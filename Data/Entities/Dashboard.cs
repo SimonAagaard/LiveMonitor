@@ -6,5 +6,6 @@ namespace Data.Entities
 {
     public class Dashboard
     {
+
     }
 }
