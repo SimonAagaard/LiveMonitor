@@ -8,6 +8,13 @@ namespace Data.Entities
     public class DashboardType
     {
         public Guid DashboardTypeId { get; set; }
-        public Enum Name { get; set; }
+       
+        public Type DashboardName { get; set; }
+        public enum Type
+        {
+            TreeDiagram,
+            VennDiagram,
+            Flowchart
+        }
     }
 }
