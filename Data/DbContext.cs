@@ -23,7 +23,6 @@ namespace Data
     //        builder.UseSqlServer(connectionString);
     //        return new DbContext(builder.Options);
     //    }
-
     //}
 
     //DbContext for identity 
@@ -34,7 +33,12 @@ namespace Data
 
         }
         public DbSet<MonitorUser> Users { get; set;}
-        //public DbSet<Dashboard> Dashboards { get; set; }
+        public DbSet<Dashboard> Dashboards { get; set; }
+        public DbSet<DashboardSetting> DashboardSettings { get; set; }
+        public DbSet<DashboardType> DashboardTypes { get; set; }
+        public DbSet<DataSet> Datasets { get; set; }
+        public DbSet<Integration> Integrations { get; set; }
+        public DbSet<IntegrationSetting> IntegrationSettings { get; set; }
 
     }
 }
