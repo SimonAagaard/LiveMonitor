@@ -32,6 +32,17 @@ namespace Web
                 .AddEntityFrameworkStores<Data.DbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            //Custom settings for identity client-side validation
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 4;
+                options.Password.RequiredUniqueChars = 1;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

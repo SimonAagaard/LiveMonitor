@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Data.Entities
 {
+    //Most properties needed for a user is provided by Identity, in this model class we only add properties to the existing ones
     public class MonitorUser : IdentityUser
     {
         public DateTime CreatedAt { get; set; }
