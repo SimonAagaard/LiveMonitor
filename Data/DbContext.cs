@@ -6,6 +6,7 @@ using Data.Entities;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Data
 {
@@ -24,13 +25,13 @@ namespace Data
 
     }
 
-    public class DbContext : Microsoft.EntityFrameworkCore.DbContext
+    public class DbContext : IdentityDbContext<MonitorUser>
     {
         public DbContext(DbContextOptions<DbContext> options) : base(options)
         {
 
         }
-        public DbSet<User> Users { get; set;}
+        public DbSet<MonitorUser> Users { get; set;}
         //public DbSet<Dashboard> Dashboards { get; set; }
 
     }
