@@ -18,7 +18,9 @@ namespace Data.Entities
         [Key]
         public Guid DashboardId { get; set; }
         [Required]
+        [ForeignKey("DashboardSettingId")]
         public Guid DashboardSettingId { get; set; }
+        public DashboardSetting DashboardSettingFK { get; set; }
         [Required]
         public DateTime DateCreated { get; set; }
         public DateTime? DateModified { get; set; }

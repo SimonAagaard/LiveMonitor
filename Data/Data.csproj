@@ -29,6 +29,10 @@
     <Compile Remove="Data\Migrations\20191115104158_fluentAPI.Designer.cs" />
     <Compile Remove="Data\Migrations\20191115111043_DashboardFK.cs" />
     <Compile Remove="Data\Migrations\20191115111043_DashboardFK.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191115114805_DashboardSettingFK.cs" />
+    <Compile Remove="Data\Migrations\20191115114805_DashboardSettingFK.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191115115058_DashboardSettingFK.cs" />
+    <Compile Remove="Data\Migrations\20191115115058_DashboardSettingFK.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

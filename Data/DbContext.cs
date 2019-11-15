@@ -49,10 +49,10 @@ namespace Data
                 .WithMany(d => d.Dashboards)
                 .HasForeignKey("UserId");
 
-            //modelBuilder.Entity<DashboardSetting>()
-            //    .HasOne(typeof(Dashboard))
-            //    .WithOne()
-            //    .HasForeignKey("DashboardId");
+            modelBuilder.Entity<DashboardSetting>()
+                .HasOne(x => x.DashboardIdFK)
+                .WithOne(y => y.DashboardSettingFK)
+                .HasForeignKey<DashboardSetting>(y => y.DashboardId);
         }
 
         public DbSet<MonitorUser> MonitorUsers { get; set;}
