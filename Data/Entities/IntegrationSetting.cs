@@ -12,8 +12,11 @@ namespace Data.Entities
         public Guid IntegrationSettingId { get; set; }
         [ForeignKey("IntegrationId")]
         public Guid IntegrationId { get; set; }
+        [Required]
         public string ClientId { get; set; }
+        [Required]
         public string ClientSecret { get; set; }
+        [Required]
         public string TenantID { get; set; }
 
     }
