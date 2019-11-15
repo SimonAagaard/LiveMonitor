@@ -10,55 +10,55 @@ namespace Data
     public class Repository<T> : IRepository<T> where T : class, IEntity
     {
         private readonly DbContext _context;
-        private DbSet<T> entities;
+        private DbSet<T> _entities;
 
         public Repository(DbContext context)
         {
             _context = context;
-            entities = context.Set<T>();
+            _entities = context.Set<T>();
 
         }
 
         public async Task<List<T>> GetAll()
         {
-            return await entities.ToListAsync();
+            return await _entities.ToListAsync();
         }
 
         public async Task<T> Get(string userId)
         {
-            var results = await entities
+            var results = await _entities
                 .FirstOrDefaultAsync(d => d.Id.ToString() == userId);
             return results;
         }
 
         public async Task<T> Get(Guid id)
         {
-            var results = await entities
+            var results = await _entities
                 .FirstOrDefaultAsync(d => d.Id == id);
             return results;
         }
 
         public async Task Add(T entity)
         {
-            await entities.AddAsync(entity);
+            await _entities.AddAsync(entity);
             _context.SaveChanges();
         }
 
         public async Task Delete(Guid id)
         {
-            var entity = await entities
+            var entity = await _entities
                 .FirstOrDefaultAsync(d => d.Id == id);
-            entities.Remove(entity);
+            _entities.Remove(entity);
             _context.SaveChanges();
         }
 
         public async Task Update(T entity)
         {
-            var entityToUpdate = await entities
+            var entityToUpdate = await _entities
                             .FirstOrDefaultAsync(d => d.Id == entity.Id);
             if(entity != null)
             {
-                entities.Update(entity);
+                _entities.Update(entity);
                 _context.SaveChanges();
             }
             else
