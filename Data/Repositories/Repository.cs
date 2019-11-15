@@ -12,11 +12,10 @@ namespace Data
         private readonly DbContext _context;
         private DbSet<T> _entities;
 
-        public Repository(DbContext context)
+        public Repository()
         {
-            _context = context;
-            _entities = context.Set<T>();
-
+            _context = new DbContext(new DbContextOptions<DbContext>());
+            _entities = _context.Set<T>();
         }
 
         public async Task<List<T>> GetAll()

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class Integration
+    public class Integration : BaseEntity
     {
         [Key]
         public Guid IntegrationId { get; set; }

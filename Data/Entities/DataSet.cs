@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class DataSet
+    public class DataSet : BaseEntity
     {
         [Key]
         public Guid DataSetId { get; set; }

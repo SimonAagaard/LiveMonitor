@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class IntegrationSetting
+    public class IntegrationSetting : BaseEntity
     {
         [Key]
         public Guid IntegrationSettingId { get; set; }
@@ -21,7 +21,5 @@ namespace Data.Entities
         [Required]
         public string TenantID { get; set; }
         public List<DataSet> DataSets { get; set; }
-
-
     }
 }

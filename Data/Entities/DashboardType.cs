@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entities
 {
-    public class DashboardType
+    public class DashboardType : BaseEntity
     {
         [Key]
         public Guid DashboardTypeId { get; set; }

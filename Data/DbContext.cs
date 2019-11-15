@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Data
 {
-    
-
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<DbContext>
     {
         //Used to get the configuration string from API, apparently the program runs just fine without it
@@ -64,7 +62,6 @@ namespace Data
                 .WithMany(y => y.DataSets)
                 .HasForeignKey("IntegrationSettingId");
         }
-       
 
         public DbSet<MonitorUser> MonitorUsers { get; set;}
         public DbSet<Dashboard> Dashboards { get; set; }
