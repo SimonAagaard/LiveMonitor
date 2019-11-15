@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Data.Entities
 {
-    public class Dashboard
+    public class Dashboard : BaseEntity
     {
         [Required]
         [MaxLength(128)]
