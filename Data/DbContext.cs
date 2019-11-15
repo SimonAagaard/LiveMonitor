@@ -44,10 +44,10 @@ namespace Data
             //    .WithOne()
             //    .HasForeignKey("DashboardSettingId");
 
-            //modelBuilder.Entity<Dashboard>()
-            //    .HasOne<MonitorUser>(x => x.UserId)
-            //    .WithOne(d => d.Da)
-            //    .HasForeignKey("UserId");
+            modelBuilder.Entity<Dashboard>()
+                .HasOne(x => x.MonitorUserFK)
+                .WithMany(d => d.Dashboards)
+                .HasForeignKey("UserId");
 
             //modelBuilder.Entity<DashboardSetting>()
             //    .HasOne(typeof(Dashboard))

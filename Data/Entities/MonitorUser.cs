@@ -13,5 +13,6 @@ namespace Data.Entities
         public DateTime DateModified { get; set; }
         public DateTime DateDeleted { get; set; }
         public bool IsDeleted { get; set; }
+        public List<Dashboard> Dashboards { get; set; }
     }
 }
