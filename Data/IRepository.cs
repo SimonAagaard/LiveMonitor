@@ -8,9 +8,11 @@ namespace Data
     public interface IRepository<T> where T : class, IEntity
     {
         Task<List<T>> GetAll();
-        Task<T> Get(int id);
-        Task<T> Add(T entity);
-        Task<T> Update(T entity);
-        Task<T> Delete(int id);
+        Task<T> Get(string userId);
+        Task<T> Get(Guid id);
+        //Task<T> Get(string userId, Guid id);
+        Task Add(T entity);
+        Task Delete(Guid id);
+        Task Update(T entity);
     }
 }
