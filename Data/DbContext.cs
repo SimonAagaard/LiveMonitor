@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Data
 {
+    
+
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<DbContext>
     {
         //Used to get the configuration string from API, apparently the program runs just fine without it
@@ -32,6 +34,27 @@ namespace Data
         {
 
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            //modelBuilder.Entity<Dashboard>()
+            //    .HasOne(typeof(DashboardSetting))
+            //    .WithOne()
+            //    .HasForeignKey("DashboardSettingId");
+
+            //modelBuilder.Entity<Dashboard>()
+            //    .HasOne<MonitorUser>(x => x.UserId)
+            //    .WithOne(d => d.Da)
+            //    .HasForeignKey("UserId");
+
+            //modelBuilder.Entity<DashboardSetting>()
+            //    .HasOne(typeof(Dashboard))
+            //    .WithOne()
+            //    .HasForeignKey("DashboardId");
+        }
+
         public DbSet<MonitorUser> MonitorUsers { get; set;}
         public DbSet<Dashboard> Dashboards { get; set; }
         public DbSet<DashboardSetting> DashboardSettings { get; set; }
@@ -39,6 +62,5 @@ namespace Data
         public DbSet<DataSet> Datasets { get; set; }
         public DbSet<Integration> Integrations { get; set; }
         public DbSet<IntegrationSetting> IntegrationSettings { get; set; }
-
     }
 }

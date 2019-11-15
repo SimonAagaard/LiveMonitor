@@ -11,6 +11,22 @@
     <Compile Remove="Data\Migrations\20191114205808_test.Designer.cs" />
     <Compile Remove="Data\Migrations\20191115085524_test.cs" />
     <Compile Remove="Data\Migrations\20191115085524_test.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191115090718_FKTest.cs" />
+    <Compile Remove="Data\Migrations\20191115090718_FKTest.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191115092604_fluentAPI.cs" />
+    <Compile Remove="Data\Migrations\20191115092604_fluentAPI.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191115093838_fluentAPI.cs" />
+    <Compile Remove="Data\Migrations\20191115093838_fluentAPI.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191115094230_fluentAPI.cs" />
+    <Compile Remove="Data\Migrations\20191115094230_fluentAPI.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191115095428_fluentAPI.cs" />
+    <Compile Remove="Data\Migrations\20191115095428_fluentAPI.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191115100030_alterIdColumn.cs" />
+    <Compile Remove="Data\Migrations\20191115100030_alterIdColumn.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191115102528_fluentAPI.cs" />
+    <Compile Remove="Data\Migrations\20191115102528_fluentAPI.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191115104158_fluentAPI.cs" />
+    <Compile Remove="Data\Migrations\20191115104158_fluentAPI.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

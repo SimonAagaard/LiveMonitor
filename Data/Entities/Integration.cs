@@ -9,7 +9,7 @@ namespace Data.Entities
     {
         [Key]
         public Guid IntegrationId { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public Guid IntegrationSettingId { get; set; }
         public string IntegrationName { get; set; }
     }
