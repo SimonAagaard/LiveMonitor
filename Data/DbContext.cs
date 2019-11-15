@@ -39,21 +39,32 @@ namespace Data
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.Entity<Dashboard>()
-            //    .HasOne(typeof(DashboardSetting))
-            //    .WithOne()
-            //    .HasForeignKey("DashboardSettingId");
-
             modelBuilder.Entity<Dashboard>()
-                .HasOne(x => x.MonitorUserFK)
+                .HasOne(x => x.MonitorUser)
                 .WithMany(d => d.Dashboards)
                 .HasForeignKey("UserId");
 
             modelBuilder.Entity<DashboardSetting>()
-                .HasOne(x => x.DashboardIdFK)
-                .WithOne(y => y.DashboardSettingFK)
+                .HasOne(x => x.Dashboard)
+                .WithOne(y => y.DashboardSetting)
                 .HasForeignKey<DashboardSetting>(y => y.DashboardId);
+
+            modelBuilder.Entity<Integration>()
+                .HasOne(x => x.MonitorUser)
+                .WithMany(x => x.Integrations)
+                .HasForeignKey("UserId");
+
+            modelBuilder.Entity<IntegrationSetting>()
+                .HasOne(x => x.Integration)
+                .WithOne(y => y.IntegrationSetting)
+                .HasForeignKey<IntegrationSetting>(y => y.IntegrationId);
+
+            modelBuilder.Entity<DataSet>()
+                .HasOne(x => x.IntegrationSetting)
+                .WithMany(y => y.DataSets)
+                .HasForeignKey("IntegrationSettingId");
         }
+       
 
         public DbSet<MonitorUser> MonitorUsers { get; set;}
         public DbSet<Dashboard> Dashboards { get; set; }

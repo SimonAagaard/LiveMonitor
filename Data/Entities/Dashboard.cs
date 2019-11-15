@@ -14,13 +14,13 @@ namespace Data.Entities
         [ForeignKey("UserId")]
         [Required]
         public string UserId { get; set; }
-        public MonitorUser MonitorUserFK { get; set; }
+        public MonitorUser MonitorUser { get; set; }
         [Key]
         public Guid DashboardId { get; set; }
         [Required]
         [ForeignKey("DashboardSettingId")]
         public Guid DashboardSettingId { get; set; }
-        public DashboardSetting DashboardSettingFK { get; set; }
+        public DashboardSetting DashboardSetting { get; set; }
         [Required]
         public DateTime DateCreated { get; set; }
         public DateTime? DateModified { get; set; }

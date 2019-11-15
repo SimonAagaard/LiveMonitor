@@ -4,14 +4,16 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(DbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191115121349_IntegrationFKSetup")]
+    partial class IntegrationFKSetup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -119,8 +121,6 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("DataSetId");
-
-                    b.HasIndex("IntegrationSettingId");
 
                     b.ToTable("Datasets");
                 });
@@ -399,15 +399,6 @@ namespace Data.Migrations
                     b.HasOne("Data.Entities.Dashboard", "Dashboard")
                         .WithOne("DashboardSetting")
                         .HasForeignKey("Data.Entities.DashboardSetting", "DashboardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Data.Entities.DataSet", b =>
-                {
-                    b.HasOne("Data.Entities.IntegrationSetting", "IntegrationSetting")
-                        .WithMany("DataSets")
-                        .HasForeignKey("IntegrationSettingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

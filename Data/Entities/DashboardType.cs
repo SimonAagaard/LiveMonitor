@@ -7,6 +7,7 @@ namespace Data.Entities
 {
     public class DashboardType
     {
+        [Key]
         public Guid DashboardTypeId { get; set; }
        
         public Type DashboardName { get; set; }

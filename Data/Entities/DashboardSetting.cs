@@ -13,7 +13,7 @@ namespace Data.Entities
         [Required]
         [ForeignKey("DashboardId")]
         public Guid DashboardId { get; set; }
-        public Dashboard DashboardIdFK { get; set; }
+        public Dashboard Dashboard { get; set; }
         [Required]
         public Guid DashboardTypeId { get; set; }
         [Required]
