@@ -27,6 +27,8 @@
     <Compile Remove="Data\Migrations\20191115102528_fluentAPI.Designer.cs" />
     <Compile Remove="Data\Migrations\20191115104158_fluentAPI.cs" />
     <Compile Remove="Data\Migrations\20191115104158_fluentAPI.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191115111043_DashboardFK.cs" />
+    <Compile Remove="Data\Migrations\20191115111043_DashboardFK.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -12,7 +12,9 @@ namespace Data.Entities
         [MaxLength(128)]
         public string DashboardName { get; set; }
         [ForeignKey("UserId")]
+        [Required]
         public string UserId { get; set; }
+        public MonitorUser MonitorUserFK { get; set; }
         [Key]
         public Guid DashboardId { get; set; }
         [Required]
