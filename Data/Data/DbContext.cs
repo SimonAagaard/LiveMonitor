@@ -28,6 +28,22 @@ namespace Data
     //DbContext for identity 
     public class DbContext : IdentityDbContext<MonitorUser, MonitorRole, Guid>
     {
+        protected override void OnConfiguring(DbContextOptionsBuilder builder)
+        {
+            if (!builder.IsConfigured)
+            {
+                IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(@Directory.GetCurrentDirectory() + "/../Web/appsettings.json")
+                .Build();
+
+                string conn = configuration.GetConnectionString("LiveMonitorConnection");
+
+                builder.UseSqlServer(conn);
+            }
+            base.OnConfiguring(builder);
+        }
+
+
         public DbContext(DbContextOptions<DbContext> options) : base(options)
         {
 
