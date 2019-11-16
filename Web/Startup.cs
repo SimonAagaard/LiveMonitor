@@ -13,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Web.Areas.Identity.Pages;
 
 namespace Web
 {
@@ -30,9 +32,9 @@ namespace Web
         {
             services.AddDbContext<Data.DbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LiveMonitorConnection")));
             //services.AddDefaultIdentity<MonitorUser>(options => options.SignIn.RequireConfirmedAccount = true);
-                //.AddEntityFrameworkStores<Data.DbContext, Guid>();
+            //.AddEntityFrameworkStores<Data.DbContext, Guid>();
 
-            services.AddIdentity<MonitorUser, MonitorRole>()
+            services.AddIdentity<MonitorUser, MonitorRole>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<Data.DbContext>()
                     .AddDefaultTokenProviders()
                     .AddUserStore<UserStore<MonitorUser, MonitorRole, Data.DbContext, Guid>>()
@@ -40,6 +42,8 @@ namespace Web
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddSingleton<IEmailSender, EmailSender>();
 
             //Custom settings for identity client-side validation
             services.Configure<IdentityOptions>(options =>
@@ -74,6 +78,8 @@ namespace Web
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+
 
             app.UseEndpoints(endpoints =>
             {
