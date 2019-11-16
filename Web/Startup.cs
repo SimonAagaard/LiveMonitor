@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Data.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Web
 {
@@ -28,8 +29,15 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<Data.DbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LiveMonitorConnection")));
-            services.AddDefaultIdentity<MonitorUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<Data.DbContext>();
+            //services.AddDefaultIdentity<MonitorUser>(options => options.SignIn.RequireConfirmedAccount = true);
+                //.AddEntityFrameworkStores<Data.DbContext, Guid>();
+
+            services.AddIdentity<MonitorUser, MonitorRole>()
+                    .AddEntityFrameworkStores<Data.DbContext>()
+                    .AddDefaultTokenProviders()
+                    .AddUserStore<UserStore<MonitorUser, MonitorRole, Data.DbContext, Guid>>()
+                    .AddRoleStore<RoleStore<MonitorRole, Data.DbContext, Guid>>();
+
             services.AddControllersWithViews();
             services.AddRazorPages();
 

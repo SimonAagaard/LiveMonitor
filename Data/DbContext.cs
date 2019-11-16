@@ -16,7 +16,7 @@ namespace Data
         public DbContext CreateDbContext(string[] args)
         {
             IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(@Directory.GetCurrentDirectory() + "/../API/appsettings.json")
+                .AddJsonFile(@Directory.GetCurrentDirectory() + "/../Web/appsettings.json")
                 .Build();
             var builder = new DbContextOptionsBuilder<DbContext>();
             var connectionString = configuration.GetConnectionString("LiveMonitorConnection");
@@ -26,7 +26,7 @@ namespace Data
     }
 
     //DbContext for identity 
-    public class DbContext : IdentityDbContext<MonitorUser>
+    public class DbContext : IdentityDbContext<MonitorUser, MonitorRole, Guid>
     {
         public DbContext(DbContextOptions<DbContext> options) : base(options)
         {
@@ -36,6 +36,16 @@ namespace Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<MonitorUser>(x =>
+            {
+                x.Property(y => y.Id).HasDefaultValueSql("newsequentialid()");
+            });
+
+            modelBuilder.Entity<MonitorRole>(x =>
+            {
+                x.Property(y => y.Id).HasDefaultValueSql("newsequentialid()");
+            });
 
             modelBuilder.Entity<Dashboard>()
                 .HasOne(x => x.MonitorUser)
@@ -64,6 +74,7 @@ namespace Data
         }
 
         public DbSet<MonitorUser> MonitorUsers { get; set;}
+        public DbSet<MonitorRole> MonitorRoles { get; set; }
         public DbSet<Dashboard> Dashboards { get; set; }
         public DbSet<DashboardSetting> DashboardSettings { get; set; }
         public DbSet<DashboardType> DashboardTypes { get; set; }

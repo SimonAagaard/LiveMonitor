@@ -12,7 +12,7 @@ namespace Data.Entities
         public Guid IntegrationId { get; set; }
         [Required]
         [ForeignKey("UserId")]
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
         public MonitorUser MonitorUser { get; set; }
         public Guid IntegrationSettingId { get; set; }
         public string IntegrationName { get; set; }

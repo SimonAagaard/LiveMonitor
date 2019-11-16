@@ -33,6 +33,8 @@
     <Compile Remove="Data\Migrations\20191115114805_DashboardSettingFK.Designer.cs" />
     <Compile Remove="Data\Migrations\20191115115058_DashboardSettingFK.cs" />
     <Compile Remove="Data\Migrations\20191115115058_DashboardSettingFK.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191116120404_MonitorRole.cs" />
+    <Compile Remove="Data\Migrations\20191116120404_MonitorRole.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,6 +53,10 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
   </ItemGroup>
 
 </Project>
