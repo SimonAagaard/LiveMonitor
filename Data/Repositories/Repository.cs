@@ -79,7 +79,6 @@ namespace Data
             }
         }
 
-
         // Generic harddeletion of an object. Checks that an objects exist before attempting to delete.
         // Create a soft delete to make use of IsDeleted.
         public async Task Delete(Guid id)
