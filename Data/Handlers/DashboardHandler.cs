@@ -17,6 +17,11 @@ namespace Data.Handlers
             dashboardRepo = new Repository<Dashboard>();
         }
 
+        public async Task CreateDashboard(Dashboard dashboard)
+        {
+            await dashboardRepo.Add(dashboard);
+        }
+
         // Get all dashboards in the database
         public async Task<List<Dashboard>> GetDashboards()
         {

@@ -59,8 +59,15 @@ namespace Data
         // Validation here?
         public async Task Add(T entity)
         {
-            await _entities.AddAsync(entity);
-            _context.SaveChanges();
+            if (entity.Id != Guid.Empty)
+            {
+                await _entities.AddAsync(entity);
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new Exception("Entity of type " + typeof(Repository<T>) + " was not valid, and has not been created");
+            }
         }
 
         // Generic update method. Checks for valid object before updating
