@@ -4,22 +4,47 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Data.Handlers
 {
-    class DashboardHandler
+    public class DashboardHandler
     {
-        private Repository<Dashboard> repo;
+        private readonly Repository<Dashboard> dashboardRepo;
 
         public DashboardHandler()
         {
-            repo = new Repository<Dashboard>();
+            dashboardRepo = new Repository<Dashboard>();
         }
 
-        // TODO
-        public async void GetDashboards()
+        // Get all dashboards in the database
+        public async Task<List<Dashboard>> GetDashboards()
         {
-            List<Dashboard> dashboards = await repo.GetAll();
+            return await dashboardRepo.GetAll();
+        }
+
+        // Get a single dashboard based on the dashboardId
+        public async Task<Dashboard> GetDashboard(Guid dashboardId)
+        {
+            return await dashboardRepo.Get(dashboardId);
+        }
+
+        // Get dashboards based on their userId (DashboardOverview)
+        public async Task<List<Dashboard>> GetDashboardsByUserId(Guid userId)
+        {
+            return await dashboardRepo.GetMany(x => x.UserId == userId);
+        }
+
+        // Update a dashboard object
+        public async Task UpdateDashboard(Dashboard dashboard)
+        {
+            await dashboardRepo.Update(dashboard);
+        }
+
+        // Hard delete a dashboard based on the dashboardId
+        public async Task Delete(Guid dashboardId)
+        {
+            await dashboardRepo.Delete(dashboardId);
         }
     }
 }

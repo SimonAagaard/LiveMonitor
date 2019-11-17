@@ -37,6 +37,8 @@
     <Compile Remove="Data\Migrations\20191116120404_MonitorRole.Designer.cs" />
     <Compile Remove="Data\Migrations\20191116124501_test.cs" />
     <Compile Remove="Data\Migrations\20191116124501_test.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191117123010_Handlers.cs" />
+    <Compile Remove="Data\Migrations\20191117123010_Handlers.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

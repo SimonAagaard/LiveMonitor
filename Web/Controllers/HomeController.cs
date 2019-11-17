@@ -19,10 +19,11 @@ namespace Web.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            UserHandler userHandler = new UserHandler();
-            var users = await userHandler.GetAllUsers();
+            //DashboardHandler dashboardHandler = new DashboardHandler();
+            //var dashboards = await dashboardHandler.GetDashboards();
+            _logger.LogInformation("Index view returned");
             return View();
         }
 
