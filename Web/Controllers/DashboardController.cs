@@ -37,6 +37,23 @@ namespace Web.Controllers
             return View();
         }
 
+        Random rdn = new Random();
+
+        public IActionResult RealTimeDashboard()
+        {
+            return View();
+        }
+
+        public JsonResult GetRealTimeData()
+        {
+            RealTimeData data = new RealTimeData
+            {
+                TimeStamp = DateTime.Now,
+                DataValue = rdn.Next(0, 11)
+            };
+            return Json(data);
+        }
+
         // GET: Dashboards/Details/5
         public async Task<IActionResult> Details(Guid id)
         {
@@ -178,5 +195,10 @@ namespace Web.Controllers
             bool dashboardExists = dashboard != null ? true : false;
             return dashboardExists;
         }
+    }
+    public class RealTimeData
+    {
+        public DateTime TimeStamp { get; set; }
+        public double DataValue { get; set; }
     }
 }
