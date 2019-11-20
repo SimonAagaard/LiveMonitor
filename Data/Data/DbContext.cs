@@ -20,7 +20,7 @@ namespace Data
                 .Build();
             var builder = new DbContextOptionsBuilder<DbContext>();
             //Change this connectionstring to personal DB whenever working on a feature branch
-            var connectionString = configuration.GetConnectionString("LiveMonitorSimon");
+            var connectionString = configuration.GetConnectionString("LiveMonitorProd");
             builder.UseSqlServer(connectionString);
             return new DbContext(builder.Options);
         }
@@ -37,7 +37,7 @@ namespace Data
                 .AddJsonFile(@Directory.GetCurrentDirectory() + "/../Web/appsettings.json")
                 .Build();
 
-                string conn = configuration.GetConnectionString("LiveMonitorSimon");
+                string conn = configuration.GetConnectionString("LiveMonitorProd");
 
                 builder.UseSqlServer(conn);
             }
