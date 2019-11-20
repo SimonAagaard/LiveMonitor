@@ -15,6 +15,7 @@ using Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Web.Areas.Identity.Pages;
+using Data.Data;
 
 namespace Web
 {
@@ -30,7 +31,9 @@ namespace Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<Data.DbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LiveMonitorProd")));
+            DbName dbName = new DbName();
+
+            services.AddDbContext<Data.DbContext>(options => options.UseSqlServer(Configuration.GetConnectionString(dbName.ConnectionName)));
             //services.AddDefaultIdentity<MonitorUser>(options => options.SignIn.RequireConfirmedAccount = true);
             //.AddEntityFrameworkStores<Data.DbContext, Guid>();
 

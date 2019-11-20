@@ -7,11 +7,14 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Data.Data;
 
 namespace Data
 {
+    
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<DbContext>
     {
+        
         //Used to get the configuration string from API, apparently the program runs just fine without it
         public DbContext CreateDbContext(string[] args)
         {
@@ -19,8 +22,10 @@ namespace Data
                 .AddJsonFile(@Directory.GetCurrentDirectory() + "/../Web/appsettings.json")
                 .Build();
             var builder = new DbContextOptionsBuilder<DbContext>();
+            DbName dbName = new DbName();
+
             //Change this connectionstring to personal DB whenever working on a feature branch
-            var connectionString = configuration.GetConnectionString("LiveMonitorProd");
+            var connectionString = configuration.GetConnectionString(dbName.ConnectionName);
             builder.UseSqlServer(connectionString);
             return new DbContext(builder.Options);
         }
@@ -36,8 +41,9 @@ namespace Data
                 IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile(@Directory.GetCurrentDirectory() + "/../Web/appsettings.json")
                 .Build();
+                DbName dbName = new DbName();
 
-                string conn = configuration.GetConnectionString("LiveMonitorProd");
+                string conn = configuration.GetConnectionString(dbName.ConnectionName);
 
                 builder.UseSqlServer(conn);
             }

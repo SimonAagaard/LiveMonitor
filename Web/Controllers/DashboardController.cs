@@ -13,12 +13,12 @@ using System.Security.Claims;
 
 namespace Web.Controllers
 {
-    public class DashboardsController : Controller
+    public class DashboardController : Controller
     {
         private readonly DashboardHandler _dashboardHandler;
         private readonly DashboardSettingHandler _dashboardSettingHandler;
 
-        public DashboardsController()
+        public DashboardController()
         {
             _dashboardHandler = new DashboardHandler();
             _dashboardSettingHandler = new DashboardSettingHandler();
