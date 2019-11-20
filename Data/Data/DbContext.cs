@@ -8,25 +8,40 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Data.Data;
+using Microsoft.AspNetCore.Http;
+using System.Diagnostics;
 
 namespace Data
 {
-    
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<DbContext>
     {
-        
         //Used to get the configuration string from API, apparently the program runs just fine without it
         public DbContext CreateDbContext(string[] args)
         {
-            IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(@Directory.GetCurrentDirectory() + "/../Web/appsettings.json")
+            var relativePath = @"../../site/wwwroot/";
+            var absolutePath = Path.GetFullPath(relativePath);
+
+            // For deployed webapp
+#if !DEBUG
+                IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(absolutePath)
+                    .AddJsonFile(absolutePath + $"appsettings.json", false, true)
+                    .Build();
+#endif
+
+            // For local debugging
+#if DEBUG
+            absolutePath = Directory.GetParent(Environment.CurrentDirectory).ToString();
+
+            IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(absolutePath)
+                .AddJsonFile(absolutePath + $"/Web/appsettings.json", false, true)
                 .Build();
+#endif
             var builder = new DbContextOptionsBuilder<DbContext>();
             DbName dbName = new DbName();
-
-            //Change this connectionstring to personal DB whenever working on a feature branch
             var connectionString = configuration.GetConnectionString(dbName.ConnectionName);
+
             builder.UseSqlServer(connectionString);
+
             return new DbContext(builder.Options);
         }
     }
@@ -38,18 +53,30 @@ namespace Data
         {
             if (!builder.IsConfigured)
             {
-                IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(@Directory.GetCurrentDirectory() + "/../Web/appsettings.json")
-                .Build();
+                var relativePath = @"../../site/wwwroot/";
+                var absolutePath = Path.GetFullPath(relativePath);
+
+                // For deployed webapp
+#if !DEBUG
+                IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(absolutePath)
+                    .AddJsonFile(absolutePath + $"appsettings.json", false, true)
+                    .Build();
+#endif
+                
+                // For local debugging
+#if DEBUG
+                absolutePath = Directory.GetParent(Environment.CurrentDirectory).ToString();
+
+                IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(absolutePath)
+                    .AddJsonFile(absolutePath + $"/Web/appsettings.json", false, true)
+                    .Build();
+#endif
                 DbName dbName = new DbName();
-
                 string conn = configuration.GetConnectionString(dbName.ConnectionName);
-
                 builder.UseSqlServer(conn);
             }
             base.OnConfiguring(builder);
         }
-
 
         public DbContext(DbContextOptions<DbContext> options) : base(options)
         {
@@ -96,7 +123,7 @@ namespace Data
                 .HasForeignKey("IntegrationSettingId");
         }
 
-        public DbSet<MonitorUser> MonitorUsers { get; set;}
+        public DbSet<MonitorUser> MonitorUsers { get; set; }
         public DbSet<MonitorRole> MonitorRoles { get; set; }
         public DbSet<Dashboard> Dashboards { get; set; }
         public DbSet<DashboardSetting> DashboardSettings { get; set; }
