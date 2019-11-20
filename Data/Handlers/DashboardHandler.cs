@@ -19,7 +19,14 @@ namespace Data.Handlers
 
         public async Task CreateDashboard(Dashboard dashboard)
         {
-            await dashboardRepo.Add(dashboard);
+            if(dashboard.DashboardId != Guid.Empty)
+            {
+                await dashboardRepo.Add(dashboard);
+            }
+            else
+            {
+                throw new Exception("Guid not valid");
+            }
         }
 
         // Get all dashboards in the database

@@ -8,30 +8,29 @@ using Microsoft.EntityFrameworkCore;
 using Data;
 using Data.Handlers;
 using Data.Entities;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Web.Controllers
 {
     public class DashboardsController : Controller
     {
-        private DashboardHandler _dashboardHandler;
+        private readonly DashboardHandler _dashboardHandler;
+        private readonly DashboardSettingHandler _dashboardSettingHandler;
 
         public DashboardsController()
         {
             _dashboardHandler = new DashboardHandler();
-        }
-        //Used to retrieve the standard scaffolded index
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
+            _dashboardSettingHandler = new DashboardSettingHandler();
 
+        }
 
         // GET: Dashboards
         public async Task<IActionResult> Index()
         {
-            var dashboards = _dashboardHandler.GetDashboards();
+            var dashboards = await _dashboardHandler.GetDashboards();
             //If there is dashboards in the DB pass them to the view
-            if(dashboards.Result.Any())
+            if (dashboards.Any())
             {
                 return View(dashboards);
             }
@@ -41,13 +40,13 @@ namespace Web.Controllers
         // GET: Dashboards/Details/5
         public async Task<IActionResult> Details(Guid id)
         {
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return NotFound();
             }
 
             var dashboard = await _dashboardHandler.GetDashboard(id);
-               
+
             if (dashboard == null)
             {
                 return NotFound();
@@ -59,24 +58,38 @@ namespace Web.Controllers
         // GET: Dashboards/Create
         public IActionResult Create()
         {
-            //ViewData["UserId"] = new SelectList(_context.MonitorUsers, "Id", "Id");
             return View();
         }
 
         // POST: Dashboards/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DashboardName,UserId,DashboardId,DashboardSettingId,DateCreated,DateModified,DateDeleted,Id")] Dashboard dashboard)
+        public async Task<IActionResult> Create([Bind("DashboardName")] Dashboard dashboard)
         {
             if (ModelState.IsValid)
             {
+                //Get current user
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                //Dashboard
                 dashboard.DashboardId = Guid.NewGuid();
+                dashboard.DateCreated = DateTime.Now;
+                dashboard.DashboardSettingId = Guid.NewGuid();
+                dashboard.UserId = Guid.Parse(userId);
+
                 await _dashboardHandler.CreateDashboard(dashboard);
+
+                //DashboardSetting - One-One relation
+                DashboardSetting dashboardSetting = new DashboardSetting
+                {
+                    DashboardSettingId = dashboard.DashboardSettingId,
+                    DashboardId = dashboard.DashboardId
+                };
+
+                await _dashboardSettingHandler.CreateDashboardSetting(dashboardSetting);
+
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["UserId"] = new SelectList(_context.MonitorUsers, "Id", "Id", dashboard.UserId);
             return View(dashboard);
         }
 
@@ -84,7 +97,7 @@ namespace Web.Controllers
         //Used for retrieveing the page to edit a dashboard
         public async Task<IActionResult> Edit(Guid id)
         {
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return NotFound();
             }
@@ -94,13 +107,10 @@ namespace Web.Controllers
             {
                 return NotFound();
             }
-            //ViewData["UserId"] = new SelectList(_context.MonitorUsers, "Id", "Id", dashboard.UserId);
             return View(dashboard);
         }
 
         // POST: Dashboards/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         //Used to post the changes made to the specified dashboard
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -130,7 +140,6 @@ namespace Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["UserId"] = new SelectList(_context.MonitorUsers, "Id", "Id", dashboard.UserId);
             return View(dashboard);
         }
 
@@ -138,7 +147,7 @@ namespace Web.Controllers
         //Get the view for the dashboard to be deleted
         public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == null)
+            if (id == Guid.Empty)
             {
                 return NotFound();
             }
