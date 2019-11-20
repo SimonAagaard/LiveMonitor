@@ -30,7 +30,7 @@ namespace Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<Data.DbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LiveMonitorProd")));
+            services.AddDbContext<Data.DbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LiveMonitorChristoffer")));
             //services.AddDefaultIdentity<MonitorUser>(options => options.SignIn.RequireConfirmedAccount = true);
             //.AddEntityFrameworkStores<Data.DbContext, Guid>();
 

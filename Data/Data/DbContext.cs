@@ -19,7 +19,7 @@ namespace Data
                 .AddJsonFile(@Directory.GetCurrentDirectory() + "/../Web/appsettings.json")
                 .Build();
             var builder = new DbContextOptionsBuilder<DbContext>();
-            var connectionString = configuration.GetConnectionString("LiveMonitorProd");
+            var connectionString = configuration.GetConnectionString("LiveMonitorChristoffer");
             builder.UseSqlServer(connectionString);
             return new DbContext(builder.Options);
         }

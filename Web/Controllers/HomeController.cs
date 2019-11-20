@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Handlers;
+using Data.Integrations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Web.Models;
@@ -19,10 +20,10 @@ namespace Web.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            //DashboardHandler dashboardHandler = new DashboardHandler();
-            //var dashboards = await dashboardHandler.GetDashboards();
+            AzureConnector azureConnector = new AzureConnector();
+            var serverResponse = await azureConnector.GetAuthTokenAsync();
             _logger.LogInformation("Index view returned");
             return View();
         }
