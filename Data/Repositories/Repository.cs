@@ -23,12 +23,13 @@ namespace Data
         {
             List<T> entities = await _entities.ToListAsync();
 
-            if (entities.Any())
-            {
-                return entities;
-            }
-
-            throw new Exception("The table that holds " + typeof(Repository<T>) + " is empty");
+            return entities;
+            //DÅRLIG KODE, SKAM DIG LASSE
+            //if (entities.Any())
+            //{
+            //    return entities;
+            //}
+            //throw new Exception("The table that holds " + typeof(Repository<T>) + " is empty");
         }
 
         public async Task<T> Get(Guid id)

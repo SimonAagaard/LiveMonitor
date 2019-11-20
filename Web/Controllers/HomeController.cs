@@ -21,8 +21,6 @@ namespace Web.Controllers
 
         public IActionResult Index()
         {
-            //DashboardHandler dashboardHandler = new DashboardHandler();
-            //var dashboards = await dashboardHandler.GetDashboards();
             _logger.LogInformation("Index view returned");
             return View();
         }

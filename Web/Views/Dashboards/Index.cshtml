@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Data.Entities.Dashboard>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string[] greetingMessages = { "du dælme smart", "du sguda smart", "ER VI ENIGE!?!", "NICE TO HAVE - LAV DEN LASSE" };
+    string randomGreetingMessage = (greetingMessages[new Random().Next(greetingMessages.Length)]);
+}
+
+<h1>Dashboard Overview - @randomGreetingMessage</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+@*Check to see if there is any dashboards, needs to be rewritting be better reflect how we want the dashboard overview to display the dashboards*@
+@if (Model != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.DashboardName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MonitorUser)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DashboardSettingId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateCreated)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateModified)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateDeleted)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DashboardName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MonitorUser.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DashboardSettingId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateCreated)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateModified)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateDeleted)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.DashboardId">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.DashboardId">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.DashboardId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
