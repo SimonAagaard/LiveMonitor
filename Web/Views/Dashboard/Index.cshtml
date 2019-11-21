@@ -7,14 +7,12 @@
     string randomGreetingMessage = (greetingMessages[new Random().Next(greetingMessages.Length)]);
 }
 
-<h1>Dashboard Overview - @randomGreetingMessage</h1>
+<h1>Your Dashboards - @randomGreetingMessage</h1>
 
 <p>
     <a asp-action="Create">Create New Dashboard</a>
 </p>
-<p>
-    <a asp-action="Dashboard">Show Real Time Dashboard</a>
-</p>
+
 @*Check to see if there is any dashboards, needs to be rewritting be better reflect how we want the dashboard overview to display the dashboards*@
 @if (Model != null)
 {
@@ -50,7 +48,8 @@
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.DashboardId">Edit</a> |
                         <a asp-action="Details" asp-route-id="@item.DashboardId">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.DashboardId">Delete</a>
+                        <a asp-action="Delete" asp-route-id="@item.DashboardId">Delete</a> |
+                        <a asp-action="Dashboard">Show</a>
                     </td>
                 </tr>
             }
