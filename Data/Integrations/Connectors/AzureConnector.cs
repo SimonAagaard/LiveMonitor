@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Data.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -15,7 +16,13 @@ namespace Data.Integrations
         private readonly string _clientId = "2de6a64e-eb0c-4275-9952-4ce1d3f0d131";
         private readonly string _clientSecret = "A1l3?[ReU3?L8eEhaYpcUPJG]jEX0_X5";
         private readonly string _tenantId = "92404485-d794-4fc2-8d0d-587d30cba2ad";
-        private readonly string _resourceId = "api://2de6a64e-eb0c-4275-9952-4ce1d3f0d131";
+        private readonly string _resourceUrl = "/subscriptions/2c24d5f6-cb4d-4857-88f8-fe5c9a827f7c/resourceGroups/LiveMonitor/providers/Microsoft.Web/sites/LiveMonitorApp/";
+        private readonly string _resourceId = "https://management.azure.com";
+        //private readonly string _accessToken = "";
+
+        // Get metric definitions:
+        //https://management.azure.com/subscriptions/2c24d5f6-cb4d-4857-88f8-fe5c9a827f7c/resourceGroups/LiveMonitor/providers/Microsoft.Web/sites/LiveMonitorApp/providers/microsoft.insights/metricDefinitions?api-version=2018-01-01&metricnamespace=Microsoft.Web/sites
+
 
         public AzureConnector()
         {
@@ -60,7 +67,6 @@ namespace Data.Integrations
                             var authServerResponse = System.Text.Json.JsonSerializer.Deserialize<AuthServerResponse>(result);
                             return authServerResponse;
                         }
-
                     }
                 }
             }
@@ -70,25 +76,36 @@ namespace Data.Integrations
             }
             return new AuthServerResponse();
         }
-    }
 
-    //public class AuthServerResponse
-    //{
-    //    [JsonProperty("token_type")]
-    //    public string TokenType { get; set; }
-    //    [JsonProperty("expires_in")]
-    //    public string ExpiresIn { get; set; }
-    //    [JsonProperty("ext_expires_in")]
-    //    public string ExtExpiresIn { get; set; }
-    //    [JsonProperty("expires_on")]
-    //    public string ExpiresOn { get; set; }
-    //    [JsonProperty("not_before")]
-    //    public string NotBefore { get; set; }
-    //    [JsonProperty("resource")]
-    //    public string Resource { get; set; }
-    //    [JsonProperty("access_token")]
-    //    public string AccessToken { get; set; }
-    //}
+        public async Task<string> GetAzureDataAsync()
+        {
+            AuthServerResponse authResponse = await GetAuthTokenAsync();
+
+            // Split url to support new integrations
+            Uri Url = new Uri(@"https://management.azure.com" + _resourceUrl + "providers/microsoft.insights/metrics?api-version=2018-01-01");
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResponse.access_token);
+
+                HttpResponseMessage response = await client.GetAsync(Url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+
+                    return result;
+                    // TODO, save token in DB, as to not create one for every call. Lasts and hour
+                    //DataSet data = System.Text.Json.JsonSerializer.Deserialize<DataSet>(result);
+
+                    //return data;
+                }
+            }
+
+            return "";
+        }
+    }
 
     public class AuthServerResponse
     {

@@ -31,7 +31,7 @@ namespace Web.Controllers
         public async Task<IActionResult> Index()
         {
             AzureConnector conn = new AzureConnector();
-            var token = await conn.GetAuthTokenAsync();
+            var token = await conn.GetAzureDataAsync();
 
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var dashboards = await _dashboardHandler.GetDashboardsByUserId(userId);
