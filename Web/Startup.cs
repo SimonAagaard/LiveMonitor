@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Web.Areas.Identity.Pages;
 using Data.Data;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace Web
 {
@@ -43,6 +44,18 @@ namespace Web
                     .AddUserStore<UserStore<MonitorUser, MonitorRole, Data.DbContext, Guid>>()
                     .AddRoleStore<RoleStore<MonitorRole, Data.DbContext, Guid>>();
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromDays(7);
+
+                options.LoginPath = "/Identity/Account/Login";
+                options.SlidingExpiration = true;
+            });
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new AuthorizeFilter());
+            }).SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddSingleton<IEmailSender, EmailSender>();
