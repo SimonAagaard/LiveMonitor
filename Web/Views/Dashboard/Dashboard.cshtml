@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Data.Entities.Dashboard
+@{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -18,7 +19,7 @@
 
         function callback() {
             var option = {
-                title: "Real-Time Chart",
+                title: "@Model.DashboardName",
                 width: 900,
                 height: 650,
                 legend: { position: 'none' },
