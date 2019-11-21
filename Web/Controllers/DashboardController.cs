@@ -41,9 +41,10 @@ namespace Web.Controllers
 
         Random rdn = new Random();
 
-        public IActionResult Dashboard(Guid id)
+        public async Task<IActionResult> Dashboard(Guid id)
         {
-            return View();
+            var dashboard = await _dashboardHandler.GetDashboards();
+            return View(dashboard);
         }
 
         //Used by the POC realtime dashboard, can be removed or refactored when we get real data through integrations
