@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Data.Handlers;
 using Data.Entities;
 using System.Security.Claims;
+using Web.Models;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Controllers
@@ -165,24 +167,11 @@ namespace Web.Controllers
             return View(dashboard);
         }
 
-        // GET: Dashboards/Delete/5
-        //Get the view for the dashboard to be deleted
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var dashboard = await _dashboardHandler.GetDashboard(id);
-            if (dashboard == null)
-            {
-                return NotFound();
-            }
-
-            return View(dashboard);
-        }
-
         // POST: Dashboards/Delete/5
-        //Post the delete of the dashboard, no checks are made since we check whenever we navigate to the delete page
-        [HttpPost, ActionName("Delete")]
+        //Post the delete of the dashboard
+        [HttpPost]       
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             //Implement checks if we decide not to have a dedicated delete page/not use the method above(Delete)
             await _dashboardHandler.DeleteDashboard(id);
@@ -196,10 +185,17 @@ namespace Web.Controllers
             bool dashboardExists = dashboard != null ? true : false;
             return dashboardExists;
         }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
     }
     public class RealTimeData
     {
         public DateTime TimeStamp { get; set; }
         public double DataValue { get; set; }
     }
+
 }
