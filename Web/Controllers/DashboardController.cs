@@ -39,7 +39,7 @@ namespace Web.Controllers
 
         Random rdn = new Random();
 
-        public IActionResult RealTimeDashboard()
+        public IActionResult Dashboard()
         {
             return View();
         }
