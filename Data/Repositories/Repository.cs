@@ -17,7 +17,6 @@ namespace Data
         {
             _context = new DbContext(new DbContextOptions<DbContext>());
             _entities = _context.Set<T>();
-
         }
 
         public async Task<List<T>> GetAll()
@@ -25,13 +24,11 @@ namespace Data
             List<T> entities = await _entities.ToListAsync();
 
             return entities;
-
         }
 
         public async Task<T> Get(Guid id)
         {
             return await _entities.FindAsync(id);
-
         }
 
         // Find List of entities based on a predicate.
@@ -47,7 +44,6 @@ namespace Data
         {
             await _entities.AddAsync(entity);
             _context.SaveChanges();
-
         }
 
         // Generic update method.
@@ -56,7 +52,6 @@ namespace Data
             T entityToUpdate = await Get(entity.Id);
             _entities.Update(entity);
             _context.SaveChanges();
-
         }
 
         // Generic harddeletion of an object.
@@ -66,7 +61,6 @@ namespace Data
             T entity = await Get(id);
             _entities.Remove(entity);
             _context.SaveChanges();
-
         }
     }
 }
