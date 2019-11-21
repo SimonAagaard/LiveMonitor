@@ -34,14 +34,8 @@ namespace Data
 
         public async Task<T> Get(Guid id)
         {
-            T entity = await _entities.FindAsync(id);
-
-            if (entity != null)
-            {
-                return entity;
-            }
-
-            throw new Exception("An entity with this ID(" + entity.Id + ") does not exist!");
+            return await _entities.FindAsync(id);
+           
         }
 
         // Find List of entities based on a predicate.
