@@ -47,9 +47,9 @@ namespace Data.Handlers
         }
 
         // Hard delete a Integration based on the IntegrationId
-        public async Task DeleteIntegration(Guid integrationId)
+        public async Task DeleteIntegration(Integration integration)
         {
-            await _integrationRepo.Delete(integrationId);
+            await _integrationRepo.Delete(integration);
         }
     }
 }

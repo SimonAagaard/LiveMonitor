@@ -148,16 +148,9 @@ namespace Web.Controllers
                 {
                     await _dashboardSettingHandler.UpdateDashboardSetting(dashboardSetting);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException e)
                 {
-                    if (!DashboardExists(dashboardSetting.DashboardSettingId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw e;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -185,29 +178,18 @@ namespace Web.Controllers
         //Used to post the changes made to the specified dashboard
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("DashboardName,UserId,DashboardId,DashboardSettingId,DateCreated,DateModified,DateDeleted,Id")] Dashboard dashboard)
+        public async Task<IActionResult> Edit([Bind("DashboardName,DashboardId,DashboardSettingId,DateCreated,DateDeleted,UserId")] Dashboard dashboard)
         {
-            if (id != dashboard.DashboardId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
+                    dashboard.DateModified = DateTime.Now;
                     await _dashboardHandler.UpdateDashboard(dashboard);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException e)
                 {
-                    if (!DashboardExists(dashboard.DashboardId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw e;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -220,7 +202,8 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _dashboardHandler.DeleteDashboard(id);
+            var dashboard = await _dashboardHandler.GetDashboard(id);
+            await _dashboardHandler.DeleteDashboard(dashboard);
             return RedirectToAction(nameof(Index));
         }
 

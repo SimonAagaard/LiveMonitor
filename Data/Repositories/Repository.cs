@@ -49,18 +49,16 @@ namespace Data
         // Generic update method.
         public async Task Update(T entity)
         {
-            T entityToUpdate = await Get(entity.Id);
             _entities.Update(entity);
             _context.SaveChanges();
         }
 
         // Generic harddeletion of an object.
         // Create a soft delete to make use of IsDeleted.
-        public async Task Delete(Guid id)
+        public async Task Delete(T entity)
         {
-            T entity = await Get(id);
-            _entities.Remove(entity);
-            _context.SaveChanges();
+             _entities.Remove(entity);
+             _context.SaveChanges();
         }
     }
 }

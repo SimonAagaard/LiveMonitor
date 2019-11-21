@@ -13,6 +13,6 @@ namespace Data
         Task<List<T>> GetMany(Expression<Func<T, bool>> predicate);
         Task Add(T entity);
         Task Update(T entity);
-        Task Delete(Guid id);
+        Task Delete(T entity);
     }
 }

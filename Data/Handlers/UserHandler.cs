@@ -43,9 +43,9 @@ namespace Data.Handlers
         }
 
         // Hard delete a user based on the userId
-        public async Task DeleteUser(Guid userId)
+        public async Task DeleteUser(MonitorUser monitorUser)
         {
-            await userRepo.Delete(userId);
+            await userRepo.Delete(monitorUser);
         }
     }
 }
