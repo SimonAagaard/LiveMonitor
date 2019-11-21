@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -11,9 +12,10 @@ namespace Data.Integrations
 {
     public class AzureConnector
     {
-        private readonly string _clientId = "1cac3850-6566-4ed5-b3a0-22ad3570113f";
-        private readonly string _clientSecret = "NNiuUDyGfU1-6t3MPzC_8[:BtagP1AX";
-        private readonly string _tenantId = "711dd56b-bdb2-48ce-s270-3b1db97f5d17";
+        private readonly string _clientId = "2de6a64e-eb0c-4275-9952-4ce1d3f0d131";
+        private readonly string _clientSecret = "A1l3?[ReU3?L8eEhaYpcUPJG]jEX0_X5";
+        private readonly string _tenantId = "92404485-d794-4fc2-8d0d-587d30cba2ad";
+        private readonly string _resourceId = "api://2de6a64e-eb0c-4275-9952-4ce1d3f0d131";
 
         public AzureConnector()
         {
@@ -41,7 +43,7 @@ namespace Data.Integrations
                 authObjects.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
                 authObjects.Add(new KeyValuePair<string, string>("client_id", _clientId));
                 authObjects.Add(new KeyValuePair<string, string>("client_secret", _clientSecret));
-                authObjects.Add(new KeyValuePair<string, string>("Resource", "https://graph.microsoft.com"));
+                authObjects.Add(new KeyValuePair<string, string>("resource", _resourceId));
 
                 // Convert the authobjects to a FormUrlEncodedContent to add the post-body
                 FormUrlEncodedContent content = new FormUrlEncodedContent(authObjects);
@@ -55,7 +57,7 @@ namespace Data.Integrations
 
                         if (!String.IsNullOrWhiteSpace(result))
                         {
-                            var authServerResponse = JsonSerializer.Deserialize<AuthServerResponse>(result);
+                            var authServerResponse = System.Text.Json.JsonSerializer.Deserialize<AuthServerResponse>(result);
                             return authServerResponse;
                         }
 
@@ -69,11 +71,33 @@ namespace Data.Integrations
             return new AuthServerResponse();
         }
     }
+
+    //public class AuthServerResponse
+    //{
+    //    [JsonProperty("token_type")]
+    //    public string TokenType { get; set; }
+    //    [JsonProperty("expires_in")]
+    //    public string ExpiresIn { get; set; }
+    //    [JsonProperty("ext_expires_in")]
+    //    public string ExtExpiresIn { get; set; }
+    //    [JsonProperty("expires_on")]
+    //    public string ExpiresOn { get; set; }
+    //    [JsonProperty("not_before")]
+    //    public string NotBefore { get; set; }
+    //    [JsonProperty("resource")]
+    //    public string Resource { get; set; }
+    //    [JsonProperty("access_token")]
+    //    public string AccessToken { get; set; }
+    //}
+
     public class AuthServerResponse
     {
-        public string TokenType { get; set; }
-        public int ExpiresIn { get; set; }
-        public int ExtExpiresIn { get; set; }
-        public string AccessToken { get; set; }
+        public string token_type { get; set; }
+        public string expires_in { get; set; }
+        public string ext_expires_in { get; set; }
+        public string expires_on { get; set; }
+        public string not_before { get; set; }
+        public string resource { get; set; }
+        public string access_token { get; set; }
     }
 }

@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Web.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using Data.Integrations;
 
 namespace Web.Controllers
 {
@@ -29,6 +30,9 @@ namespace Web.Controllers
         //Get all dashboards for the logged in user.
         public async Task<IActionResult> Index()
         {
+            AzureConnector conn = new AzureConnector();
+            var token = await conn.GetAuthTokenAsync();
+
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var dashboards = await _dashboardHandler.GetDashboardsByUserId(userId);
             //If there is dashboards in the DB pass them to the view
