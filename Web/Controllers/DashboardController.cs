@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Data;
 using Data.Handlers;
 using Data.Entities;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Controllers
 {
+    [Authorize]
     public class DashboardController : Controller
     {
         private readonly DashboardHandler _dashboardHandler;
@@ -28,7 +26,9 @@ namespace Web.Controllers
         // GET: Dashboards
         public async Task<IActionResult> Index()
         {
-            var dashboards = await _dashboardHandler.GetDashboards();
+            //Get all dashboards for the logged in user.
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var dashboards = await _dashboardHandler.GetDashboardsByUserId(userId);
             //If there is dashboards in the DB pass them to the view
             if (dashboards.Any())
             {
@@ -88,6 +88,11 @@ namespace Web.Controllers
                 //Get current user
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
+                //Checks if there is a current user to bind the dashboard to
+                if (userId == Guid.Empty.ToString())
+                {
+                    return NotFound("No current user available");
+                }
                 //Dashboard
                 dashboard.DashboardId = Guid.NewGuid();
                 dashboard.DateCreated = DateTime.Now;
@@ -111,7 +116,7 @@ namespace Web.Controllers
         }
 
         // GET: Dashboards/Edit/5
-        //Used for retrieveing the page to edit a dashboard
+        //Used for retrieveing the page to edit/update a dashboard
         public async Task<IActionResult> Edit(Guid id)
         {
             if (id == Guid.Empty)
@@ -164,11 +169,6 @@ namespace Web.Controllers
         //Get the view for the dashboard to be deleted
         public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == Guid.Empty)
-            {
-                return NotFound();
-            }
-
             var dashboard = await _dashboardHandler.GetDashboard(id);
             if (dashboard == null)
             {
@@ -179,16 +179,17 @@ namespace Web.Controllers
         }
 
         // POST: Dashboards/Delete/5
-        //Post the delete of the dashboard
+        //Post the delete of the dashboard, no checks are made since we check whenever we navigate to the delete page
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
+            //Implement checks if we decide not to have a dedicated delete page/not use the method above(Delete)
             await _dashboardHandler.DeleteDashboard(id);
             return RedirectToAction(nameof(Index));
         }
 
-        //Helper method to determine if the dashboard exists in the db
+        //Helper method to determine if the dashboard exists in the db before we try to update/delete it
         private bool DashboardExists(Guid dashboardId)
         {
             var dashboard = _dashboardHandler.GetDashboard(dashboardId);

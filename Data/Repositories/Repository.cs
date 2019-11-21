@@ -17,6 +17,7 @@ namespace Data
         {
             _context = new DbContext(new DbContextOptions<DbContext>());
             _entities = _context.Set<T>();
+
         }
 
         public async Task<List<T>> GetAll()
@@ -24,18 +25,13 @@ namespace Data
             List<T> entities = await _entities.ToListAsync();
 
             return entities;
-            //DÅRLIG KODE, SKAM DIG LASSE
-            //if (entities.Any())
-            //{
-            //    return entities;
-            //}
-            //throw new Exception("The table that holds " + typeof(Repository<T>) + " is empty");
+
         }
 
         public async Task<T> Get(Guid id)
         {
             return await _entities.FindAsync(id);
-           
+
         }
 
         // Find List of entities based on a predicate.
@@ -43,12 +39,7 @@ namespace Data
         {
             List<T> entities = await _entities.Where(predicate).ToListAsync();
 
-            if (entities.Any())
-            {
-                return entities;
-            }
-
-            throw new Exception("The table that holds " + typeof(Repository<T>) + " is empty, with predicate: " + predicate);
+            return entities;
         }
 
         // Validation here?
@@ -56,37 +47,26 @@ namespace Data
         {
             await _entities.AddAsync(entity);
             _context.SaveChanges();
+
         }
 
-        // Generic update method. Checks for valid object before updating
+        // Generic update method.
         public async Task Update(T entity)
         {
             T entityToUpdate = await Get(entity.Id);
+            _entities.Update(entity);
+            _context.SaveChanges();
 
-            if (entityToUpdate != null)
-            {
-                _entities.Update(entity);
-                _context.SaveChanges();
-            }
-            else
-            {
-                throw new Exception("An entity with this ID(" + entity.Id + ") does not exist!");
-            }
         }
 
-        // Generic harddeletion of an object. Checks that an objects exist before attempting to delete.
+        // Generic harddeletion of an object.
         // Create a soft delete to make use of IsDeleted.
         public async Task Delete(Guid id)
         {
             T entity = await Get(id);
+            _entities.Remove(entity);
+            _context.SaveChanges();
 
-            if (entity != null)
-            {
-                _entities.Remove(entity);
-                _context.SaveChanges();
-            }
-
-            throw new Exception("An entity with this ID (" + id + ") does not exist!");
         }
     }
 }
