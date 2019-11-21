@@ -8,6 +8,13 @@ namespace Data.Entities
 {
     public class DashboardSetting : BaseEntity
     {
+        public DashboardSetting()
+        {
+            //Default values
+            XLabel = "Choose label";
+            YLabel = "Choose label";
+            RefreshRate = 15;
+        }
         [Key]
         public Guid DashboardSettingId { get; set; }
         [Required]

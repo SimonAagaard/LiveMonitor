@@ -20,6 +20,7 @@ namespace Data.Handlers
         public async Task CreateDashboard(Dashboard dashboard)
         {
             await dashboardRepo.Add(dashboard);
+
         }
 
         // Get all dashboards in the database
@@ -47,9 +48,9 @@ namespace Data.Handlers
         }
 
         // Hard delete a dashboard based on the dashboardId
-        public async Task Delete(Guid dashboardId)
+        public async Task DeleteDashboard(Dashboard dashboard)
         {
-            await dashboardRepo.Delete(dashboardId);
+            await dashboardRepo.Delete(dashboard);
         }
     }
 }

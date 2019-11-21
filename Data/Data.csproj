@@ -39,6 +39,8 @@
     <Compile Remove="Data\Migrations\20191116124501_test.Designer.cs" />
     <Compile Remove="Data\Migrations\20191117123010_Handlers.cs" />
     <Compile Remove="Data\Migrations\20191117123010_Handlers.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191120155631_azurePush.cs" />
+    <Compile Remove="Data\Migrations\20191120155631_azurePush.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
