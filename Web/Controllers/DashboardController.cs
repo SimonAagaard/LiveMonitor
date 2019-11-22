@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Data.Handlers;
 using Data.Entities;
 using System.Security.Claims;
+using Web.Models;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Controllers
@@ -24,9 +26,9 @@ namespace Web.Controllers
         }
 
         // GET: Dashboards
+        //Get all dashboards for the logged in user.
         public async Task<IActionResult> Index()
         {
-            //Get all dashboards for the logged in user.
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var dashboards = await _dashboardHandler.GetDashboardsByUserId(userId);
             //If there is dashboards in the DB pass them to the view
@@ -39,11 +41,13 @@ namespace Web.Controllers
 
         Random rdn = new Random();
 
-        public IActionResult Dashboard()
+        public async Task<IActionResult> Dashboard(Guid id)
         {
-            return View();
+            var dashboard = await _dashboardHandler.GetDashboard(id);
+            return View(dashboard);
         }
 
+        //Used by the POC realtime dashboard, can be removed or refactored when we get real data through integrations
         public JsonResult GetRealTimeData()
         {
             RealTimeData data = new RealTimeData
@@ -110,9 +114,52 @@ namespace Web.Controllers
 
                 await _dashboardSettingHandler.CreateDashboardSetting(dashboardSetting);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(DashboardSetting), new {id =dashboardSetting.DashboardSettingId });
             }
             return View(dashboard);
+        }
+        //Get DashboardSetting view
+        public async Task<IActionResult> DashboardSetting(Guid id)
+        {
+            if (id == Guid.Empty)
+            {
+                return NotFound();
+            }
+
+            var dashboardSetting = await _dashboardSettingHandler.GetDashboardSetting(id);
+            if (dashboardSetting == null)
+            {
+                return NotFound();
+            }
+
+            //Sets viewbag to display the name of the dashboard linked to the setting page
+            var dashboard = await _dashboardHandler.GetDashboard(dashboardSetting.DashboardId);
+            ViewBag.DashboardName = dashboard.DashboardName;
+            return View(dashboardSetting);
+        }
+        //POST - Update a setting
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateDashboardSetting(Guid id, [Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel")] DashboardSetting dashboardSetting)
+        {
+            if (id != dashboardSetting.DashboardSettingId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _dashboardSettingHandler.UpdateDashboardSetting(dashboardSetting);
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    throw e;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(dashboardSetting);
         }
 
         // GET: Dashboards/Edit/5
@@ -136,65 +183,47 @@ namespace Web.Controllers
         //Used to post the changes made to the specified dashboard
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("DashboardName,UserId,DashboardId,DashboardSettingId,DateCreated,DateModified,DateDeleted,Id")] Dashboard dashboard)
+        public async Task<IActionResult> Edit([Bind("DashboardName,DashboardId,DashboardSettingId,DateCreated,DateDeleted,UserId")] Dashboard dashboard)
         {
-            if (id != dashboard.DashboardId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
+                    dashboard.DateModified = DateTime.Now;
                     await _dashboardHandler.UpdateDashboard(dashboard);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException e)
                 {
-                    if (!DashboardExists(dashboard.DashboardId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw e;
                 }
                 return RedirectToAction(nameof(Index));
             }
             return View(dashboard);
         }
 
-        // GET: Dashboards/Delete/5
-        //Get the view for the dashboard to be deleted
+        // POST: Dashboards/Delete/5
+        //Post the delete of the dashboard
+        [HttpPost]       
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
             var dashboard = await _dashboardHandler.GetDashboard(id);
-            if (dashboard == null)
-            {
-                return NotFound();
-            }
-
-            return View(dashboard);
-        }
-
-        // POST: Dashboards/Delete/5
-        //Post the delete of the dashboard, no checks are made since we check whenever we navigate to the delete page
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            //Implement checks if we decide not to have a dedicated delete page/not use the method above(Delete)
-            await _dashboardHandler.DeleteDashboard(id);
+            await _dashboardHandler.DeleteDashboard(dashboard);
             return RedirectToAction(nameof(Index));
         }
 
-        //Helper method to determine if the dashboard exists in the db before we try to update/delete it
+        //Helper method to determine if the dashboard exists in the DB before we try to update/delete it
         private bool DashboardExists(Guid dashboardId)
         {
             var dashboard = _dashboardHandler.GetDashboard(dashboardId);
             bool dashboardExists = dashboard != null ? true : false;
             return dashboardExists;
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
     public class RealTimeData
@@ -202,4 +231,5 @@ namespace Web.Controllers
         public DateTime TimeStamp { get; set; }
         public double DataValue { get; set; }
     }
+
 }

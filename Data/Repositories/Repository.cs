@@ -22,7 +22,6 @@ namespace Data
         public async Task<List<T>> GetAll()
         {
             List<T> entities = await _entities.ToListAsync();
-
             return entities;
         }
 
@@ -35,7 +34,6 @@ namespace Data
         public async Task<List<T>> GetMany(Expression<Func<T, bool>> predicate)
         {
             List<T> entities = await _entities.Where(predicate).ToListAsync();
-
             return entities;
         }
 
@@ -43,24 +41,22 @@ namespace Data
         public async Task Add(T entity)
         {
             await _entities.AddAsync(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         // Generic update method.
         public async Task Update(T entity)
         {
-            T entityToUpdate = await Get(entity.Id);
             _entities.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         // Generic harddeletion of an object.
         // Create a soft delete to make use of IsDeleted.
-        public async Task Delete(Guid id)
+        public async Task Delete(T entity)
         {
-            T entity = await Get(id);
-            _entities.Remove(entity);
-            _context.SaveChanges();
+             _entities.Remove(entity);
+             await _context.SaveChangesAsync();
         }
     }
 }

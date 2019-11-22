@@ -53,9 +53,9 @@ namespace Data.Handlers
         }
 
         // Hard delete a dataset based on the DataSetId
-        public async Task DeleteDataSet(Guid dataSetId)
+        public async Task DeleteDataSet(DataSet dataSet)
         {
-            await _dataSetRepo.Delete(dataSetId);
+            await _dataSetRepo.Delete(dataSet);
         }
 
     }

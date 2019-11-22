@@ -57,8 +57,7 @@ namespace Web
                 options.Filters.Add(new AuthorizeFilter());
             }).SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
             services.AddControllersWithViews();
-            services.AddRazorPages();
-
+            services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddSingleton<IEmailSender, EmailSender>();
 
             //Custom settings for identity client-side validation
@@ -87,7 +86,7 @@ namespace Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Dashboard/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -104,8 +103,8 @@ namespace Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                name: "default",
+                pattern: "{controller=Dashboard}/{action=Index}");
                 endpoints.MapRazorPages();
             });
         }

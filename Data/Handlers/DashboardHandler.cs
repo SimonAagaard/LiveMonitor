@@ -48,9 +48,9 @@ namespace Data.Handlers
         }
 
         // Hard delete a dashboard based on the dashboardId
-        public async Task DeleteDashboard(Guid dashboardId)
+        public async Task DeleteDashboard(Dashboard dashboard)
         {
-            await dashboardRepo.Delete(dashboardId);
+            await dashboardRepo.Delete(dashboard);
         }
     }
 }

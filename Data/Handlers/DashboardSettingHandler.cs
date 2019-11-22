@@ -46,9 +46,9 @@ namespace Data.Handlers
         }
 
         // Hard delete a DashboardSetting based on the DashboardSettingId
-        public async Task DeleteDashboardSetting(Guid DashboardSettingId)
+        public async Task DeleteDashboardSetting(DashboardSetting dashboardSetting)
         {
-            await DashboardSettingRepo.Delete(DashboardSettingId);
+            await DashboardSettingRepo.Delete(dashboardSetting);
         }
     }
 }
