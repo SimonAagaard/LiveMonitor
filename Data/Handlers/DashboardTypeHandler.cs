@@ -18,7 +18,7 @@ namespace Data.Handlers
         {
             get { return _instance; }
         }
-        public void CreateType()
+        public async Task CreateType()
         {
             IList<DashboardType> dashboardTypes = new List<DashboardType>();
             dashboardTypes.Add(new DashboardType()
@@ -35,7 +35,7 @@ namespace Data.Handlers
          
             foreach (DashboardType dashboardType in dashboardTypes)
             {
-                _dashboardTypeRepo.Seed(dashboardType);
+                await _dashboardTypeRepo.Seed(dashboardType);
             }
 
         }

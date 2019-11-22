@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Data.Handlers;
 
 namespace TestConsole
 {
@@ -10,7 +9,7 @@ namespace TestConsole
         {
             Initialize();
             Console.WriteLine("Started and working...");
-            Data.Handlers.DashboardTypeHandler.Instance.CreateType();
+            Data.Handlers.DashboardTypeHandler.Instance.CreateType().Wait();
             Console.WriteLine("Done...");
             Console.ReadLine();
 
