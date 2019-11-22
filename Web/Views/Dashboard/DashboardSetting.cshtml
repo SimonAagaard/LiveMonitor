@@ -1,8 +1,9 @@
 ﻿@model Data.Entities.DashboardSetting
-@inject IEnumerable<Data.Entities.DashboardType> dashboardType
+@inject Data.Handlers.DashboardTypeHandler dashboardTypeHandler
 @{
     ViewData["Title"] = "DashboardSetting";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Data.Entities.DashboardType> dashboardTypes = await dashboardTypeHandler.GetDashboardTypes();
 }
 
 <h1>DashboardSetting - @ViewBag.DashboardName</h1>
@@ -15,10 +16,12 @@
             <input type="hidden" asp-for="DashboardSettingId" />
             <input type="hidden" asp-for="DashboardId" />
             <input type="hidden" asp-for="DashboardTypeId" />
+            @*@Html.DropDownList("DashboardType", dashboardTypeHandler.GetDashboardTypes().Result.Select(s =>
+            new SelectListItem() { Value = s.DashboardName.ToString() }))*@
             <select>
-                @foreach (var item in dashboardType)
+                @foreach (var option in dashboardTypes)
                 {
-                    <option value="@item.DashboardTypeId">@item.DashboardName</option>
+                    <option value="@option.DashboardTypeId">@option.DashboardName</option>
                 }
             </select>
             <div class="form-group">
@@ -28,12 +31,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="XLabel" class="control-label"></label>
-                <input asp-for="XLabel" class="form-control" />
+                <input asp-for="XLabel" onfocus="this.value=''" class="form-control" />
                 <span asp-validation-for="XLabel" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="YLabel" class="control-label"></label>
-                <input asp-for="YLabel" class="form-control" />
+                <input asp-for="YLabel" onfocus="this.value=''" class="form-control" />
                 <span asp-validation-for="YLabel" class="text-danger"></span>
             </div>
         

@@ -42,7 +42,10 @@ namespace Data.Handlers
             }
             //Bulk inserts the list to the DB
             await _dashboardTypeRepo.AddMany(seedList);
-           
+        }
+        public async Task<List<DashboardType>> GetDashboardTypes()
+        {
+            return await _dashboardTypeRepo.GetAll();
         }
     }
 }

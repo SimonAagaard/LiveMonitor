@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Web.Areas.Identity.Pages;
 using Data.Data;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Data.Handlers;
 
 namespace Web
 {
@@ -52,6 +53,8 @@ namespace Web
                 options.LoginPath = "/Identity/Account/Login";
                 options.SlidingExpiration = true;
             });
+            //Allows the injection of the handler to Dashboarsettingsview
+            services.AddTransient<DashboardTypeHandler>();
             services.AddMvc(options =>
             {
                 options.Filters.Add(new AuthorizeFilter());

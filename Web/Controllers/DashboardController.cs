@@ -17,11 +17,13 @@ namespace Web.Controllers
     {
         private readonly DashboardHandler _dashboardHandler;
         private readonly DashboardSettingHandler _dashboardSettingHandler;
+        private readonly DashboardTypeHandler _dashboardTypeHandler;
 
         public DashboardController()
         {
             _dashboardHandler = new DashboardHandler();
             _dashboardSettingHandler = new DashboardSettingHandler();
+            _dashboardTypeHandler = new DashboardTypeHandler();
 
         }
 
@@ -40,8 +42,6 @@ namespace Web.Controllers
             return View();
         }
 
-        Random rdn = new Random();
-
         public async Task<IActionResult> Dashboard(Guid id)
         {
             var dashboard = await _dashboardHandler.GetDashboard(id);
@@ -51,6 +51,7 @@ namespace Web.Controllers
         //Used by the POC realtime dashboard, can be removed or refactored when we get real data through integrations
         public JsonResult GetRealTimeData()
         {
+            Random rdn = new Random();
             RealTimeData data = new RealTimeData
             {
                 TimeStamp = DateTime.Now,
@@ -114,20 +115,21 @@ namespace Web.Controllers
                 };
 
                 await _dashboardSettingHandler.CreateDashboardSetting(dashboardSetting);
-
-                return RedirectToAction(nameof(DashboardSetting), new {id =dashboardSetting.DashboardSettingId });
+                //Passes the Ids needed by the Dashboardsetting view
+                return RedirectToAction(nameof(DashboardSetting), new { dashboardSettingId = dashboardSetting.DashboardSettingId});
             }
             return View(dashboard);
         }
+
         //Get DashboardSetting view
-        public async Task<IActionResult> DashboardSetting(Guid id)
+        public async Task<IActionResult> DashboardSetting(Guid dashboardSettingId)
         {
-            if (id == Guid.Empty)
+            if (dashboardSettingId == Guid.Empty)
             {
                 return NotFound();
             }
 
-            var dashboardSetting = await _dashboardSettingHandler.GetDashboardSetting(id);
+            var dashboardSetting = await _dashboardSettingHandler.GetDashboardSetting(dashboardSettingId);
             if (dashboardSetting == null)
             {
                 return NotFound();
@@ -136,8 +138,12 @@ namespace Web.Controllers
             //Sets viewbag to display the name of the dashboard linked to the setting page
             var dashboard = await _dashboardHandler.GetDashboard(dashboardSetting.DashboardId);
             ViewBag.DashboardName = dashboard.DashboardName;
+            //Gets all dashboardtypas as we need to display them in the settings view
+            var dashboardTypes = _dashboardTypeHandler.GetDashboardTypes();
+
             return View(dashboardSetting);
         }
+
         //POST - Update a setting
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -160,7 +166,7 @@ namespace Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(dashboardSetting);
+            return View("DashboardSetting", dashboardSetting);
         }
 
         // GET: Dashboards/Edit/5
