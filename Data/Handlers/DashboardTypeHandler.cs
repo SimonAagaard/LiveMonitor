@@ -19,12 +19,17 @@ namespace Data.Handlers
         {
             get { return _instance; }
         }
+
+        //Seed the database with types
         public async Task CreateType()
         {
+            //Creates list to be bulk inserted to DB
             List<DashboardType> seedList = new List<DashboardType>();
             List<DashboardType> dashboardTypes = await _dashboardTypeRepo.GetAll();
+            //Iterates through the enum "Type" 
             foreach (DashboardType.Type type in (DashboardType.Type[])Enum.GetValues(typeof(DashboardType.Type)))
             {
+                //Before adding to the DB, checks to see if the type is already present in the DB.
                 bool dasboardExists = dashboardTypes.Any(x => x.DashboardName == type);
                 if (!dasboardExists)
                 {
@@ -35,6 +40,7 @@ namespace Data.Handlers
                     });
                 }
             }
+            //Bulk inserts the list to the DB
             await _dashboardTypeRepo.AddMany(seedList);
            
         }
