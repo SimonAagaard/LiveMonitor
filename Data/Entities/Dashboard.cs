@@ -9,6 +9,7 @@ namespace Data.Entities
     public class Dashboard : BaseEntity
     {
         [Required]
+        [Display(Name = "Dashboard name")]
         [MaxLength(128)]
         public string DashboardName { get; set; }
         [ForeignKey("UserId")]

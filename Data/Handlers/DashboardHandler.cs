@@ -35,6 +35,11 @@ namespace Data.Handlers
             return await dashboardRepo.Get(dashboardId);
         }
 
+        public async Task<List<Dashboard>> GetDashboardAndDashboardSetting(Guid userId, string[] children)
+        {
+            return await dashboardRepo.GetMany(x => x.UserId == userId, children);
+        }
+
         // Get dashboards based on their userId (DashboardOverview)
         public async Task<List<Dashboard>> GetDashboardsByUserId(Guid userId)
         {
