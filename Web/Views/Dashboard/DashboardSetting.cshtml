@@ -16,8 +16,6 @@
             <input type="hidden" asp-for="DashboardSettingId" />
             <input type="hidden" asp-for="DashboardId" />
             <input type="hidden" asp-for="DashboardTypeId" />
-            @*@Html.DropDownList("DashboardType", dashboardTypeHandler.GetDashboardTypes().Result.Select(s =>
-            new SelectListItem() { Value = s.DashboardName.ToString() }))*@
             <select>
                 @foreach (var option in dashboardTypes)
                 {
