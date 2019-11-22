@@ -14,5 +14,6 @@ namespace Data
         Task Add(T entity);
         Task Update(T entity);
         Task Delete(T entity);
+        void Seed(T entity);
     }
 }
