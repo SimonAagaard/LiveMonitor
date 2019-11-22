@@ -9,11 +9,12 @@ namespace Data.Entities
     {
         public DashboardType()
         {
-            DashboardTypeId = Guid.NewGuid();
+
         }
         [Key]
         public Guid DashboardTypeId { get; set; }
        
+        //Might need to be refactored down the line, could be made a list instead
         public Type DashboardName { get; set; }
         public enum Type
         {

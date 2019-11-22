@@ -58,5 +58,10 @@ namespace Data
              _entities.Remove(entity);
              await _context.SaveChangesAsync();
         }
+        public async Task Seed(T entity)
+        {
+             await _entities.AddAsync(entity);
+             await _context.SaveChangesAsync();
+        }
     }
 }
