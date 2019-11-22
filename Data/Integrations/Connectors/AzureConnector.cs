@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Data.Handlers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace Data.Integrations
         // Get metric definitions:
         //https://management.azure.com/subscriptions/2c24d5f6-cb4d-4857-88f8-fe5c9a827f7c/resourceGroups/LiveMonitor/providers/Microsoft.Web/sites/LiveMonitorApp/providers/microsoft.insights/metricDefinitions?api-version=2018-01-01&metricnamespace=Microsoft.Web/sites
 
+        // Get requests
+        // https://management.azure.com/subscriptions/2c24d5f6-cb4d-4857-88f8-fe5c9a827f7c/resourceGroups/LiveMonitor/providers/Microsoft.Web/sites/LiveMonitorApp/providers/microsoft.insights/metrics?interval=PT1M&aggregation=Total&metricnames=Requests&api-version=2018-01-01&metricnamespace=Microsoft.Web/sites
 
         public AzureConnector()
         {
@@ -77,17 +80,26 @@ namespace Data.Integrations
             return new AuthServerResponse();
         }
 
-        public async Task<string> GetAzureDataAsync()
+        // Get datasets from Azure based on the passed integrationsettings and values passed to the constructor
+        public async Task<AzureDataResponse> GetAzureDataAsync(IntegrationSetting integrationSetting)
         {
-            AuthServerResponse authResponse = await GetAuthTokenAsync();
+            string accessToken = "";
+            DataSetHandler dataSetHandler = new DataSetHandler();
+
+            accessToken = await GetAzureBearerTokenAsync(integrationSetting);
 
             // Split url to support new integrations
-            Uri Url = new Uri(@"https://management.azure.com" + _resourceUrl + "providers/microsoft.insights/metrics?api-version=2018-01-01");
+            Uri Url = new Uri(@"https://management.azure.com" + _resourceUrl + "providers/microsoft.insights/metrics?" +
+                "interval=PT1M" +
+                "&aggregation=Total" +
+                "&metricnames=Requests" +
+                "&api-version=2018-01-01" +
+                "&metricnamespace=Microsoft.Web/sites");
 
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResponse.access_token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 HttpResponseMessage response = await client.GetAsync(Url);
 
@@ -95,15 +107,64 @@ namespace Data.Integrations
                 {
                     string result = await response.Content.ReadAsStringAsync();
 
-                    return result;
-                    // TODO, save token in DB, as to not create one for every call. Lasts and hour
-                    //DataSet data = System.Text.Json.JsonSerializer.Deserialize<DataSet>(result);
+                    AzureDataResponse azureDataResponse = System.Text.Json.JsonSerializer.Deserialize<AzureDataResponse>(result);
 
-                    //return data;
+                    if (azureDataResponse != null)
+                    {
+                        foreach (var value in azureDataResponse.value)
+                        {
+                            foreach (var timeseries in value.timeseries)
+                            {
+                                foreach (var data in timeseries.data)
+                                {
+                                    DataSet dataSet = new DataSet
+                                    {
+                                        DataSetId = Guid.NewGuid(),
+                                        DateCreated = DateTime.Now,
+                                        IntegrationSettingId = integrationSetting.IntegrationSettingId,
+                                        XValue = data.timeStamp,
+                                        YValue = data.total
+                                    };
+
+                                    // Bulk insert these values instead
+                                    await dataSetHandler.CreateDataSet(dataSet);
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
-            return "";
+            return new AzureDataResponse();
+        }
+
+        // Helper method to check for valid bearer token
+        public async Task<string> GetAzureBearerTokenAsync(IntegrationSetting integrationSetting)
+        {
+            AuthServerResponse authResponse = new AuthServerResponse();
+            BearerTokenHandler bearerTokenHandler = new BearerTokenHandler();
+
+            // Attempt to get a valid bearerToken from the Db
+            var bearerToken = await bearerTokenHandler.GetValidBearerToken(integrationSetting.IntegrationSettingId, DateTime.Now);
+
+            if (!String.IsNullOrWhiteSpace(bearerToken?.AccessToken))
+            {
+                return bearerToken.AccessToken;
+            }
+            else
+            {
+                // If not valid BearerToken exists in the database, create a new one
+                authResponse = await GetAuthTokenAsync();
+                await bearerTokenHandler.CreateBearerToken(new BearerToken
+                {
+                    AccessToken = authResponse.access_token,
+                    BearerTokenId = Guid.NewGuid(),
+                    DateCreated = DateTime.Now,
+                    DateExpired = DateTime.Now.AddMinutes(59),
+                    IntegrationSettingId = integrationSetting.IntegrationSettingId
+                });
+                return authResponse.access_token;
+            }
         }
     }
 
@@ -116,5 +177,58 @@ namespace Data.Integrations
         public string not_before { get; set; }
         public string resource { get; set; }
         public string access_token { get; set; }
+    }
+
+    // Data response
+    public class Name
+    {
+        public string value { get; set; }
+        public string localizedValue { get; set; }
+    }
+
+    public class Metric
+    {
+        public DateTime timeStamp { get; set; }
+        public double total { get; set; }
+    }
+
+    [JsonObject("timeseries")]
+    public class Timesery
+    {
+        public List<object> metadatavalues { get; set; }
+        public List<Metric> data { get; set; }
+        public Timesery()
+        {
+            data = new List<Metric>();
+        }
+    }
+
+    public class AzureData
+    {
+        public string id { get; set; }
+        public string type { get; set; }
+        public Name name { get; set; }
+        public string displayDescription { get; set; }
+        public string unit { get; set; }
+        public List<Timesery> timeseries { get; set; }
+        public string errorCode { get; set; }
+        public AzureData()
+        {
+            timeseries = new List<Timesery>();
+        }
+    }
+
+    public class AzureDataResponse
+    {
+        public int cost { get; set; }
+        public string timespan { get; set; }
+        public string interval { get; set; }
+        public List<AzureData> value { get; set; }
+        public string stringNamespace { get; set; }
+        public string resourceregion { get; set; }
+        public AzureDataResponse()
+        {
+            value = new List<AzureData>();
+        }
     }
 }

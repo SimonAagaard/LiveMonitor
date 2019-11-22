@@ -11,10 +11,11 @@ namespace Data.Entities
         [Key]
         public Guid BearerTokenId { get; set; }
         public string AccessToken { get; set; }
-        [ForeignKey("IntegrationSettingId")]
         [Required]
+        [ForeignKey("IntegrationSettingId")]
         public Guid IntegrationSettingId { get; set; }
         public IntegrationSetting IntegrationSetting { get; set; }
         public DateTime DateCreated { get; set; }
+        public DateTime DateExpired { get; set; }
     }
 }

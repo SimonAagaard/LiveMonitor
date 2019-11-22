@@ -12,6 +12,5 @@ namespace Data.Data
             //Change value to the Db you wish to access
             ConnectionName = "LiveMonitorChristoffer";
         }
-     
     }
 }

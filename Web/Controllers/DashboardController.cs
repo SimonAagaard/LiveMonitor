@@ -30,8 +30,34 @@ namespace Web.Controllers
         //Get all dashboards for the logged in user.
         public async Task<IActionResult> Index()
         {
+            IntegrationHandler integrationHandler = new IntegrationHandler();
+            IntegrationSettingHandler integrationSettingHandler = new IntegrationSettingHandler();
+
+            //var integration = new Integration
+            //{
+            //    IntegrationId = Guid.NewGuid(),
+            //    IntegrationName = "Azure Test",
+            //    IntegrationSettingId = Guid.NewGuid(),
+            //    UserId = new Guid("88460F1B-7E0C-EA11-A6A2-C86000C03827"),
+            //};
+
+            //await integrationHandler.CreateIntegration(integration);
+            //var integrationSetting = new IntegrationSetting
+            //{
+            //    ClientId = "2de6a64e-eb0c-4275-9952-4ce1d3f0d131",
+            //    ClientSecret = "A1l3?[ReU3?L8eEhaYpcUPJG]jEX0_X5",
+            //    IntegrationId = integration.IntegrationId,
+            //    IntegrationSettingId = integration.IntegrationSettingId,
+            //    TenantId = "92404485-d794-4fc2-8d0d-587d30cba2ad",
+            //    ResourceId = "https://management.azure.com",
+            //    ResourceUrl = @"/subscriptions/2c24d5f6-cb4d-4857-88f8-fe5c9a827f7c/resourceGroups/LiveMonitor/providers/Microsoft.Web/sites/LiveMonitorApp/"
+            //};
+            //await integrationSettingHandler.CreateIntegrationSetting(integrationSetting);
+
+            var integrationSetting = await integrationSettingHandler.GetIntegration(new Guid("966d8d9c-6736-4da3-a48a-a9032f512a7a"));
+
             AzureConnector conn = new AzureConnector();
-            var token = await conn.GetAzureDataAsync();
+            await conn.GetAzureDataAsync(integrationSetting);
 
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var dashboards = await _dashboardHandler.GetDashboardsByUserId(userId);
