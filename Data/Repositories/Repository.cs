@@ -36,6 +36,17 @@ namespace Data
             List<T> entities = await _entities.Where(predicate).ToListAsync();
             return entities;
         }
+        public async Task<List<T>> GetMany(Expression<Func<T, bool>> predicate, string[] children)
+        {
+            IQueryable<T> entities = _entities;
+
+            foreach (var entity in children)
+            {
+                entities = entities.Include(entity);
+            }
+        
+            return await entities.Where(predicate).ToListAsync();
+        }
 
         // Validation here?
         public async Task Add(T entity)

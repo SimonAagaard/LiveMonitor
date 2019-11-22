@@ -30,7 +30,8 @@ namespace Web.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var dashboards = await _dashboardHandler.GetDashboardsByUserId(userId);
+            string[] children = new string[] {"DashboardSetting"};
+            var dashboards = await _dashboardHandler.GetDashboardAndDashboardSetting(userId, children);
             //If there is dashboards in the DB pass them to the view
             if (dashboards.Any())
             {
