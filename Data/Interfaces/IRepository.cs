@@ -12,8 +12,10 @@ namespace Data
         Task<T> Get(Guid id);
         Task<List<T>> GetMany(Expression<Func<T, bool>> predicate);
         Task Add(T entity);
+        Task AddMany(List<T> entities);
         Task Update(T entity);
         Task Delete(T entity);
         Task Seed(T entity);
+
     }
 }
