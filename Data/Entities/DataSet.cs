@@ -20,6 +20,6 @@ namespace Data.Entities
         [Required]
         public DateTime XValue { get; set; }
         [Required]
-        public int YValue { get; set; }
+        public double YValue { get; set; }
     }
 }

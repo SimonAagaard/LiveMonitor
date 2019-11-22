@@ -45,9 +45,10 @@ namespace Web.Controllers
 
         Random rdn = new Random();
 
-        public IActionResult Dashboard(Guid id)
+        public async Task<IActionResult> Dashboard(Guid id)
         {
-            return View();
+            var dashboard = await _dashboardHandler.GetDashboard(id);
+            return View(dashboard);
         }
 
         //Used by the POC realtime dashboard, can be removed or refactored when we get real data through integrations
@@ -117,12 +118,12 @@ namespace Web.Controllers
 
                 await _dashboardSettingHandler.CreateDashboardSetting(dashboardSetting);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(DashboardSetting), new {id =dashboardSetting.DashboardSettingId });
             }
             return View(dashboard);
         }
         //Get DashboardSetting view
-        public async Task<IActionResult> UpdateDashBoardSetting(Guid id)
+        public async Task<IActionResult> DashboardSetting(Guid id)
         {
             if (id == Guid.Empty)
             {
@@ -134,12 +135,16 @@ namespace Web.Controllers
             {
                 return NotFound();
             }
+
+            //Sets viewbag to display the name of the dashboard linked to the setting page
+            var dashboard = await _dashboardHandler.GetDashboard(dashboardSetting.DashboardId);
+            ViewBag.DashboardName = dashboard.DashboardName;
             return View(dashboardSetting);
         }
         //POST - Update a setting
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateDashboardSetting(Guid id, [Bind("DashboardTypeId,RefreshRate,XLabel,YLabel")] DashboardSetting dashboardSetting)
+        public async Task<IActionResult> UpdateDashboardSetting(Guid id, [Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel")] DashboardSetting dashboardSetting)
         {
             if (id != dashboardSetting.DashboardSettingId)
             {

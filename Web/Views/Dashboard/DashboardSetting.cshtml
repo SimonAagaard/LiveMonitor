@@ -5,19 +5,16 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>DashboardSetting</h1>
+<h1>DashboardSetting - @ViewBag.DashboardName</h1>
 
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="DashboardSetting">
+        <form asp-action="UpdateDashboardSetting">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="DashboardSettingId" />
-            <div class="form-group">
-                <label asp-for="DashboardId" class="control-label"></label>
-                <select asp-for="DashboardId" class="form-control" asp-items="ViewBag.DashboardId"></select>
-                <span asp-validation-for="DashboardId" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="DashboardId" />
+
             <div class="form-group">
                 <label asp-for="DashboardTypeId" class="control-label"></label>
                 <input asp-for="DashboardTypeId" class="form-control" />
