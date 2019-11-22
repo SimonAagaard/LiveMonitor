@@ -21,5 +21,6 @@ namespace Data.Entities
         [Required]
         public string TenantID { get; set; }
         public List<DataSet> DataSets { get; set; }
+        public List<BearerToken> BearerTokens { get; set; }
     }
 }

@@ -121,6 +121,11 @@ namespace Data
                 .HasOne(x => x.IntegrationSetting)
                 .WithMany(y => y.DataSets)
                 .HasForeignKey("IntegrationSettingId");
+
+            modelBuilder.Entity<BearerToken>()
+                .HasOne(x => x.IntegrationSetting)
+                .WithMany(y => y.BearerTokens)
+                .HasForeignKey("IntegrationSettingId");
         }
 
         public DbSet<MonitorUser> MonitorUsers { get; set; }
@@ -131,5 +136,6 @@ namespace Data
         public DbSet<DataSet> Datasets { get; set; }
         public DbSet<Integration> Integrations { get; set; }
         public DbSet<IntegrationSetting> IntegrationSettings { get; set; }
+        public DbSet<BearerToken> BearerToken { get; set; }
     }
 }

@@ -41,6 +41,8 @@
     <Compile Remove="Data\Migrations\20191117123010_Handlers.Designer.cs" />
     <Compile Remove="Data\Migrations\20191120155631_azurePush.cs" />
     <Compile Remove="Data\Migrations\20191120155631_azurePush.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191122085829_RemoveIdFromBaseEntity.cs" />
+    <Compile Remove="Data\Migrations\20191122085829_RemoveIdFromBaseEntity.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
