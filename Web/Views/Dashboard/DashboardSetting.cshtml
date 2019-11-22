@@ -1,5 +1,5 @@
 ﻿@model Data.Entities.DashboardSetting
-
+@inject IEnumerable<Data.Entities.DashboardType> dashboardType
 @{
     ViewData["Title"] = "DashboardSetting";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -14,12 +14,13 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="DashboardSettingId" />
             <input type="hidden" asp-for="DashboardId" />
-
-            <div class="form-group">
-                <label asp-for="DashboardTypeId" class="control-label"></label>
-                <input asp-for="DashboardTypeId" class="form-control" />
-                <span asp-validation-for="DashboardTypeId" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="DashboardTypeId" />
+            <select>
+                @foreach (var item in dashboardType)
+                {
+                    <option value="@item.DashboardTypeId">@item.DashboardName</option>
+                }
+            </select>
             <div class="form-group">
                 <label asp-for="RefreshRate" class="control-label"></label>
                 <input asp-for="RefreshRate" class="form-control" />
