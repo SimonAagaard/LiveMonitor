@@ -110,7 +110,8 @@ namespace Web.Controllers
                 DashboardSetting dashboardSetting = new DashboardSetting
                 {
                     DashboardSettingId = dashboard.DashboardSettingId,
-                    DashboardId = dashboard.DashboardId
+                    DashboardId = dashboard.DashboardId,
+                    IntegrationId = Guid.NewGuid()
                 };
 
                 await _dashboardSettingHandler.CreateDashboardSetting(dashboardSetting);

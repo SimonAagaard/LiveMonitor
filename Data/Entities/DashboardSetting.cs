@@ -23,6 +23,7 @@ namespace Data.Entities
         public Dashboard Dashboard { get; set; }
         [Required]
         public Guid DashboardTypeId { get; set; }
+        public Guid IntegrationId { get; set; }
         [Required]
         [Display(Name = "Refresh rate")]
         public int RefreshRate { get; set; }
