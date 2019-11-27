@@ -36,8 +36,8 @@
                     </ul>
                 </div>
             </div>
-            <button type="button" class="far fa-moon fa-2x" onclick="switch_style('dark'); togglebtn('dark');" name="theme" style="background-color:transparent; border: none;" value="Dark Theme" id="dark"></button>
-            <button type="button" class="fas fa-sun fa-2x" onclick="switch_style('light'); togglebtn('light');" name="theme" style="color:yellow;background-color:transparent; border: none;" value="Light Theme" id="light"></button>
+            <button type="button" class="far fa-moon fa-2x" onclick="switchStyle('dark'); toggleBtn('dark');" name="theme" style="background-color:transparent; border: none;" value="Dark Theme" id="dark"></button>
+            <button type="button" class="fas fa-sun fa-2x" onclick="switchStyle('light'); toggleBtn('light');" name="theme" style="color:yellow;background-color:transparent; border: none;" value="Light Theme" id="light"></button>
 
         </nav>
     </header>
@@ -56,37 +56,35 @@
 
     <script>
         // The name of the cookie
-        var style_cookie_name = "Stylesheet Theme Cookie";
-        //
-        var style_cookie_duration = 30;
-        // style_domain should change depending on domain
-        var style_domain = "https://localhost:44320";
+        var styleCookieName = "Stylesheet Theme Cookie";
+        // styleDomain should change depending on domain
+        var styleDomain = "https://localhost:44320";
 
-        function switch_style(css_title) {
+        function switchStyle(cssTitle) {
 
             // for loop for all <link/> tags
-            var i, link_tag;
-            for (i = 0, link_tag = document.getElementsByTagName("link");
-                i < link_tag.length; i++) {
+            var i, linkTag;
+            for (i = 0, linkTag = document.getElementsByTagName("link");
+                i < linkTag.length; i++) {
                 // if its a stylesheet with a title, enter the if statement
-                if ((link_tag[i].rel.indexOf("stylesheet") != -1) && link_tag[i].title){
+                if ((linkTag[i].rel.indexOf("stylesheet") != -1) && linkTag[i].title){
                     // disables all the stylesheets
-                    link_tag[i].disabled = true;
+                    linkTag[i].disabled = true;
                     // if the link tags title matches your parameter "undisable" the stylesheet
-                    if (link_tag[i].title == css_title) {
-                        link_tag[i].disabled = false;
+                    if (linkTag[i].title == cssTitle) {
+                        linkTag[i].disabled = false;
                     }
                 }
                 //sets the cookies name and value(dark/light theme)
-                set_cookie(style_cookie_name, css_title);
+                setCookie(styleCookieName, cssTitle);
             }
 
         }
-        // sets the stylesheet depending on the cookie. Also loads which button should be shown, calls switch_style()
-        function set_style_from_cookie() {
-            var css_title = get_cookie(style_cookie_name);
+        // sets the stylesheet depending on the cookie. Also loads which button should be shown, calls switchStyle()
+        function setStyleFromCookie() {
+            var cssTitle = getCookie(styleCookieName);
 
-             if (css_title == 'light' || css_title == null) {
+             if (cssTitle == 'light' || cssTitle == null) {
                 document.getElementById('dark').style.display = 'block'; 
                 document.getElementById('light').style.display = 'none';
             }
@@ -95,27 +93,27 @@
                 document.getElementById('dark').style.display = 'none';
             }
 
-            if (css_title.length) {
-                switch_style(css_title);
+            if (cssTitle.length) {
+                switchStyle(cssTitle);
             }
            
         }
 
-        function set_cookie(cookie_name, cookie_value) {
+        function setCookie(cookieName, cookieValue) {
             var expiry = new Date();
             // expiry to 10years in the future
             expiry.setMinutes(5259487);
             // saves the cookie
-            document.cookie = cookie_name + "=" + (cookie_value) + "; path=/; expires=" + expiry.toGMTString();
+            document.cookie = cookieName + "=" + (cookieValue) + "; path=/; expires=" + expiry.toGMTString();
         }
          // returns the cookies value, unless its null
-        function get_cookie(cookie_name) {
-            var re = new RegExp(cookie_name + "=([^;]+)");
+        function getCookie(cookieName) {
+            var re = new RegExp(cookieName + "=([^;]+)");
             var value = re.exec(document.cookie);
             return (value != null) ? (value[1]) : null;
         }
         // toggles the sun/moon buttons 
-        function togglebtn(btn) {
+        function toggleBtn(btn) {
             if (btn == 'dark') {
                  document.getElementById('light').style.display = 'block'; 
                  document.getElementById('dark').style.display = 'none';
@@ -126,8 +124,8 @@
             }
 
         }
-        // calls set_style_from_cookie on load
-        window.onload = set_style_from_cookie;
+        // calls setStyleFromCookie on load
+        window.onload = setStyleFromCookie;
     </script>
 
 </body>
