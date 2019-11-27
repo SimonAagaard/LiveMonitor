@@ -30,11 +30,6 @@ namespace Web.Controllers
         //Get all dashboards for the logged in user.
         public async Task<IActionResult> Index()
         {
-            IntegrationSettingHandler integrationSettingHandler = new IntegrationSettingHandler();
-            var integrationSetting = await integrationSettingHandler.GetIntegration(new Guid("966d8d9c-6736-4da3-a48a-a9032f512a7a"));
-            AzureConnector conn = new AzureConnector();
-            await conn.GetAzureDataAsync(integrationSetting);
-
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var dashboards = await _dashboardHandler.GetDashboardsByUserId(userId);
             //If there is dashboards in the DB pass them to the view
