@@ -47,5 +47,10 @@ namespace Data.Handlers
         {
             return await _dashboardTypeRepo.GetAll();
         }
+        // Get a single DashboardSetting based on the DashboardSettingId
+        public async Task<DashboardType> GetDashboardType(Guid DashboardTypeId)
+        {
+            return await _dashboardTypeRepo.Get(DashboardTypeId);
+        }
     }
 }

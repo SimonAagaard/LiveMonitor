@@ -32,7 +32,7 @@ namespace Web.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            string[] children = new string[] {"DashboardSetting"};
+            string[] children = new string[] { "DashboardSetting" };
             var dashboards = await _dashboardHandler.GetDashboardAndDashboardSetting(userId, children);
             //If there is dashboards in the DB pass them to the view
             if (dashboards.Any())
@@ -112,11 +112,12 @@ namespace Web.Controllers
                 {
                     DashboardSettingId = dashboard.DashboardSettingId,
                     DashboardId = dashboard.DashboardId
+
                 };
 
                 await _dashboardSettingHandler.CreateDashboardSetting(dashboardSetting);
                 //Passes the Ids needed by the Dashboardsetting view
-                return RedirectToAction(nameof(DashboardSetting), new { dashboardSettingId = dashboardSetting.DashboardSettingId});
+                return RedirectToAction(nameof(DashboardSetting), new { dashboardSettingId = dashboardSetting.DashboardSettingId });
             }
             return View(dashboard);
         }
@@ -138,8 +139,9 @@ namespace Web.Controllers
             //Sets viewbag to display the name of the dashboard linked to the setting page
             var dashboard = await _dashboardHandler.GetDashboard(dashboardSetting.DashboardId);
             ViewBag.DashboardName = dashboard.DashboardName;
-            //Gets all dashboardtypas as we need to display them in the settings view
-            var dashboardTypes = _dashboardTypeHandler.GetDashboardTypes();
+            //Get the DashboardType in case the user has already chosen one for the current DashboardSetting
+            var dashboardType = _dashboardTypeHandler.GetDashboardType(dashboardSetting.DashboardTypeId);
+            ViewBag.DashboardTypeName = dashboardType.Result?.DashboardName;
 
             return View(dashboardSetting);
         }
@@ -147,13 +149,8 @@ namespace Web.Controllers
         //POST - Update a setting
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateDashboardSetting(Guid id, [Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel")] DashboardSetting dashboardSetting)
+        public async Task<IActionResult> UpdateDashboardSetting([Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel")] DashboardSetting dashboardSetting)
         {
-            if (id != dashboardSetting.DashboardSettingId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
@@ -164,9 +161,12 @@ namespace Web.Controllers
                 {
                     throw e;
                 }
-                return RedirectToAction(nameof(Index));
+                var dashboard = await _dashboardHandler.GetDashboard(dashboardSetting.DashboardId);
+                ViewBag.DashboardName = dashboard.DashboardName;
+                return View("DashboardSetting", dashboardSetting);
+
             }
-            return View("DashboardSetting", dashboardSetting);
+            return BadRequest(ModelState);
         }
 
         // GET: Dashboards/Edit/5
@@ -210,7 +210,7 @@ namespace Web.Controllers
 
         // POST: Dashboards/Delete/5
         //Post the delete of the dashboard
-        [HttpPost]       
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
