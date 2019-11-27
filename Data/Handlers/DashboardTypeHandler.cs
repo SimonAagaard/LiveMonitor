@@ -30,8 +30,8 @@ namespace Data.Handlers
             foreach (DashboardType.Type type in (DashboardType.Type[])Enum.GetValues(typeof(DashboardType.Type)))
             {
                 //Before adding to the DB, checks to see if the type is already present in the DB.
-                bool dasboardExists = dashboardTypes.Any(x => x.DashboardName == type);
-                if (!dasboardExists)
+                bool dashboardExists = dashboardTypes.Any(x => x.DashboardName == type);
+                if (!dashboardExists)
                 {
                     seedList.Add(new DashboardType()
                     {

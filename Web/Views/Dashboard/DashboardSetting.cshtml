@@ -59,28 +59,18 @@
     $(document).ready(function () {
         //Determines what option to preselect from the dropdown list of available DashboardTypes, if the user has already picked one before
         var e = document.getElementById("DashboardTypes");
-             for (var i = 0; i < e.options.length; i++) {
-        if (e.options[i].text == @ViewBag.DashboardTypeName) {
+        for (var i = 0; i < e.options.length; i++)
+        {
+            if (e.options[i].text == @ViewBag.DashboardTypeName)
+            {
             e.options[i].selected = true;
             return;
         }
     }
-        $("#submitButton").on("click", function () {
-             $("status-success").show();
-             setTimeout(fade_out, 5000);
-        });
     });
 
     function fade_out() {
         $("status-sucess").fadeOut().empty();
-    }
-
-    function setSelectedValue(selectObj, valueToSet) {
-    for (var i = 0; i < selectObj.options.length; i++) {
-        if (selectObj.options[i].text== valueToSet) {
-            selectObj.options[i].selected = true;
-            return;
-        }
     }
 }
 </script>

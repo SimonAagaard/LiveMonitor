@@ -53,7 +53,7 @@ namespace Web
                 options.LoginPath = "/Identity/Account/Login";
                 options.SlidingExpiration = true;
             });
-            //Allows the injection of the handler to Dashboarsettingsview
+            //Allows the injection of the handler to Dashboardsettingsview
             services.AddTransient<DashboardTypeHandler>();
             services.AddMvc(options =>
             {
