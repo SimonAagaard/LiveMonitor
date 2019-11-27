@@ -6,33 +6,39 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Web</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - LiveMonitor</title>
+    <link id="styleSheet" rel="stylesheet" title="light" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link id="styleSheet" rel="stylesheet" title="dark" href="~/lib/bootstrap/dist/css/bootstrapDarkly.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <script src="https://kit.fontawesome.com/96d32ef7a1.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Dashboard" asp-action="Index">LiveMonitor</a>
+                <a class="navbar-brand adaptive-color" asp-area="" asp-controller="Dashboard" asp-action="Index">LiveMonitor</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
-                    <ul class="navbar-nav flex-grow-1">                       
+                    <ul class="navbar-nav flex-grow-1">
                         @*Only display the option to navigate to dashboards, if the user is logged in*@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboards</a>
+                                <a class="nav-link adaptive-color" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboards</a>
                             </li>
                         }
+
                     </ul>
                 </div>
             </div>
+            <button type="button" class="far fa-moon fa-2x" onclick="switch_style('dark'); togglebtn('dark');" name="theme" style="background-color:transparent; border: none;" value="Dark Theme" id="dark"></button>
+            <button type="button" class="fas fa-sun fa-2x" onclick="switch_style('light'); togglebtn('light');" name="theme" style="color:yellow;background-color:transparent; border: none;" value="Light Theme" id="light"></button>
+
         </nav>
     </header>
     <div class="container">
@@ -42,11 +48,87 @@
     </div>
 
     <footer class="border-top footer text-muted">
-       
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
+
+    <script>
+        // The name of the cookie
+        var style_cookie_name = "Stylesheet Theme Cookie";
+        //
+        var style_cookie_duration = 30;
+        // style_domain should change depending on domain
+        var style_domain = "https://localhost:44320";
+
+        function switch_style(css_title) {
+
+            // for loop for all <link/> tags
+            var i, link_tag;
+            for (i = 0, link_tag = document.getElementsByTagName("link");
+                i < link_tag.length; i++) {
+                // if its a stylesheet with a title, enter the if statement
+                if ((link_tag[i].rel.indexOf("stylesheet") != -1) && link_tag[i].title){
+                    // disables all the stylesheets
+                    link_tag[i].disabled = true;
+                    // if the link tags title matches your parameter "undisable" the stylesheet
+                    if (link_tag[i].title == css_title) {
+                        link_tag[i].disabled = false;
+                    }
+                }
+                //sets the cookies name and value(dark/light theme)
+                set_cookie(style_cookie_name, css_title);
+            }
+
+        }
+        // sets the stylesheet depending on the cookie. Also loads which button should be shown, calls switch_style()
+        function set_style_from_cookie() {
+            var css_title = get_cookie(style_cookie_name);
+
+             if (css_title == 'light' || css_title == null) {
+                document.getElementById('dark').style.display = 'block'; 
+                document.getElementById('light').style.display = 'none';
+            }
+            else {
+                document.getElementById('light').style.display = 'block'; 
+                document.getElementById('dark').style.display = 'none';
+            }
+
+            if (css_title.length) {
+                switch_style(css_title);
+            }
+           
+        }
+
+        function set_cookie(cookie_name, cookie_value) {
+            var expiry = new Date();
+            // expiry to 10years in the future
+            expiry.setMinutes(5259487);
+            // saves the cookie
+            document.cookie = cookie_name + "=" + (cookie_value) + "; path=/; expires=" + expiry.toGMTString();
+        }
+         // returns the cookies value, unless its null
+        function get_cookie(cookie_name) {
+            var re = new RegExp(cookie_name + "=([^;]+)");
+            var value = re.exec(document.cookie);
+            return (value != null) ? (value[1]) : null;
+        }
+        // toggles the sun/moon buttons 
+        function togglebtn(btn) {
+            if (btn == 'dark') {
+                 document.getElementById('light').style.display = 'block'; 
+                 document.getElementById('dark').style.display = 'none';
+            }
+            else {
+                 document.getElementById('dark').style.display = 'block'; 
+                 document.getElementById('light').style.display = 'none';
+            }
+
+        }
+        // calls set_style_from_cookie on load
+        window.onload = set_style_from_cookie;
+    </script>
+
 </body>
 </html>
