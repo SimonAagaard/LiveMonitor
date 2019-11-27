@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Data.Integrations
 {
@@ -83,16 +84,18 @@ namespace Data.Integrations
         // Get datasets from Azure based on the passed integrationsettings and values passed to the constructor
         public async Task<AzureDataResponse> GetAzureDataAsync(IntegrationSetting integrationSetting)
         {
-            string accessToken = "";
+            string currentTime = DateTime.UtcNow.ToString("o");
+            string fromTime = DateTime.UtcNow.AddMinutes(-2).ToString("o");
             DataSetHandler dataSetHandler = new DataSetHandler();
 
-            accessToken = await GetAzureBearerTokenAsync(integrationSetting);
+            string accessToken = await GetAzureBearerTokenAsync(integrationSetting);
 
             // Split url to support new integrations
             Uri Url = new Uri(@"https://management.azure.com" + _resourceUrl + "providers/microsoft.insights/metrics?" +
-                "interval=PT1M" +
-                "&aggregation=Total" +
-                "&metricnames=Requests" +
+                "timespan=" + fromTime + @"/" + currentTime +
+                "&interval=PT1M" +
+                "&aggregation=Average" +
+                "&metricnames=AverageResponseTime" +
                 "&api-version=2018-01-01" +
                 "&metricnamespace=Microsoft.Web/sites");
 
@@ -115,18 +118,23 @@ namespace Data.Integrations
                         {
                             foreach (var timeseries in value.timeseries)
                             {
-                                foreach (var data in timeseries.data)
-                                {
-                                    DataSet dataSet = new DataSet
-                                    {
-                                        DataSetId = Guid.NewGuid(),
-                                        DateCreated = DateTime.Now,
-                                        IntegrationSettingId = integrationSetting.IntegrationSettingId,
-                                        XValue = data.timeStamp,
-                                        YValue = data.total
-                                    };
+                                // Sort list by highest datetime value and select the newest object
+                                timeseries.data.Sort((x, y) => y.timeStamp.CompareTo(x.timeStamp));
+                                Metric newestMetric = timeseries.data.FirstOrDefault();
 
-                                    // Bulk insert these values instead
+                                DataSet dataSet = new DataSet
+                                {
+                                    DataSetId = Guid.NewGuid(),
+                                    DateCreated = DateTime.UtcNow,
+                                    IntegrationSettingId = integrationSetting.IntegrationSettingId,
+                                    XValue = newestMetric.timeStamp.ToUniversalTime(),
+                                    YValue = Math.Round(newestMetric.average * 1000, 2) // Save in milliseconds - Total for count, average for average, etc.
+                                };
+
+                                // Check if the dataset already exists - Create new if it doesn't
+                                var dataSetCheck = await dataSetHandler.GetDataSetByIntegrationSettingAndTimestamp(integrationSetting.IntegrationSettingId, dataSet.XValue);
+                                if (dataSetCheck == null)
+                                {
                                     await dataSetHandler.CreateDataSet(dataSet);
                                 }
                             }
@@ -138,14 +146,14 @@ namespace Data.Integrations
             return new AzureDataResponse();
         }
 
-        // Helper method to check for valid bearer token
+        // Helper method to check for valid bearer token. Creates new if no valid is found, returns existing if its valid
         public async Task<string> GetAzureBearerTokenAsync(IntegrationSetting integrationSetting)
         {
-            AuthServerResponse authResponse = new AuthServerResponse();
+            // instantiate a bearertokenhandler
             BearerTokenHandler bearerTokenHandler = new BearerTokenHandler();
 
             // Attempt to get a valid bearerToken from the Db
-            var bearerToken = await bearerTokenHandler.GetValidBearerToken(integrationSetting.IntegrationSettingId, DateTime.Now);
+            BearerToken bearerToken = await bearerTokenHandler.GetValidBearerToken(integrationSetting.IntegrationSettingId, DateTime.Now);
 
             if (!String.IsNullOrWhiteSpace(bearerToken?.AccessToken))
             {
@@ -153,8 +161,8 @@ namespace Data.Integrations
             }
             else
             {
-                // If not valid BearerToken exists in the database, create a new one
-                authResponse = await GetAuthTokenAsync();
+                // If not valid BearerToken exists in the database, create a new one and set expiry time to 59 minutes to ensure we don't use an expired one
+                AuthServerResponse authResponse = await GetAuthTokenAsync();
                 await bearerTokenHandler.CreateBearerToken(new BearerToken
                 {
                     AccessToken = authResponse.access_token,
@@ -190,6 +198,7 @@ namespace Data.Integrations
     {
         public DateTime timeStamp { get; set; }
         public double total { get; set; }
+        public double average { get; set; }
     }
 
     [JsonObject("timeseries")]
