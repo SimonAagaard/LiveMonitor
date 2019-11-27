@@ -60,6 +60,12 @@ namespace Data
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddMany(List<T> entities)
+        {
+            await _context.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+        }
+
         // Generic update method.
         public async Task Update(T entity)
         {
@@ -79,5 +85,6 @@ namespace Data
              await _entities.AddAsync(entity);
              await _context.SaveChangesAsync();
         }
+        
     }
 }

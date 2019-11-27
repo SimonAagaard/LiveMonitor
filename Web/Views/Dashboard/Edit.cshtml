@@ -7,7 +7,7 @@
 
 <h1>Edit</h1>
 
-<h4>Dashboard</h4>
+<h4>Dashboard - @Model.DashboardName</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -29,6 +29,7 @@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-outline-danger">Go back</a>
+                <a asp-action="DashboardSetting" asp-route-dashboardSettingId="@Model.DashboardSettingId" class="btn btn-outline-success">Settings</a>
             </div>
         </form>
     </div>
