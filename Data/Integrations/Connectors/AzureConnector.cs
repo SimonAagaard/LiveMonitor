@@ -132,7 +132,7 @@ namespace Data.Integrations
                                 };
 
                                 // Check if the dataset already exists - Create new if it doesn't
-                                var dataSetCheck = await dataSetHandler.GetDataSetByIntegrationSettingAndTimestamp(integrationSetting.IntegrationSettingId, dataSet.XValue);
+                                var dataSetCheck = await dataSetHandler.GetDataSetByIntegrationSettingIdAndTimestamp(integrationSetting.IntegrationSettingId, dataSet.XValue);
                                 if (dataSetCheck == null)
                                 {
                                     await dataSetHandler.CreateDataSet(dataSet);
