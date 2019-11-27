@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Web.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using Data.Integrations;
 
 namespace Web.Controllers
 {

@@ -19,7 +19,10 @@ namespace Data.Entities
         [Required]
         public string ClientSecret { get; set; }
         [Required]
-        public string TenantID { get; set; }
+        public string TenantId { get; set; }
+        public string ResourceId { get; set; }
+        public string ResourceUrl { get; set; }
         public List<DataSet> DataSets { get; set; }
+        public List<BearerToken> BearerTokens { get; set; }
     }
 }
