@@ -24,7 +24,8 @@
                 width: 900,
                 height: 650,
                 legend: { position: 'none' },
-                vAxis: { viewWindow: { min: -1, max: 50 }, baselineColor: 'transparent' },
+                hAxis: { format: 'HH:mm:ss'},
+                vAxis: { viewWindow: { min: 0 }, baselineColor: 'transparent' },
                 chartArea: {
                     height: '80%', width: '85%', left: 100,
                     backgroundColor: { stroke: "gray", strokeWidth: 1 }
@@ -55,12 +56,12 @@
             //    });
             //}
             function drawChart() {
-                $.get('GetDataSet', integrationSettingId = 'integrationSettingId=9b60bb8e-edc6-43be-8080-4f3e32166d64', function (dataSet) {
+                $.get('GetDataSet', integrationSettingId = 'integrationSettingId=854c79b2-6b31-472c-938f-f1077343aac0', function (dataSet) {
                     var timeStamp = new Date(dataSet.xValue);
                     var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
                     var val = dataSet.yValue;
                     data.addRow([time, val]);
-                    if (data.getNumberOfRows() > 20) {
+                    if (data.getNumberOfRows() > 100) {
                         data.removeRow(0);
                     }
                     chart.draw(data, option);

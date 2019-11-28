@@ -70,14 +70,14 @@ namespace Web.Controllers
                 throw new Exception();
             }
 
-            var dataSet = await _dataSetHandler.GetDataSet(integrationSettingId);
+            var dataSet = await _dataSetHandler.GetNewestDataSetByIntegrationSettingIdFromDateTime(integrationSettingId, DateTime.Now.AddMinutes(-70));
 
             if (dataSet == null)
             {
                 throw new Exception();
             }
 
-            dataSet.XValue = DateTime.Now;
+            dataSet.XValue = dataSet.XValue.AddHours(1);
 
             return Json(dataSet);
         }
