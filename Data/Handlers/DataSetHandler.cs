@@ -40,6 +40,13 @@ namespace Data.Handlers
             return await _dataSetRepo.Get(x => x.IntegrationSettingId == integrationSettingId && x.XValue == dateTime);
         }
 
+        // Get newest dataset based on their IntegrationSettingId and a specific from-time
+        public async Task<DataSet> GetNewestDataSetByIntegrationSettingIdFromDateTime(Guid integrationSettingId, DateTime dateFrom)
+        {
+            List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId && x.XValue > dateFrom);
+            return dataSets.OrderByDescending(x => x.XValue).FirstOrDefault();
+        }
+
         // Get dataset based on their IntegrationSettingId
         public async Task<List<DataSet>> GetDataSetsByIntegrationSettingId(Guid integrationSettingId)
         {
