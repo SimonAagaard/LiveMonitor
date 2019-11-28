@@ -1,49 +1,82 @@
 ﻿@model Data.Entities.DashboardSetting
-
+@inject Data.Handlers.DashboardTypeHandler dashboardTypeHandler
 @{
     ViewData["Title"] = "DashboardSetting";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Data.Entities.DashboardType> dashboardTypes = await dashboardTypeHandler.GetDashboardTypes();
+    SelectList selectlist = new SelectList(dashboardTypes, "DashboardTypeId", "DashboardName");
 }
-
-<h1>DashboardSetting - @ViewBag.DashboardName</h1>
-
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="UpdateDashboardSetting">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="DashboardSettingId" />
-            <input type="hidden" asp-for="DashboardId" />
-
-            <div class="form-group">
-                <label asp-for="DashboardTypeId" class="control-label"></label>
-                <input asp-for="DashboardTypeId" class="form-control" />
-                <span asp-validation-for="DashboardTypeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RefreshRate" class="control-label"></label>
-                <input asp-for="RefreshRate" class="form-control" />
-                <span asp-validation-for="RefreshRate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="XLabel" class="control-label"></label>
-                <input asp-for="XLabel" class="form-control" />
-                <span asp-validation-for="XLabel" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="YLabel" class="control-label"></label>
-                <input asp-for="YLabel" class="form-control" />
-                <span asp-validation-for="YLabel" class="text-danger"></span>
-            </div>
-        
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</head>
+<body>
+    <h1>DashboardSetting - @ViewBag.DashboardName</h1>
+    <div id="status-success" class="alert alert-success" role="alert" style="display:none">
+        <strong>Well done!</strong> You successfully updated the setting
     </div>
-</div>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="UpdateDashboardSetting">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="DashboardSettingId" />
+                <input type="hidden" asp-for="DashboardId" />
+                <select asp-for="DashboardTypeId" asp-items="selectlist" id="DashboardTypes" class="form-control">
+                    @*<option disabled selected value="">Pick one...</option>*@
+                </select>
+                <div class="form-group">
+                    <label asp-for="RefreshRate" class="control-label"></label>
+                    <input asp-for="RefreshRate" class="form-control" />
+                    <span asp-validation-for="RefreshRate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="XLabel" class="control-label"></label>
+                    <input asp-for="XLabel" placeholder="Choose name for X-label" class="form-control" />
+                    <span asp-validation-for="YLabel" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="YLabel" class="control-label"></label>
+                    <input asp-for="YLabel" placeholder="Choose name for Y-label" class="form-control" />
+                    <span asp-validation-for="YLabel" class="text-danger"></span>
+                </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+                <div class="form-group">
+                    <input type="submit" id="submitButton" name="submitButton" value="Save" onclick="alert('Success! Settings for @ViewBag.DashboardName was updated')" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
 
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+        //Determines what option to preselect from the dropdown list of available DashboardTypes, if the user has already picked one before
+        var e = document.getElementById("DashboardTypes");
+        for (var i = 0; i < e.options.length; i++)
+        {
+            if (e.options[i].text == @ViewBag.DashboardTypeName)
+            {
+            e.options[i].selected = true;
+            return;
+        }
+    }
+    });
+
+    function fade_out() {
+        $("status-sucess").fadeOut().empty();
+    }
+}
+</script>
+@*<script>
+        function() {
+            document.getElementById('DashboardTypes')
+            @Model.DashboardTypeId
+        }
+    </script>*@

@@ -4,45 +4,22 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(DbContext))]
-    partial class DbContextModelSnapshot : ModelSnapshot
+    [Migration("20191127132909_LabelNullable")]
+    partial class LabelNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("Data.Entities.BearerToken", b =>
-                {
-                    b.Property<Guid>("BearerTokenId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AccessToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateExpired")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("IntegrationSettingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("BearerTokenId");
-
-                    b.HasIndex("IntegrationSettingId");
-
-                    b.ToTable("BearerToken");
-                });
 
             modelBuilder.Entity("Data.Entities.Dashboard", b =>
                 {
@@ -186,13 +163,7 @@ namespace Data.Migrations
                     b.Property<Guid>("IntegrationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ResourceId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ResourceUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TenantId")
+                    b.Property<string>("TenantID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -411,15 +382,6 @@ namespace Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("Data.Entities.BearerToken", b =>
-                {
-                    b.HasOne("Data.Entities.IntegrationSetting", "IntegrationSetting")
-                        .WithMany("BearerTokens")
-                        .HasForeignKey("IntegrationSettingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Data.Entities.Dashboard", b =>

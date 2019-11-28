@@ -7,15 +7,19 @@ namespace Data.Entities
 {
     public class DashboardType : BaseEntity
     {
+        public DashboardType()
+        {
+
+        }
         [Key]
         public Guid DashboardTypeId { get; set; }
        
+        //Might need to be refactored down the line, could be made a list instead
         public Type DashboardName { get; set; }
         public enum Type
         {
-            TreeDiagram,
-            VennDiagram,
-            Flowchart
+            LineChart,
+            AreaChart,
         }
     }
 }

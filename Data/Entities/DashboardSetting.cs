@@ -11,8 +11,6 @@ namespace Data.Entities
         public DashboardSetting()
         {
             //Default values
-            XLabel = "Choose label";
-            YLabel = "Choose label";
             RefreshRate = 15;
         }
         [Key]
@@ -24,11 +22,12 @@ namespace Data.Entities
         [Required]
         public Guid DashboardTypeId { get; set; }
         [Required]
+        [Display(Name = "Refresh rate")]
         public int RefreshRate { get; set; }
-        [Required]
+        [Display(Name = "X-axis Label")]
         [MaxLength(128)]
         public string XLabel { get; set; }
-        [Required]
+        [Display(Name = "Y-axis Label")]
         [MaxLength(128)]
         public string YLabel { get; set; }
     }

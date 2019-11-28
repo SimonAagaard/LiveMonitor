@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Web.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using Data.Integrations;
 
 namespace Web.Controllers
 {
@@ -17,11 +18,13 @@ namespace Web.Controllers
     {
         private readonly DashboardHandler _dashboardHandler;
         private readonly DashboardSettingHandler _dashboardSettingHandler;
+        private readonly DashboardTypeHandler _dashboardTypeHandler;
 
         public DashboardController()
         {
             _dashboardHandler = new DashboardHandler();
             _dashboardSettingHandler = new DashboardSettingHandler();
+            _dashboardTypeHandler = new DashboardTypeHandler();
 
         }
 
@@ -30,7 +33,8 @@ namespace Web.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var dashboards = await _dashboardHandler.GetDashboardsByUserId(userId);
+            string[] children = new string[] { "DashboardSetting" };
+            var dashboards = await _dashboardHandler.GetDashboardAndDashboardSetting(userId, children);
             //If there is dashboards in the DB pass them to the view
             if (dashboards.Any())
             {
@@ -38,8 +42,6 @@ namespace Web.Controllers
             }
             return View();
         }
-
-        Random rdn = new Random();
 
         public async Task<IActionResult> Dashboard(Guid id)
         {
@@ -50,6 +52,7 @@ namespace Web.Controllers
         //Used by the POC realtime dashboard, can be removed or refactored when we get real data through integrations
         public JsonResult GetRealTimeData()
         {
+            Random rdn = new Random();
             RealTimeData data = new RealTimeData
             {
                 TimeStamp = DateTime.Now,
@@ -110,23 +113,25 @@ namespace Web.Controllers
                 {
                     DashboardSettingId = dashboard.DashboardSettingId,
                     DashboardId = dashboard.DashboardId
+
                 };
 
                 await _dashboardSettingHandler.CreateDashboardSetting(dashboardSetting);
-
-                return RedirectToAction(nameof(DashboardSetting), new {id =dashboardSetting.DashboardSettingId });
+                //Passes the Ids needed by the Dashboardsetting view
+                return RedirectToAction(nameof(DashboardSetting), new { dashboardSettingId = dashboardSetting.DashboardSettingId });
             }
             return View(dashboard);
         }
+
         //Get DashboardSetting view
-        public async Task<IActionResult> DashboardSetting(Guid id)
+        public async Task<IActionResult> DashboardSetting(Guid dashboardSettingId)
         {
-            if (id == Guid.Empty)
+            if (dashboardSettingId == Guid.Empty)
             {
                 return NotFound();
             }
 
-            var dashboardSetting = await _dashboardSettingHandler.GetDashboardSetting(id);
+            var dashboardSetting = await _dashboardSettingHandler.GetDashboardSetting(dashboardSettingId);
             if (dashboardSetting == null)
             {
                 return NotFound();
@@ -135,18 +140,18 @@ namespace Web.Controllers
             //Sets viewbag to display the name of the dashboard linked to the setting page
             var dashboard = await _dashboardHandler.GetDashboard(dashboardSetting.DashboardId);
             ViewBag.DashboardName = dashboard.DashboardName;
+            //Get the DashboardType in case the user has already chosen one for the current DashboardSetting
+            var dashboardType = _dashboardTypeHandler.GetDashboardType(dashboardSetting.DashboardTypeId);
+            ViewBag.DashboardTypeName = dashboardType.Result?.DashboardName;
+
             return View(dashboardSetting);
         }
+
         //POST - Update a setting
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateDashboardSetting(Guid id, [Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel")] DashboardSetting dashboardSetting)
+        public async Task<IActionResult> UpdateDashboardSetting([Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel")] DashboardSetting dashboardSetting)
         {
-            if (id != dashboardSetting.DashboardSettingId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
@@ -157,9 +162,12 @@ namespace Web.Controllers
                 {
                     throw e;
                 }
-                return RedirectToAction(nameof(Index));
+                var dashboard = await _dashboardHandler.GetDashboard(dashboardSetting.DashboardId);
+                ViewBag.DashboardName = dashboard.DashboardName;
+                return View("DashboardSetting", dashboardSetting);
+
             }
-            return View(dashboardSetting);
+            return BadRequest(ModelState);
         }
 
         // GET: Dashboards/Edit/5
@@ -203,7 +211,7 @@ namespace Web.Controllers
 
         // POST: Dashboards/Delete/5
         //Post the delete of the dashboard
-        [HttpPost]       
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {

@@ -10,8 +10,7 @@ namespace Data.Data
         public DbName()
         {
             //Change value to the Db you wish to access
-            ConnectionName = "LiveMonitorTest";
+            ConnectionName = "LiveMonitorProd";
         }
-     
     }
 }
