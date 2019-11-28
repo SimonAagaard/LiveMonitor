@@ -105,12 +105,12 @@
                     backgroundColor: { stroke: "gray", strokeWidth: 1 }
                 },
             };
-            //Choose which chart type to use on the line below
+                     //Choose which chart type to use on the line below
             var chart = new google.visualization.LineChart(document.getElementById('chart1'));
             var data = new google.visualization.DataTable();
             data.addColumn('datetime', 'TimeStamp');
             data.addColumn('number', 'Value');
-
+            onLoad();
             drawChart();
             //ChartFromDataSet();
             //Update speed is controlled here
@@ -128,6 +128,25 @@
                     }
                     chart.draw(data, option);
                 });
+            }
+
+
+        function onLoad() {
+            $.get('GetDataSets', integrationSettingId = 'integrationSettingId=854c79b2-6b31-472c-938f-f1077343aac0', function (dataSets) {
+                for (var i = 0; i < dataSets.length; i++) {
+                    var itemxyz = dataSets[i];
+
+                    var timeStamp = new Date(itemxyz.xValue);
+                    var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
+                    var val = itemxyz.yValue;
+
+                    data.addRow([time, val]);
+                    if (data.getNumberOfRows() >= dataSets.length) {
+                        data.removeRow(0);
+                    }
+                }
+                chart.draw(data, option);
+            });
             }
         }
     </script>

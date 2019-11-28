@@ -9,16 +9,9 @@ namespace PingService
     {
         static void Main(string[] args)
         {
+            // Call the method to ping our endpoint with dataset creation
             var pingservice = new PingMonitor();
-
-            // As long as this service runs it will call the PingMethod every 30 seconds
-            while (true)
-            {
-                pingservice.PingMethod().Wait();
-
-                Console.WriteLine("Waiting 30 seconds to ping again");
-                Thread.Sleep(30000);
-            }
+            pingservice.PingMethod().Wait();
         }
     }
 
@@ -35,15 +28,6 @@ namespace PingService
             using (HttpClient client = new HttpClient())
             {
                 var response = await client.GetAsync(Url);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    Console.WriteLine(response.StatusCode + "  --  " + response.ReasonPhrase);
-                }
-                else
-                {
-                    Console.WriteLine("Not successful statuscode: " + response.StatusCode);
-                }
             }
         }
     }
