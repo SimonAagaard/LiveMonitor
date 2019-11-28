@@ -38,7 +38,7 @@
             function drawChart() {
                 $.get('GetRealTimeData', function (d) {
                     var timeStamp = new Date(d.timeStamp);
-                    var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };ZZZZ
+                    var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
                     var val = d.dataValue;
                     data.addRow([time, val]);
                     if (data.getNumberOfRows() > 20) {
