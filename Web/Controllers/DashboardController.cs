@@ -10,6 +10,7 @@ using Web.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Data.Integrations;
+using System.Collections.Generic;
 
 namespace Web.Controllers
 {
@@ -80,6 +81,28 @@ namespace Web.Controllers
             dataSet.XValue = dataSet.XValue.AddHours(1);
 
             return Json(dataSet);
+        }
+
+        public async Task<JsonResult> GetDataSets(Guid integrationSettingId)
+        {
+            if (integrationSettingId != Guid.Empty)
+            {
+                List<DataSet> dataSets = await _dataSetHandler.GetDataSetsFromAGivenTimePeriod(integrationSettingId, DateTime.Now.AddMinutes(-200), DateTime.Now.AddMinutes(60));
+
+                dataSets = dataSets.OrderBy(x => x.XValue).TakeLast(100).ToList();
+
+                if (dataSets.Count > 0)
+                {
+                    foreach (DataSet dataSet in dataSets)
+                    {
+                        dataSet.XValue = dataSet.XValue.AddHours(1);
+                    }
+
+                    return Json(dataSets);
+                }
+            }
+
+            return Json("");
         }
 
         // GET: Dashboards/Details/5
