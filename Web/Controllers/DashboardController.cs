@@ -17,12 +17,13 @@ namespace Web.Controllers
     {
         private readonly DashboardHandler _dashboardHandler;
         private readonly DashboardSettingHandler _dashboardSettingHandler;
+        private readonly DataSetHandler _dataSetHandler;
 
         public DashboardController()
         {
             _dashboardHandler = new DashboardHandler();
             _dashboardSettingHandler = new DashboardSettingHandler();
-
+            _dataSetHandler = new DataSetHandler();
         }
 
         // GET: Dashboards
@@ -57,6 +58,25 @@ namespace Web.Controllers
                 DataValue = rdn.Next(0, 11)
             };
             return Json(data);
+        }
+
+        public async Task<JsonResult> GetDataSet(Guid integrationSettingId)
+        {
+            if (integrationSettingId == Guid.Empty)
+            {
+                throw new Exception();
+            }
+
+            var dataSet = await _dataSetHandler.GetDataSet(integrationSettingId);
+
+            if (dataSet == null)
+            {
+                throw new Exception();
+            }
+
+            dataSet.XValue = DateTime.Now;
+
+            return Json(dataSet);
         }
 
         // GET: Dashboards/Details/5

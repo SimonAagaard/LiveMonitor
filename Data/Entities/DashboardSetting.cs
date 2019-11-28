@@ -23,7 +23,9 @@ namespace Data.Entities
         public Dashboard Dashboard { get; set; }
         [Required]
         public Guid DashboardTypeId { get; set; }
+        [ForeignKey("IntegrationId")]
         public Guid IntegrationId { get; set; }
+        public List<Integration> Integrations { get; set; }
         [Required]
         [Display(Name = "Refresh rate")]
         public int RefreshRate { get; set; }

@@ -121,6 +121,11 @@ namespace Data
                 .HasOne(x => x.IntegrationSetting)
                 .WithMany(y => y.DataSets)
                 .HasForeignKey("IntegrationSettingId");
+
+            //modelBuilder.Entity<Integration>()
+            //    .HasOne(x => x.DashboardSetting)
+            //    .WithMany(y => y.Integrations)
+            //    .HasForeignKey("DashboardSettingId");
         }
 
         public DbSet<MonitorUser> MonitorUsers { get; set; }

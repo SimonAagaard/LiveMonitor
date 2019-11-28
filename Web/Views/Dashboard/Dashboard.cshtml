@@ -1,4 +1,5 @@
 ﻿@model Data.Entities.Dashboard
+
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -23,7 +24,7 @@
                 width: 900,
                 height: 650,
                 legend: { position: 'none' },
-                vAxis: { viewWindow: { min: -1, max: 11 }, baselineColor: 'transparent' },
+                vAxis: { viewWindow: { min: -1, max: 50 }, baselineColor: 'transparent' },
                 chartArea: {
                     height: '80%', width: '85%', left: 100,
                     backgroundColor: { stroke: "gray", strokeWidth: 1 }
@@ -37,14 +38,27 @@
             data.addColumn('number', 'Value');
 
             drawChart();
+            //ChartFromDataSet();
             //Update speed is controlled here
-            setInterval(drawChart, 1000);
+            setInterval(drawChart, 60000);
 
+            //function drawChart() {
+            //    $.get('GetRealTimeData', function (d) {
+            //        var timeStamp = new Date(d.timeStamp);
+            //        var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
+            //        var val = d.dataValue;
+            //        data.addRow([time, val]);
+            //        if (data.getNumberOfRows() > 20) {
+            //            data.removeRow(0);
+            //        }
+            //        chart.draw(data, option);
+            //    });
+            //}
             function drawChart() {
-                $.get('GetRealTimeData', function (d) {
-                    var timeStamp = new Date(d.timeStamp);
+                $.get('GetDataSet', integrationSettingId = 'integrationSettingId=9b60bb8e-edc6-43be-8080-4f3e32166d64', function (dataSet) {
+                    var timeStamp = new Date(dataSet.xValue);
                     var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
-                    var val = d.dataValue;
+                    var val = dataSet.yValue;
                     data.addRow([time, val]);
                     if (data.getNumberOfRows() > 20) {
                         data.removeRow(0);
