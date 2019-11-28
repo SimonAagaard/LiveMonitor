@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
@@ -18,26 +19,38 @@ namespace Data.Handlers
         {
             get { return _instance; }
         }
+
+        //Seed the database with types
         public async Task CreateType()
         {
-            IList<DashboardType> dashboardTypes = new List<DashboardType>();
-            dashboardTypes.Add(new DashboardType()
+            //Creates list to be bulk inserted to DB
+            List<DashboardType> seedList = new List<DashboardType>();
+            List<DashboardType> dashboardTypes = await _dashboardTypeRepo.GetAll();
+            //Iterates through the enum "Type" 
+            foreach (DashboardType.Type type in (DashboardType.Type[])Enum.GetValues(typeof(DashboardType.Type)))
             {
-                DashboardTypeId = Guid.NewGuid(),
-                DashboardName = DashboardType.Type.LineChart
-                
-            });
-            dashboardTypes.Add(new DashboardType()
-            {
-                DashboardTypeId = Guid.NewGuid(),
-                DashboardName = DashboardType.Type.AreaChart
-            });
-         
-            foreach (DashboardType dashboardType in dashboardTypes)
-            {
-                await _dashboardTypeRepo.Seed(dashboardType);
+                //Before adding to the DB, checks to see if the type is already present in the DB.
+                bool dashboardExists = dashboardTypes.Any(x => x.DashboardName == type);
+                if (!dashboardExists)
+                {
+                    seedList.Add(new DashboardType()
+                    {
+                        DashboardTypeId = Guid.NewGuid(),
+                        DashboardName = type
+                    });
+                }
             }
-
+            //Bulk inserts the list to the DB
+            await _dashboardTypeRepo.AddMany(seedList);
+        }
+        public async Task<List<DashboardType>> GetDashboardTypes()
+        {
+            return await _dashboardTypeRepo.GetAll();
+        }
+        // Get a single DashboardSetting based on the DashboardSettingId
+        public async Task<DashboardType> GetDashboardType(Guid DashboardTypeId)
+        {
+            return await _dashboardTypeRepo.Get(DashboardTypeId);
         }
     }
 }
