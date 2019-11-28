@@ -11,6 +11,79 @@
     <link id="styleSheet" rel="stylesheet" title="dark" href="~/lib/bootstrap/dist/css/bootstrapDarkly.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <script src="https://kit.fontawesome.com/96d32ef7a1.js" crossorigin="anonymous"></script>
+    <script>
+        // The name of the cookie
+        var styleCookieName = "Stylesheet Theme Cookie";
+        // styleDomain should change depending on domain
+        var styleDomain = "https://localhost:44320";
+
+        function switchStyle(cssTitle) {
+
+            // for loop for all <link/> tags
+            var i, linkTag;
+            for (i = 0, linkTag = document.getElementsByTagName("link");
+                i < linkTag.length; i++) {
+                // if its a stylesheet with a title, enter the if statement
+                if ((linkTag[i].rel.indexOf("stylesheet") != -1) && linkTag[i].title) {
+                    // disables all the stylesheets
+                    linkTag[i].disabled = true;
+                    // if the link tags title matches your parameter "undisable" the stylesheet
+                    if (linkTag[i].title == cssTitle) {
+                        linkTag[i].disabled = false;
+                    }
+                }
+                //sets the cookies name and value(dark/light theme)
+                setCookie(styleCookieName, cssTitle);
+            }
+
+        }
+        // sets the stylesheet depending on the cookie. Also loads which button should be shown, calls switchStyle()
+        function setStyleFromCookie() {
+            var cssTitle = getCookie(styleCookieName);
+
+            if (cssTitle == 'light' || cssTitle == null) {
+                document.getElementById('darkBtn').style.display = 'block';
+                document.getElementById('lightBtn').style.display = 'none';
+            }
+            else {
+                document.getElementById('lightBtn').style.display = 'block';
+                document.getElementById('darkBtn').style.display = 'none';
+            }
+
+            if (cssTitle.length) {
+                switchStyle(cssTitle);
+            }
+
+        }
+
+        function setCookie(cookieName, cookieValue) {
+            var expiry = new Date();
+            // expiry to 10years in the future
+            expiry.setMinutes(5259487);
+            // saves the cookie
+            document.cookie = cookieName + "=" + (cookieValue) + "; path=/; expires=" + expiry.toGMTString();
+        }
+        // returns the cookies value, unless its null
+        function getCookie(cookieName) {
+            var re = new RegExp(cookieName + "=([^;]+)");
+            var value = re.exec(document.cookie);
+            return (value != null) ? (value[1]) : null;
+        }
+        // toggles the sun/moon buttons
+        function toggleBtn(btn) {
+            if (btn == 'dark') {
+                document.getElementById('lightBtn').style.display = 'block';
+                document.getElementById('darkBtn').style.display = 'none';
+            }
+            else {
+                document.getElementById('darkBtn').style.display = 'block';
+                document.getElementById('lightBtn').style.display = 'none';
+            }
+            location.reload();
+        }
+        // calls setStyleFromCookie on load
+        window.onload = setStyleFromCookie;
+    </script>
 </head>
 
 <body>
@@ -36,8 +109,8 @@
                     </ul>
                 </div>
             </div>
-            <button type="button" class="far fa-moon fa-2x" onclick="switchStyle('dark'); toggleBtn('dark');" name="theme" style="background-color:transparent; border: none;" value="Dark Theme" id="dark"></button>
-            <button type="button" class="fas fa-sun fa-2x" onclick="switchStyle('light'); toggleBtn('light');" name="theme" style="color:yellow;background-color:transparent; border: none;" value="Light Theme" id="light"></button>
+            <button type="button" class="far fa-moon fa-2x" onclick="switchStyle('dark'); toggleBtn('dark');" name="theme" style="background-color:transparent; border: none;" value="Dark Theme" id="darkBtn"></button>
+            <button type="button" class="fas fa-sun fa-2x" onclick="switchStyle('light'); toggleBtn('light');" name="theme" style="color:yellow;background-color:transparent; border: none;" value="Light Theme" id="lightBtn"></button>
 
         </nav>
     </header>
@@ -54,79 +127,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 
-    <script>
-        // The name of the cookie
-        var styleCookieName = "Stylesheet Theme Cookie";
-        // styleDomain should change depending on domain
-        var styleDomain = "https://localhost:44320";
-
-        function switchStyle(cssTitle) {
-
-            // for loop for all <link/> tags
-            var i, linkTag;
-            for (i = 0, linkTag = document.getElementsByTagName("link");
-                i < linkTag.length; i++) {
-                // if its a stylesheet with a title, enter the if statement
-                if ((linkTag[i].rel.indexOf("stylesheet") != -1) && linkTag[i].title){
-                    // disables all the stylesheets
-                    linkTag[i].disabled = true;
-                    // if the link tags title matches your parameter "undisable" the stylesheet
-                    if (linkTag[i].title == cssTitle) {
-                        linkTag[i].disabled = false;
-                    }
-                }
-                //sets the cookies name and value(dark/light theme)
-                setCookie(styleCookieName, cssTitle);
-            }
-
-        }
-        // sets the stylesheet depending on the cookie. Also loads which button should be shown, calls switchStyle()
-        function setStyleFromCookie() {
-            var cssTitle = getCookie(styleCookieName);
-
-             if (cssTitle == 'light' || cssTitle == null) {
-                document.getElementById('dark').style.display = 'block'; 
-                document.getElementById('light').style.display = 'none';
-            }
-            else {
-                document.getElementById('light').style.display = 'block'; 
-                document.getElementById('dark').style.display = 'none';
-            }
-
-            if (cssTitle.length) {
-                switchStyle(cssTitle);
-            }
-           
-        }
-
-        function setCookie(cookieName, cookieValue) {
-            var expiry = new Date();
-            // expiry to 10years in the future
-            expiry.setMinutes(5259487);
-            // saves the cookie
-            document.cookie = cookieName + "=" + (cookieValue) + "; path=/; expires=" + expiry.toGMTString();
-        }
-         // returns the cookies value, unless its null
-        function getCookie(cookieName) {
-            var re = new RegExp(cookieName + "=([^;]+)");
-            var value = re.exec(document.cookie);
-            return (value != null) ? (value[1]) : null;
-        }
-        // toggles the sun/moon buttons 
-        function toggleBtn(btn) {
-            if (btn == 'dark') {
-                 document.getElementById('light').style.display = 'block'; 
-                 document.getElementById('dark').style.display = 'none';
-            }
-            else {
-                 document.getElementById('dark').style.display = 'block'; 
-                 document.getElementById('light').style.display = 'none';
-            }
-
-        }
-        // calls setStyleFromCookie on load
-        window.onload = setStyleFromCookie;
-    </script>
+   
 
 </body>
 </html>
