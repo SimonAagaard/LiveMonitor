@@ -76,12 +76,15 @@ namespace Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbContext context)
         {
             var builder = new ConfigurationBuilder()
             .SetBasePath(env.ContentRootPath)
             .AddJsonFile("appsettings.json");
 
+#if !DEBUG
+            context.Database.Migrate();
+#endif
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
