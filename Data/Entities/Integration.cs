@@ -17,5 +17,6 @@ namespace Data.Entities
         public Guid IntegrationSettingId { get; set; }
         public string IntegrationName { get; set; }
         public IntegrationSetting IntegrationSetting { get; set; }
+        public DashboardSetting DashboardSetting { get; set; }
     }
 }
