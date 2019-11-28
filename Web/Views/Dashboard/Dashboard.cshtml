@@ -1,4 +1,5 @@
 ﻿@model Data.Entities.Dashboard
+
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -37,7 +38,7 @@
                 document.getElementById('darkBtn').style.display = 'none';
             }
 
-            if (cssTitle.length) {
+            if (cssTitle != null) {
                 switchStyle(cssTitle);
             }
 
@@ -59,6 +60,7 @@
                 width: 900,
                 height: 650,
                 legend: { position: 'none' },
+              
                 //Horizontal axis styling
                 hAxis: {
                     format: 'HH:mm:ss',
@@ -67,10 +69,7 @@
                     },
                 },
                 //Vertical axis styling
-                vAxis: {
-                    viewWindow: {
-                        min: -1, max: 11
-                    },
+                vAxis: {                 
                     baselineColor: 'transparent',
                     textStyle: {
                         color: color
@@ -93,16 +92,18 @@
             data.addColumn('number', 'Value');
 
             drawChart();
+            //ChartFromDataSet();
             //Update speed is controlled here
-            setInterval(drawChart, 1000);
-
+            setInterval(drawChart, 60000);
+          
             function drawChart() {
-                $.get('GetRealTimeData', function (d) {
-                    var timeStamp = new Date(d.timeStamp);
-                    var time = { v: timeStamp, f: moment(timeStamp).locale('sv').format('HH:mm') };
-                    var val = d.dataValue;
+                $.get('GetDataSet', integrationSettingId = 'integrationSettingId=854c79b2-6b31-472c-938f-f1077343aac0', function (dataSet) {
+                    var timeStamp = new Date(dataSet.xValue);
+                    var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
+                    var val = dataSet.yValue;
+
                     data.addRow([time, val]);
-                    if (data.getNumberOfRows() > 20) {
+                    if (data.getNumberOfRows() > 100) {
                         data.removeRow(0);
                     }
                     chart.draw(data, option);
