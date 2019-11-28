@@ -7,6 +7,7 @@
 
 
 <div class="container">
+    <h1 id="title" style="text-align:center; margin-left:-10%; font-size:28px; font-weight:bold;">@Model.DashboardName</h1>
     <div id="chart1"></div>
 </div>
 
@@ -28,14 +29,16 @@
             if (cssTitle == 'light' || cssTitle == null) {
                 document.getElementById('darkBtn').style.display = 'block';
                 document.getElementById('lightBtn').style.display = 'none';
+                document.getElementById('title').style.color = 'grey';
             }
-            //dark
+            //Dark theme overrides the values on variables
             else {
-                color = '#0ffc4b';
+                color = '#ffffff';
                 backgroundColor = '#222';
                 lineColor = '#0ffc4b';
                 document.getElementById('lightBtn').style.display = 'block';
                 document.getElementById('darkBtn').style.display = 'none';
+                document.getElementById('title').style.color = '#ffffff';
             }
 
             if (cssTitle != null) {
@@ -50,19 +53,24 @@
         google.charts.setOnLoadCallback(callback);
 
         function callback() {
+            //Style choices for the chart
             var option = {
-                title: "@Model.DashboardName",
-                titleTextStyle: {
-                    color: color,
-                    fontSize: 28,
-                    bold: true,
-                },
                 width: 900,
                 height: 650,
-                legend: { position: 'none' },
-              
+                legend: { position: 'top', alignment: 'start' },
+                legendTextStyle: {
+                    color: color,
+                    fontSize: 24,
+                    bold: true
+                },
                 //Horizontal axis styling
                 hAxis: {
+                    title: "Time", //Use x-label here from dashboardsSettings
+                    titleTextStyle: {
+                        color: color,
+                        fontSize: 24,
+                        bold: true
+                    },
                     format: 'HH:mm:ss',
                     textStyle: {
                         color: color
@@ -70,10 +78,17 @@
                 },
                 //Vertical axis styling
                 vAxis: {
+                    title: "Avg. Response time", //Use y-label here from dashboardsSettings
+                    titleTextStyle: {
+                        color: color,
+                        fontSize: 24,
+                        bold: true
+                    },
+                    baselineColor: 'transparent',
                     viewWindow: {
                         min: 0
                     },
-                    baselineColor: 'transparent',
+
                     textStyle: {
                         color: color
                     },
@@ -81,9 +96,11 @@
                 backgroundColor: backgroundColor,
                 //Line color
                 series: {
-                    0: {color: lineColor},
+                    0: { color: lineColor },
                 },
+
                 chartArea: {
+                    //Determines how much of the container to fill out
                     height: '80%', width: '85%', left: 100,
                     backgroundColor: { stroke: "gray", strokeWidth: 1 }
                 },
@@ -98,7 +115,7 @@
             //ChartFromDataSet();
             //Update speed is controlled here
             setInterval(drawChart, 60000);
-          
+
             function drawChart() {
                 $.get('GetDataSet', integrationSettingId = 'integrationSettingId=854c79b2-6b31-472c-938f-f1077343aac0', function (dataSet) {
                     var timeStamp = new Date(dataSet.xValue);
