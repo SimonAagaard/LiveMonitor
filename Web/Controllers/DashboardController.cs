@@ -71,7 +71,7 @@ namespace Web.Controllers
                 throw new Exception();
             }
 
-            var dataSet = await _dataSetHandler.GetNewestDataSetByIntegrationSettingIdFromDateTime(integrationSettingId, DateTime.Now.AddMinutes(-70));
+            var dataSet = await _dataSetHandler.GetNewestDataSetByIntegrationSettingId(integrationSettingId);
 
             if (dataSet == null)
             {
@@ -85,10 +85,8 @@ namespace Web.Controllers
         {
             if (integrationSettingId != Guid.Empty)
             {
-                List<DataSet> dataSets = await _dataSetHandler.GetDataSetsFromAGivenTimePeriod(integrationSettingId, DateTime.Now.AddMinutes(-200), DateTime.Now.AddMinutes(60));
-
-                dataSets = dataSets.OrderBy(x => x.XValue).TakeLast(100).ToList();
-
+                List<DataSet> dataSets = await _dataSetHandler.GetCertainAmountOfDataSets(integrationSettingId, 100);
+              
                 if (dataSets.Count > 0)
                 {
                     return Json(dataSets);
