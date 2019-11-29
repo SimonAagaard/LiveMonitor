@@ -157,7 +157,6 @@ namespace Web.Controllers
                 {
                     DashboardSettingId = dashboard.DashboardSettingId,
                     DashboardId = dashboard.DashboardId,
-                    IntegrationId = Guid.NewGuid()
                 };
 
                 await _dashboardSettingHandler.CreateDashboardSetting(dashboardSetting);
