@@ -57,7 +57,7 @@ namespace Data.Handlers
         {
             return await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId && x.DateCreated >= fromDate && x.DateCreated <= toDate );
         }
-        //Gets the newest dataset, based on)
+        //Gets the newest dataset, based on DateCreated
         public async Task<DataSet> GetNewestDataSetByIntegrationSettingId(Guid integrationSettingId)
         {
             List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId);
