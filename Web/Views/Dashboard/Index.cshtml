@@ -40,7 +40,7 @@
                     </td>
                     <td class="">
                         <div class="offset-md-7 row">
-                            <a asp-action="Edit" asp-route-id="@item.DashboardId"><span style="margin-right:5px;" class="fas fa-edit fa-lg"></span></a>
+                            <a asp-action="Edit" asp-route-dashboardId="@item.DashboardId"><span style="margin-right:5px;" class="fas fa-edit fa-lg"></span></a>
 
                             <form asp-action="Delete">
                                 <input type="hidden" name="id" asp-for="@item.DashboardId" />
@@ -48,9 +48,9 @@
                                     <i class="fas fa-trash fa-lg" style="margin-right:5px;"> </i>
                                 </button>
                             </form>
-                            <a asp-action="Dashboard" asp-route-id="@item.DashboardId"><span class="fas fa-chart-line fa-lg adaptive-color" style="margin-right:5px;"></span></a>
+                            <a asp-action="Dashboard" asp-route-dashboardId="@item.DashboardId"><span class="fas fa-chart-line fa-lg adaptive-color" style="margin-right:5px;"></span></a>
                         </div>
-                            </td>
+                    </td>
                 </tr>
             }
         </tbody>

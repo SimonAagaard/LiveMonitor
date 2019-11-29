@@ -45,9 +45,9 @@ namespace Web.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Dashboard(Guid id)
+        public async Task<IActionResult> Dashboard(Guid dashboardId)
         {
-            var dashboard = await _dashboardHandler.GetDashboard(id);
+            var dashboard = await _dashboardHandler.GetDashboard(dashboardId);
             return View(dashboard);
         }
 
@@ -228,9 +228,9 @@ namespace Web.Controllers
         //Post the delete of the dashboard
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid dashboardId)
         {
-            var dashboard = await _dashboardHandler.GetDashboard(id);
+            var dashboard = await _dashboardHandler.GetDashboard(dashboardId);
             await _dashboardHandler.DeleteDashboard(dashboard);
             return RedirectToAction(nameof(Index));
         }
