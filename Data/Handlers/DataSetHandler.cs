@@ -35,7 +35,7 @@ namespace Data.Handlers
             return await _dataSetRepo.Get(dataSetId);
         }
 
-        public async Task<DataSet> GetDataSetByIntegrationSettingIdAndTimestamp(Guid integrationSettingId, DateTime dateTime)
+        public async Task<DataSet> GetDataSetByIntegrationSettingIdAndTimestamp(Guid integrationSettingId, DateTimeOffset dateTime)
         {
             return await _dataSetRepo.Get(x => x.IntegrationSettingId == integrationSettingId && x.XValue == dateTime);
         }

@@ -17,14 +17,7 @@ namespace Data.Handlers
 
         public async Task CreateDashboardSetting(DashboardSetting DashboardSetting)
         {
-            if (DashboardSetting.DashboardSettingId != Guid.Empty)
-            {
-                await DashboardSettingRepo.Add(DashboardSetting);
-            }
-            else
-            {
-                throw new Exception("Guid not valid");
-            }
+            await DashboardSettingRepo.Add(DashboardSetting);
         }
 
         // Get all DashboardSettings in the database
@@ -52,4 +45,3 @@ namespace Data.Handlers
         }
     }
 }
-
