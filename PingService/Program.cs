@@ -13,9 +13,13 @@ namespace PingService
             {
                 if (DateTime.Now.Second == 01)
                 {
+                    Console.WriteLine("DataSet created: " + DateTime.UtcNow.ToShortTimeString());
+
                     // Call the method to ping our endpoint with dataset creation
                     var pingservice = new PingMonitor();
                     pingservice.PingMethod().Wait();
+
+                    Thread.Sleep(1000);
                 }
             }
         }
