@@ -21,25 +21,25 @@ namespace Data.Handlers
         }
 
         // Get all Integration in the database
-        public async Task<List<IntegrationSetting>> GetIntegrations()
+        public async Task<List<IntegrationSetting>> GetIntegrationSettings()
         {
             return await _integrationSettingRepo.GetAll();
         }
 
         // Get a single Integration based on the IntegrationId
-        public async Task<IntegrationSetting> GetIntegration(Guid integrationSettingId)
+        public async Task<IntegrationSetting> GetIntegrationSetting(Guid integrationSettingId)
         {
             return await _integrationSettingRepo.Get(integrationSettingId);
         }
 
         // Update a Integration object
-        public async Task UpdateIntegration(IntegrationSetting integrationSetting)
+        public async Task UpdateIntegrationSetting(IntegrationSetting integrationSetting)
         {
             await _integrationSettingRepo.Update(integrationSetting);
         }
 
         // Hard delete a IntegrationSetting based on the IntegrationSettingId
-        public async Task DeleteIntegration(IntegrationSetting integrationSetting)
+        public async Task DeleteIntegrationSetting(IntegrationSetting integrationSetting)
         {
             await _integrationSettingRepo.Delete(integrationSetting);
         }
