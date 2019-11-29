@@ -9,19 +9,11 @@ namespace PingService
     {
         static void Main(string[] args)
         {
-            while (true)
-            {
-                if (DateTime.Now.Second == 01)
-                {
-                    Console.WriteLine("DataSet created: " + DateTime.UtcNow.ToShortTimeString());
+            // Call the method to ping our endpoint with dataset creation
+            var pingservice = new PingMonitor();
+            pingservice.PingMethod().Wait();
 
-                    // Call the method to ping our endpoint with dataset creation
-                    var pingservice = new PingMonitor();
-                    pingservice.PingMethod().Wait();
-
-                    Thread.Sleep(1000);
-                }
-            }
+            Console.WriteLine("DataSet created: " + DateTime.UtcNow.ToShortTimeString());
         }
     }
 
@@ -33,11 +25,13 @@ namespace PingService
         //Method which calls the endpoint of our service which currently creates any new datasets not yet in the database
         public async Task PingMethod()
         {
-            Uri Url = new Uri("https://livemonitortest.azurewebsites.net/dataset");
+            Uri Url = new Uri("https://livemonitorapp.azurewebsites.net/dataset");
+            Uri TestUrl = new Uri("https://livemonitortest.azurewebsites.net/dataset");
 
             using (HttpClient client = new HttpClient())
             {
-                var response = await client.GetAsync(Url);
+                await client.GetAsync(Url);
+                await client.GetAsync(TestUrl);
             }
         }
     }
