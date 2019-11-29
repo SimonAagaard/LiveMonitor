@@ -137,7 +137,7 @@ namespace Web.Controllers
                 }
                 //Dashboard
                 dashboard.DashboardId = Guid.NewGuid();
-                dashboard.DateCreated = DateTime.Now;
+                dashboard.DateCreated = DateTime.UtcNow;
                 dashboard.DashboardSettingId = Guid.NewGuid();
                 dashboard.UserId = Guid.Parse(userId);
 
@@ -231,7 +231,7 @@ namespace Web.Controllers
             {
                 try
                 {
-                    dashboard.DateModified = DateTime.Now;
+                    dashboard.DateModified = DateTime.UtcNow;
                     await _dashboardHandler.UpdateDashboard(dashboard);
                 }
                 catch (DbUpdateConcurrencyException e)
