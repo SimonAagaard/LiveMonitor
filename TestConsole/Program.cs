@@ -12,6 +12,7 @@ namespace TestConsole
             Console.WriteLine("Started and working...");
             //Insert and remove calls to methods here
             Data.Handlers.DashboardTypeHandler.Instance.CreateType().Wait(); //Seeds the DB with DashboardTypes
+            //Console.WriteLine();
             Console.WriteLine("Done...");
 
         }
