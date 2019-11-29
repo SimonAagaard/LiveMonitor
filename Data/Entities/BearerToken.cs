@@ -15,7 +15,7 @@ namespace Data.Entities
         [ForeignKey("IntegrationSettingId")]
         public Guid IntegrationSettingId { get; set; }
         public IntegrationSetting IntegrationSetting { get; set; }
-        public DateTime DateCreated { get; set; }
-        public DateTime DateExpired { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
+        public DateTimeOffset DateExpired { get; set; }
     }
 }
