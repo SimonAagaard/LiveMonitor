@@ -95,24 +95,6 @@ namespace Web.Controllers
             return Json("");
         }
 
-        // GET: Dashboards/Details/5
-        public async Task<IActionResult> Details(Guid id)
-        {
-            if (id == Guid.Empty)
-            {
-                return NotFound();
-            }
-
-            var dashboard = await _dashboardHandler.GetDashboard(id);
-
-            if (dashboard == null)
-            {
-                return NotFound();
-            }
-
-            return View(dashboard);
-        }
-
         // GET: Dashboards/Create
         public IActionResult Create()
         {
@@ -205,14 +187,14 @@ namespace Web.Controllers
 
         // GET: Dashboards/Edit/5
         //Used for retrieveing the page to edit/update a dashboard
-        public async Task<IActionResult> Edit(Guid id)
+        public async Task<IActionResult> Edit(Guid dashboardId)
         {
-            if (id == Guid.Empty)
+            if (dashboardId == Guid.Empty)
             {
                 return NotFound();
             }
 
-            var dashboard = await _dashboardHandler.GetDashboard(id);
+            var dashboard = await _dashboardHandler.GetDashboard(dashboardId);
             if (dashboard == null)
             {
                 return NotFound();
