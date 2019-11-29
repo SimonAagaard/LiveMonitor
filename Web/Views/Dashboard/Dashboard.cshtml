@@ -1,10 +1,13 @@
 ﻿@model Data.Entities.Dashboard
+
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
 <div class="container">
+    <h1 id="title" style="text-align:center; margin-left:-10%; font-size:28px; font-weight:bold;">@Model.DashboardName</h1>
     <div id="chart1"></div>
 </div>
 
@@ -12,45 +15,138 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     @*Should most likely host it locally instead of using CDN, but this was quick n dirty :pregnantWoman:*@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js" integrity="sha256-H9jAz//QLkDOy/nzE9G4aYijQtkLt9FvGmdUTwBk6gs=" crossorigin="anonymous"></script>
+    <script>
+        //Default values for white theme
+        var color = 'grey';
+        var backgroundColor = '#ffffff';
+        var lineColor = '#3366cc';
+        document.getElementById("darkBtn").addEventListener("click", setDashboardStyleFromCookie);
+        document.getElementById("lightBtn").addEventListener("click", setDashboardStyleFromCookie);
+        window.onload = setDashboardStyleFromCookie();
+        function setDashboardStyleFromCookie() {
+            var cssTitle = getCookie(styleCookieName);
+
+            if (cssTitle == 'light' || cssTitle == null) {
+                document.getElementById('darkBtn').style.display = 'block';
+                document.getElementById('lightBtn').style.display = 'none';
+                document.getElementById('title').style.color = 'grey';
+            }
+            //Dark theme overrides the values on variables
+            else {
+                color = '#ffffff';
+                backgroundColor = '#222';
+                lineColor = '#0ffc4b';
+                document.getElementById('lightBtn').style.display = 'block';
+                document.getElementById('darkBtn').style.display = 'none';
+                document.getElementById('title').style.color = '#ffffff';
+            }
+
+            if (cssTitle != null) {
+                switchStyle(cssTitle);
+            }
+
+        }
+    </script>
 
     <script>
         google.charts.load('current', { 'packages': ['corechart'] });
         google.charts.setOnLoadCallback(callback);
 
         function callback() {
+            //Style choices for the chart
             var option = {
-                title: "@Model.DashboardName",
                 width: 900,
                 height: 650,
-                legend: { position: 'none' },
-                vAxis: { viewWindow: { min: -1, max: 11 }, baselineColor: 'transparent' },
+                legend: { position: 'top', alignment: 'start' },
+                legendTextStyle: {
+                    color: color,
+                    fontSize: 24,
+                    bold: true
+                },
+                //Horizontal axis styling
+                hAxis: {
+                    title: "Time", //Use x-label here from dashboardsSettings
+                    titleTextStyle: {
+                        color: color,
+                        fontSize: 24,
+                        bold: true
+                    },
+                    format: 'HH:mm:ss',
+                    textStyle: {
+                        color: color
+                    },
+                },
+                //Vertical axis styling
+                vAxis: {
+                    title: "Avg. Response time", //Use y-label here from dashboardsSettings
+                    titleTextStyle: {
+                        color: color,
+                        fontSize: 24,
+                        bold: true
+                    },
+                    baselineColor: 'transparent',
+                    viewWindow: {
+                        min: 0
+                    },
+
+                    textStyle: {
+                        color: color
+                    },
+                },
+                backgroundColor: backgroundColor,
+                //Line color
+                series: {
+                    0: { color: lineColor },
+                },
+
                 chartArea: {
+                    //Determines how much of the container to fill out
                     height: '80%', width: '85%', left: 100,
                     backgroundColor: { stroke: "gray", strokeWidth: 1 }
                 },
-                pointSize: 10
             };
-            //Choose which chart type to use on the line below
+                     //Choose which chart type to use on the line below
             var chart = new google.visualization.LineChart(document.getElementById('chart1'));
             var data = new google.visualization.DataTable();
             data.addColumn('datetime', 'TimeStamp');
             data.addColumn('number', 'Value');
-
+            onLoad();
             drawChart();
+            //ChartFromDataSet();
             //Update speed is controlled here
-            setInterval(drawChart, 1000);
+            setInterval(drawChart, 60000);
 
             function drawChart() {
-                $.get('GetRealTimeData', function (d) {
-                    var timeStamp = new Date(d.timeStamp);
+                $.get('GetDataSet', integrationSettingId = 'integrationSettingId=854c79b2-6b31-472c-938f-f1077343aac0', function (dataSet) {
+                    var timeStamp = new Date(dataSet.xValue);
                     var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
-                    var val = d.dataValue;
+                    var val = dataSet.yValue;
+
                     data.addRow([time, val]);
-                    if (data.getNumberOfRows() > 20) {
+                    if (data.getNumberOfRows() > 100) {
                         data.removeRow(0);
                     }
                     chart.draw(data, option);
                 });
+            }
+
+
+        function onLoad() {
+            $.get('GetDataSets', integrationSettingId = 'integrationSettingId=854c79b2-6b31-472c-938f-f1077343aac0', function (dataSets) {
+                for (var i = 0; i < dataSets.length; i++) {
+                    var itemxyz = dataSets[i];
+
+                    var timeStamp = new Date(itemxyz.xValue);
+                    var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
+                    var val = itemxyz.yValue;
+
+                    data.addRow([time, val]);
+                    if (data.getNumberOfRows() >= dataSets.length) {
+                        data.removeRow(0);
+                    }
+                }
+                chart.draw(data, option);
+            });
             }
         }
     </script>

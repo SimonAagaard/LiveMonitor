@@ -15,10 +15,10 @@ namespace Data.Entities
         public Guid IntegrationSettingId { get;  set; }
         public IntegrationSetting IntegrationSetting { get; set; }
         [Required]
-        public DateTime DateCreated { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
         //Assumes our x-axis will always measure in time
         [Required]
-        public DateTime XValue { get; set; }
+        public DateTimeOffset XValue { get; set; }
         [Required]
         public double YValue { get; set; }
     }

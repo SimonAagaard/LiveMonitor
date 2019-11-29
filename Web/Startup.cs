@@ -82,9 +82,11 @@ namespace Web
             .SetBasePath(env.ContentRootPath)
             .AddJsonFile("appsettings.json");
 
+            // Automatically apply migrations to the relevant DB when the pipeline rolls out to production
 #if !DEBUG
             context.Database.Migrate();
 #endif
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
