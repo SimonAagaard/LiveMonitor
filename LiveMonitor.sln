@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Web\Web.csproj", "{7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsole", "TestConsole\TestConsole.csproj", "{8D055168-8069-4FA2-BFE6-B75320C94CB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PingService", "PingService\PingService.csproj", "{242898BB-E40D-4E1A-95ED-32586293219F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PingService", "PingService\PingService.csproj", "{242898BB-E40D-4E1A-95ED-32586293219F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PingWebJob", "PingWebJob\PingWebJob.csproj", "{D448532F-8F77-4769-9276-5FCFA8DD5480}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{242898BB-E40D-4E1A-95ED-32586293219F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{242898BB-E40D-4E1A-95ED-32586293219F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{242898BB-E40D-4E1A-95ED-32586293219F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D448532F-8F77-4769-9276-5FCFA8DD5480}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D448532F-8F77-4769-9276-5FCFA8DD5480}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D448532F-8F77-4769-9276-5FCFA8DD5480}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D448532F-8F77-4769-9276-5FCFA8DD5480}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

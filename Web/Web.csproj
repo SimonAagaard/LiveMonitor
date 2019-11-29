@@ -32,6 +32,9 @@
     <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
+  <Target Name="PostpublishScript" AfterTargets="Publish">
+    <Exec Command="dotnet publish ..\LiveMonitor.PingWebJob\ -o $(ProjectDir)$(PublishDir)App_Data\Jobs\triggered\PingWebJob" />
+  </Target>
 
   <ItemGroup>
     <Content Update="appsettings.json">
