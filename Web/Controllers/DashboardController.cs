@@ -53,16 +53,16 @@ namespace Web.Controllers
         }
 
         //Used by the POC realtime dashboard, can be removed or refactored when we get real data through integrations
-        public JsonResult GetRealTimeData()
-        {
-            Random rdn = new Random();
-            RealTimeData data = new RealTimeData
-            {
-                TimeStamp = DateTime.Now,
-                DataValue = rdn.Next(0, 11)
-            };
-            return Json(data);
-        }
+        //public JsonResult GetRealTimeData()
+        //{
+        //    Random rdn = new Random();
+        //    RealTimeData data = new RealTimeData
+        //    {
+        //        TimeStamp = DateTime.Now,
+        //        DataValue = rdn.Next(0, 11)
+        //    };
+        //    return Json(data);
+        //}
 
         public async Task<JsonResult> GetDataSet(Guid integrationSettingId)
         {
@@ -78,8 +78,6 @@ namespace Web.Controllers
                 throw new Exception();
             }
 
-            dataSet.XValue = dataSet.XValue.AddHours(1);
-
             return Json(dataSet);
         }
 
@@ -93,11 +91,6 @@ namespace Web.Controllers
 
                 if (dataSets.Count > 0)
                 {
-                    foreach (DataSet dataSet in dataSets)
-                    {
-                        dataSet.XValue = dataSet.XValue.AddHours(1);
-                    }
-
                     return Json(dataSets);
                 }
             }

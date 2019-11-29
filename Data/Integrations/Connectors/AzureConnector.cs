@@ -84,10 +84,12 @@ namespace Data.Integrations
         // Get datasets from Azure based on the passed integrationsettings and values passed to the constructor
         public async Task<AzureDataResponse> GetAzureDataAsync(IntegrationSetting integrationSetting)
         {
+            // Set datetime for the request to the API
             string currentTime = DateTime.UtcNow.ToString("o");
             string fromTime = DateTime.UtcNow.AddMinutes(-2).ToString("o");
             DataSetHandler dataSetHandler = new DataSetHandler();
 
+            // Get a valid bearertoken either from the DB or new from the API
             string accessToken = await GetAzureBearerTokenAsync(integrationSetting);
 
             // Split url to support new integrations
@@ -104,14 +106,18 @@ namespace Data.Integrations
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
+                // Send request to the API for metrics
                 HttpResponseMessage response = await client.GetAsync(Url);
 
                 if (response.IsSuccessStatusCode)
                 {
+                    // Read the response to a string
                     string result = await response.Content.ReadAsStringAsync();
 
+                    // Deserialize the response from json to an object
                     AzureDataResponse azureDataResponse = System.Text.Json.JsonSerializer.Deserialize<AzureDataResponse>(result);
 
+                    // Iterate the objects in the response to get to the metrics returned
                     if (azureDataResponse != null)
                     {
                         foreach (var value in azureDataResponse.value)
@@ -153,7 +159,7 @@ namespace Data.Integrations
             BearerTokenHandler bearerTokenHandler = new BearerTokenHandler();
 
             // Attempt to get a valid bearerToken from the Db
-            BearerToken bearerToken = await bearerTokenHandler.GetValidBearerToken(integrationSetting.IntegrationSettingId, DateTime.Now);
+            BearerToken bearerToken = await bearerTokenHandler.GetValidBearerToken(integrationSetting.IntegrationSettingId, DateTime.UtcNow);
 
             if (!String.IsNullOrWhiteSpace(bearerToken?.AccessToken))
             {
@@ -167,8 +173,8 @@ namespace Data.Integrations
                 {
                     AccessToken = authResponse.access_token,
                     BearerTokenId = Guid.NewGuid(),
-                    DateCreated = DateTime.Now,
-                    DateExpired = DateTime.Now.AddMinutes(59),
+                    DateCreated = DateTime.UtcNow,
+                    DateExpired = DateTime.UtcNow.AddMinutes(59),
                     IntegrationSettingId = integrationSetting.IntegrationSettingId
                 });
                 return authResponse.access_token;
