@@ -7,42 +7,31 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Data;
 using Data.Entities;
+using Data.Handlers;
 
 namespace Web.Controllers
 {
     public class IntegrationController : Controller
     {
         private readonly IntegrationHandler _integrationHandler;
+        private readonly IntegrationSettingHandler _integrationSettingHandler;
 
         public IntegrationController()
         {
-           
+            _integrationHandler = new IntegrationHandler();
+            _integrationSettingHandler = new IntegrationSettingHandler();
         }
 
         // GET: Integration
         public async Task<IActionResult> Index()
         {
-            var dbContext = _context.Integrations.Include(i => i.MonitorUser);
-            return View(await dbContext.ToListAsync());
-        }
-
-        // GET: Integration/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
+            var integrations = await _integrationHandler.GetIntegrations();
+            //If there is dashboards in the DB pass them to the view
+            if (integrations.Any())
             {
-                return NotFound();
+                return View(integrations);
             }
-
-            var integration = await _context.Integrations
-                .Include(i => i.MonitorUser)
-                .FirstOrDefaultAsync(m => m.IntegrationId == id);
-            if (integration == null)
-            {
-                return NotFound();
-            }
-
-            return View(integration);
+            return View();
         }
 
         // GET: Integration/Create

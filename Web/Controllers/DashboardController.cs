@@ -26,9 +26,8 @@ namespace Web.Controllers
         {
             _dashboardHandler = new DashboardHandler();
             _dashboardSettingHandler = new DashboardSettingHandler();
-            _dataSetHandler = new DataSetHandler();
             _dashboardTypeHandler = new DashboardTypeHandler();
-
+            _dataSetHandler = new DataSetHandler();
         }
 
         // GET: Dashboards
