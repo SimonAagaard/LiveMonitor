@@ -39,10 +39,6 @@
     </Content>
   </ItemGroup>
 
-  <Target Name="PostpublishScript" AfterTargets="Publish">
-    <Exec Command="dotnet publish ..\LiveMonitor.PingService\ -o $(ProjectDir)$(PublishDir)App_Data\Jobs\triggered\PingService" />
-  </Target>
-
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>
