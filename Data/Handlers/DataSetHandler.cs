@@ -57,6 +57,18 @@ namespace Data.Handlers
         {
             return await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId && x.DateCreated >= fromDate && x.DateCreated <= toDate );
         }
+        //Gets the newest dataset, based on DateCreated
+        public async Task<DataSet> GetNewestDataSetByIntegrationSettingId(Guid integrationSettingId)
+        {
+            List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId);
+            return dataSets.OrderByDescending(x => x.DateCreated).FirstOrDefault();
+        }
+
+        public async Task<List<DataSet>> GetCertainAmountOfDataSets(Guid integrationSettingId, int dataSetAmount)
+        {
+            List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId);
+            return dataSets.OrderBy(x => x.DateCreated).TakeLast(dataSetAmount).ToList();
+        }
 
         // Update a DataSet object
         public async Task UpdateDataSet(DataSet dataSet)

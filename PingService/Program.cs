@@ -9,9 +9,15 @@ namespace PingService
     {
         static void Main(string[] args)
         {
-            // Call the method to ping our endpoint with dataset creation
-            var pingservice = new PingMonitor();
-            pingservice.PingMethod().Wait();
+            while (true)
+            {
+                if (DateTime.Now.Second == 01)
+                {
+                    // Call the method to ping our endpoint with dataset creation
+                    var pingservice = new PingMonitor();
+                    pingservice.PingMethod().Wait();
+                }
+            }
         }
     }
 
