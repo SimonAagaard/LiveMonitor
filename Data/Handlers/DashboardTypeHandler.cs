@@ -26,6 +26,7 @@ namespace Data.Handlers
             //Creates list to be bulk inserted to DB
             List<DashboardType> seedList = new List<DashboardType>();
             List<DashboardType> dashboardTypes = await _dashboardTypeRepo.GetAll();
+
             //Iterates through the enum "Type" 
             foreach (DashboardType.Type type in (DashboardType.Type[])Enum.GetValues(typeof(DashboardType.Type)))
             {

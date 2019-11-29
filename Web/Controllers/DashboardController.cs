@@ -53,16 +53,16 @@ namespace Web.Controllers
         }
 
         //Used by the POC realtime dashboard, can be removed or refactored when we get real data through integrations
-        public JsonResult GetRealTimeData()
-        {
-            Random rdn = new Random();
-            RealTimeData data = new RealTimeData
-            {
-                TimeStamp = DateTime.Now,
-                DataValue = rdn.Next(0, 11)
-            };
-            return Json(data);
-        }
+        //public JsonResult GetRealTimeData()
+        //{
+        //    Random rdn = new Random();
+        //    RealTimeData data = new RealTimeData
+        //    {
+        //        TimeStamp = DateTime.Now,
+        //        DataValue = rdn.Next(0, 11)
+        //    };
+        //    return Json(data);
+        //}
 
         public async Task<JsonResult> GetDataSet(Guid integrationSettingId)
         {
@@ -71,14 +71,12 @@ namespace Web.Controllers
                 throw new Exception();
             }
 
-            var dataSet = await _dataSetHandler.GetNewestDataSetByIntegrationSettingIdFromDateTime(integrationSettingId, DateTime.Now.AddMinutes(-70));
+            var dataSet = await _dataSetHandler.GetNewestDataSetByIntegrationSettingId(integrationSettingId);
 
             if (dataSet == null)
             {
                 throw new Exception();
             }
-
-            dataSet.XValue = dataSet.XValue.AddHours(1);
 
             return Json(dataSet);
         }
@@ -87,17 +85,10 @@ namespace Web.Controllers
         {
             if (integrationSettingId != Guid.Empty)
             {
-                List<DataSet> dataSets = await _dataSetHandler.GetDataSetsFromAGivenTimePeriod(integrationSettingId, DateTime.Now.AddMinutes(-200), DateTime.Now.AddMinutes(60));
-
-                dataSets = dataSets.OrderBy(x => x.XValue).TakeLast(100).ToList();
-
+                List<DataSet> dataSets = await _dataSetHandler.GetCertainAmountOfDataSets(integrationSettingId, 100);
+              
                 if (dataSets.Count > 0)
                 {
-                    foreach (DataSet dataSet in dataSets)
-                    {
-                        dataSet.XValue = dataSet.XValue.AddHours(1);
-                    }
-
                     return Json(dataSets);
                 }
             }
@@ -146,7 +137,7 @@ namespace Web.Controllers
                 }
                 //Dashboard
                 dashboard.DashboardId = Guid.NewGuid();
-                dashboard.DateCreated = DateTime.Now;
+                dashboard.DateCreated = DateTime.UtcNow;
                 dashboard.DashboardSettingId = Guid.NewGuid();
                 dashboard.UserId = Guid.Parse(userId);
 
@@ -240,7 +231,7 @@ namespace Web.Controllers
             {
                 try
                 {
-                    dashboard.DateModified = DateTime.Now;
+                    dashboard.DateModified = DateTime.UtcNow;
                     await _dashboardHandler.UpdateDashboard(dashboard);
                 }
                 catch (DbUpdateConcurrencyException e)

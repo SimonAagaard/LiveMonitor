@@ -100,7 +100,7 @@
                 },
 
                 chartArea: {
-                    //Determines how much of the container to fill out
+                    //Determines how much of the container to fill out  
                     height: '80%', width: '85%', left: 100,
                     backgroundColor: { stroke: "gray", strokeWidth: 1 }
                 },
@@ -113,7 +113,7 @@
             onLoad();
             drawChart();
             //ChartFromDataSet();
-            //Update speed is controlled here
+            //Update speed is controlled here should be the refreshrate property in the future
             setInterval(drawChart, 60000);
 
             function drawChart() {
@@ -123,6 +123,7 @@
                     var val = dataSet.yValue;
 
                     data.addRow([time, val]);
+                    //The hard coded "100" should be the amountofdatasetsfordashboard property in the future
                     if (data.getNumberOfRows() > 100) {
                         data.removeRow(0);
                     }
