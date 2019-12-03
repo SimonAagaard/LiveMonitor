@@ -84,7 +84,7 @@ namespace Web.Controllers
 
             //Sets viewbag to display the name of the integration linked to the IntegrationSetting page
             var integration = await _integrationHandler.GetIntegration(integrationSetting.IntegrationId);
-            ViewBag.IntegrationId = integration.IntegrationName;
+            ViewBag.IntegrationName = integration.IntegrationName;
 
             return View(integrationSetting);
         }
