@@ -20,14 +20,14 @@ namespace Web.Controllers
         private readonly DashboardHandler _dashboardHandler;
         private readonly DashboardSettingHandler _dashboardSettingHandler;
         private readonly DashboardTypeHandler _dashboardTypeHandler;
-        private readonly DataSetHandler _dataSetHandler;
+        private readonly DataSetController _dataSetController;
 
         public DashboardController()
         {
             _dashboardHandler = new DashboardHandler();
             _dashboardSettingHandler = new DashboardSettingHandler();
             _dashboardTypeHandler = new DashboardTypeHandler();
-            _dataSetHandler = new DataSetHandler();
+            _dataSetController = new DataSetController();
         }
 
         // GET: Dashboards
@@ -49,50 +49,6 @@ namespace Web.Controllers
         {
             var dashboard = await _dashboardHandler.GetDashboard(dashboardId);
             return View(dashboard);
-        }
-
-        //Used by the POC realtime dashboard, can be removed or refactored when we get real data through integrations
-        //public JsonResult GetRealTimeData()
-        //{
-        //    Random rdn = new Random();
-        //    RealTimeData data = new RealTimeData
-        //    {
-        //        TimeStamp = DateTime.Now,
-        //        DataValue = rdn.Next(0, 11)
-        //    };
-        //    return Json(data);
-        //}
-
-        public async Task<JsonResult> GetDataSet(Guid integrationSettingId)
-        {
-            if (integrationSettingId == Guid.Empty)
-            {
-                throw new Exception();
-            }
-
-            var dataSet = await _dataSetHandler.GetNewestDataSetByIntegrationSettingId(integrationSettingId);
-
-            if (dataSet == null)
-            {
-                throw new Exception();
-            }
-
-            return Json(dataSet);
-        }
-
-        public async Task<JsonResult> GetDataSets(Guid integrationSettingId)
-        {
-            if (integrationSettingId != Guid.Empty)
-            {
-                List<DataSet> dataSets = await _dataSetHandler.GetCertainAmountOfDataSets(integrationSettingId, 100);
-              
-                if (dataSets.Count > 0)
-                {
-                    return Json(dataSets);
-                }
-            }
-
-            return Json("");
         }
 
         // GET: Dashboards/Create
@@ -248,11 +204,15 @@ namespace Web.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-    }
-    public class RealTimeData
-    {
-        public DateTime TimeStamp { get; set; }
-        public double DataValue { get; set; }
-    }
 
+        public async Task<JsonResult> GetNewestDataSet(Guid integrationSettingId)
+        {
+            return await _dataSetController.GetDataSet(integrationSettingId);
+        }
+
+        public async Task<JsonResult> GetNewestDataSets(Guid integrationSettingId, int amountOfDataSets)
+        {
+            return await _dataSetController.GetAmountOfDataSets(integrationSettingId, amountOfDataSets);
+        }
+    }
 }

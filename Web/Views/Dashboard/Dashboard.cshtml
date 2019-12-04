@@ -70,7 +70,7 @@
                         fontSize: 24,
                         bold: true
                     },
-                    format: 'HH:mm:ss',
+                    format: 'HH:mm',
                     textStyle: {
                         color: color
                     },
@@ -116,9 +116,9 @@
             setInterval(drawChart, 60000);
 
             function drawChart() {
-                $.get('GetDataSet', integrationSettingId = 'integrationSettingId=854c79b2-6b31-472c-938f-f1077343aac0', function (dataSet) {
+                $.get('GetNewestDataSet', integrationSettingId = 'integrationSettingId=854c79b2-6b31-472c-938f-f1077343aac0', function (dataSet) {
                     var timeStamp = new Date(dataSet.xValue);
-                    var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
+                    var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm') };
                     var val = dataSet.yValue;
 
                     data.addRow([time, val]);
@@ -132,12 +132,12 @@
 
             //Fills the dashboard with latest entries/datasets
             function fillDashboard() {
-                $.get('GetDataSets', integrationSettingId = 'integrationSettingId=854c79b2-6b31-472c-938f-f1077343aac0', function (dataSets) {
+                $.get('GetNewestDataSets', { integrationSettingId: '854c79b2-6b31-472c-938f-f1077343aac0', amountOfDataSets: '100'  }, function (dataSets) {
                     for (var i = 0; i < dataSets.length; i++) {
                         var itemxyz = dataSets[i];
 
                         var timeStamp = new Date(itemxyz.xValue);
-                        var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
+                        var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm') };
                         var val = itemxyz.yValue;
 
                         data.addRow([time, val]);
