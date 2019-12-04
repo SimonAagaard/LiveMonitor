@@ -25,6 +25,7 @@ namespace Data
             return await _entities.ToListAsync();
         }
 
+        //Get a single object of a type, based on its id
         public async Task<T> Get(Guid id)
         {
             return await _entities.FindAsync(id);
@@ -36,11 +37,26 @@ namespace Data
             return await _entities.FirstOrDefaultAsync(predicate);
         }
 
+        //Return a single object along with its child objects
+        public async Task<T> Get(Expression<Func<T, bool>> predicate, string[] children)
+        {
+            IQueryable<T> entities = _entities;
+
+            foreach (var entity in children)
+            {
+                entities = entities.Include(entity);
+            }
+
+            return await entities.FirstOrDefaultAsync(predicate);
+        }
+
         // Find List of entities based on a predicate.
         public async Task<List<T>> GetMany(Expression<Func<T, bool>> predicate)
         {
             return await _entities.Where(predicate).ToListAsync();
         }
+
+        //Return list of objects along with child objects
         public async Task<List<T>> GetMany(Expression<Func<T, bool>> predicate, string[] children)
         {
             IQueryable<T> entities = _entities;
