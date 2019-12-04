@@ -15,7 +15,7 @@ namespace Data.Entities
         public Guid DashboardTypeId { get; set; }
        
         //Might need to be refactored down the line, could be made a list instead
-        public Type DashboardName { get; set; }
+        public Type DashboardTypeValue{ get; set; }
         public enum Type
         {
             LineChart,

@@ -48,7 +48,7 @@ namespace Web.Controllers
         //Get a single dashboard along with its setting based on its dashboardId
         public async Task<IActionResult> Dashboard(Guid dashboardId)
         {
-            string[] children = new string[] { "DashboardSetting" };
+            string[] children = new string[] { "DashboardSetting", "DashboardType" };
             var dashboardWithSetting = await _dashboardHandler.GetDashBoardAndDashboardSetting(dashboardId, children);
 
             if(dashboardWithSetting.DashboardSetting != null)
@@ -122,7 +122,7 @@ namespace Web.Controllers
             ViewBag.DashboardName = dashboard.DashboardName;
             //Get the DashboardType in case the user has already chosen one for the current DashboardSetting
             var dashboardType = _dashboardTypeHandler.GetDashboardType(dashboardSetting.DashboardTypeId);
-            ViewBag.DashboardTypeName = dashboardType.Result?.DashboardName;
+            ViewBag.DashboardTypeName = dashboardType.Result?.DashboardTypeValue;
 
             return View(dashboardSetting);
         }
