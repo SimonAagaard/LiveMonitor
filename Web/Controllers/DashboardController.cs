@@ -36,7 +36,7 @@ namespace Web.Controllers
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             string[] children = new string[] { "DashboardSetting" };
-            var dashboards = await _dashboardHandler.GetDashboardAndDashboardSetting(userId, children);
+            var dashboards = await _dashboardHandler.GetDashboardsAndDashboardSettings(userId, children);
             //If there is dashboards in the DB pass them to the view
             if (dashboards.Any())
             {
@@ -45,8 +45,17 @@ namespace Web.Controllers
             return View();
         }
 
+        //Get a single dashboard along with its setting based on its dashboardId
         public async Task<IActionResult> Dashboard(Guid dashboardId)
         {
+            string[] children = new string[] { "DashboardSetting" };
+            var dashboardWithSetting = await _dashboardHandler.GetDashBoardAndDashboardSetting(dashboardId, children);
+
+            if(dashboardWithSetting.DashboardSetting != null)
+            {
+                return View(dashboardWithSetting);
+            }
+
             var dashboard = await _dashboardHandler.GetDashboard(dashboardId);
             return View(dashboard);
         }
