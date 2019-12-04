@@ -14,13 +14,11 @@ namespace Web.Controllers
     {
         private readonly IntegrationSettingHandler _integrationSettingHandler;
         private readonly DataSetHandler _dataSetHandler;
-        private readonly AzureConnector _azureConnector;
 
         public DataSetController()
         {
             _integrationSettingHandler = new IntegrationSettingHandler();
             _dataSetHandler = new DataSetHandler();
-            _azureConnector = new AzureConnector();
         }
 
         // Create all datasets for current integrationSettings
@@ -29,9 +27,18 @@ namespace Web.Controllers
         {
             List<IntegrationSetting> integrations = await _integrationSettingHandler.GetIntegrationSettings();
 
+            // Create DataSets for all integrations
             foreach (IntegrationSetting integrationSetting in integrations)
             {
-                await _azureConnector.GetAzureDataAsync(integrationSetting);
+                if (!String.IsNullOrWhiteSpace(integrationSetting.TenantId) && 
+                    !String.IsNullOrWhiteSpace(integrationSetting.ClientId) && 
+                    !String.IsNullOrWhiteSpace(integrationSetting.ClientSecret) &&
+                    !String.IsNullOrWhiteSpace(integrationSetting.ResourceId) &&
+                    !String.IsNullOrWhiteSpace(integrationSetting.ResourceUrl))
+                {
+                    AzureConnector azureConnector = new AzureConnector(integrationSetting);
+                    await azureConnector.GetAzureDataAsync();
+                }
             }
 
             return new OkResult();

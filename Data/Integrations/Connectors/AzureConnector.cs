@@ -15,25 +15,11 @@ namespace Data.Integrations
 {
     public class AzureConnector
     {
-        private readonly string _clientId = "2de6a64e-eb0c-4275-9952-4ce1d3f0d131";
-        private readonly string _clientSecret = "A1l3?[ReU3?L8eEhaYpcUPJG]jEX0_X5";
-        private readonly string _tenantId = "92404485-d794-4fc2-8d0d-587d30cba2ad";
-        private readonly string _resourceUrl = "/subscriptions/2c24d5f6-cb4d-4857-88f8-fe5c9a827f7c/resourceGroups/LiveMonitor/providers/Microsoft.Web/sites/LiveMonitorApp/";
-        private readonly string _resourceId = "https://management.azure.com";
-        //private readonly string _accessToken = "";
+        private readonly IntegrationSetting _integrationSetting;
 
-        // Get metric definitions:
-        //https://management.azure.com/subscriptions/2c24d5f6-cb4d-4857-88f8-fe5c9a827f7c/resourceGroups/LiveMonitor/providers/Microsoft.Web/sites/LiveMonitorApp/providers/microsoft.insights/metricDefinitions?api-version=2018-01-01&metricnamespace=Microsoft.Web/sites
-
-        // Get requests
-        // https://management.azure.com/subscriptions/2c24d5f6-cb4d-4857-88f8-fe5c9a827f7c/resourceGroups/LiveMonitor/providers/Microsoft.Web/sites/LiveMonitorApp/providers/microsoft.insights/metrics?interval=PT1M&aggregation=Total&metricnames=Requests&api-version=2018-01-01&metricnamespace=Microsoft.Web/sites
-
-        public AzureConnector()
+        public AzureConnector(IntegrationSetting integrationSetting)
         {
-            //string clientId, string clientSecret, string tenantId
-            //_clientId = clientId;
-            //_clientSecret = clientSecret;
-            //_tenantId = tenantId;
+            _integrationSetting = integrationSetting;
         }
 
         public async Task<AuthServerResponse> GetAuthTokenAsync()
@@ -47,14 +33,14 @@ namespace Data.Integrations
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
                 // Set baseadress for authentication
-                Uri authUrl = new Uri("https://login.microsoftonline.com/" + _tenantId + "/oauth2/token");
+                Uri authUrl = new Uri("https://login.microsoftonline.com/" + _integrationSetting.TenantId + "/oauth2/token");
 
                 // Create a list of KVP with the values for the post-body
                 List<KeyValuePair<string, string>> authObjects = new List<KeyValuePair<string, string>>();
                 authObjects.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
-                authObjects.Add(new KeyValuePair<string, string>("client_id", _clientId));
-                authObjects.Add(new KeyValuePair<string, string>("client_secret", _clientSecret));
-                authObjects.Add(new KeyValuePair<string, string>("resource", _resourceId));
+                authObjects.Add(new KeyValuePair<string, string>("client_id", _integrationSetting.ClientId));
+                authObjects.Add(new KeyValuePair<string, string>("client_secret", _integrationSetting.ClientSecret));
+                authObjects.Add(new KeyValuePair<string, string>("resource", _integrationSetting.ResourceId));
 
                 // Convert the authobjects to a FormUrlEncodedContent to add the post-body
                 FormUrlEncodedContent content = new FormUrlEncodedContent(authObjects);
@@ -82,7 +68,7 @@ namespace Data.Integrations
         }
 
         // Get datasets from Azure based on the passed integrationsettings and values passed to the constructor
-        public async Task<AzureDataResponse> GetAzureDataAsync(IntegrationSetting integrationSetting)
+        public async Task<AzureDataResponse> GetAzureDataAsync()
         {
             // Set datetime for the request to the API
             string currentTime = DateTime.UtcNow.ToString("o");
@@ -90,10 +76,10 @@ namespace Data.Integrations
             DataSetHandler dataSetHandler = new DataSetHandler();
 
             // Get a valid bearertoken either from the DB or new from the API
-            string accessToken = await GetAzureBearerTokenAsync(integrationSetting);
+            string accessToken = await GetAzureBearerTokenAsync();
 
             // Split url to support new integrations
-            Uri Url = new Uri(@"https://management.azure.com" + _resourceUrl + "providers/microsoft.insights/metrics?" +
+            Uri Url = new Uri(@"https://management.azure.com" + _integrationSetting.ResourceUrl + "providers/microsoft.insights/metrics?" +
                 "timespan=" + fromTime + @"/" + currentTime +
                 "&interval=PT1M" +
                 "&aggregation=Average" +
@@ -132,13 +118,13 @@ namespace Data.Integrations
                                 {
                                     DataSetId = Guid.NewGuid(),
                                     DateCreated = DateTime.UtcNow,
-                                    IntegrationSettingId = integrationSetting.IntegrationSettingId,
+                                    IntegrationSettingId = _integrationSetting.IntegrationSettingId,
                                     XValue = newestMetric.timeStamp.ToUniversalTime(),
                                     YValue = Math.Round(newestMetric.average * 1000, 2) // Save in milliseconds - Total for count, average for average, etc.
                                 };
 
                                 // Check if the dataset already exists - Create new if it doesn't
-                                var dataSetCheck = await dataSetHandler.GetDataSetByIntegrationSettingIdAndTimestamp(integrationSetting.IntegrationSettingId, dataSet.XValue);
+                                var dataSetCheck = await dataSetHandler.GetDataSetByIntegrationSettingIdAndTimestamp(_integrationSetting.IntegrationSettingId, dataSet.XValue);
                                 if (dataSetCheck == null)
                                 {
                                     await dataSetHandler.CreateDataSet(dataSet);
@@ -153,13 +139,13 @@ namespace Data.Integrations
         }
 
         // Helper method to check for valid bearer token. Creates new if no valid is found, returns existing if its valid
-        public async Task<string> GetAzureBearerTokenAsync(IntegrationSetting integrationSetting)
+        public async Task<string> GetAzureBearerTokenAsync()
         {
             // instantiate a bearertokenhandler
             BearerTokenHandler bearerTokenHandler = new BearerTokenHandler();
 
             // Attempt to get a valid bearerToken from the Db
-            BearerToken bearerToken = await bearerTokenHandler.GetValidBearerToken(integrationSetting.IntegrationSettingId, DateTime.UtcNow);
+            BearerToken bearerToken = await bearerTokenHandler.GetValidBearerToken(_integrationSetting.IntegrationSettingId, DateTime.UtcNow);
 
             if (!String.IsNullOrWhiteSpace(bearerToken?.AccessToken))
             {
@@ -175,7 +161,7 @@ namespace Data.Integrations
                     BearerTokenId = Guid.NewGuid(),
                     DateCreated = DateTime.UtcNow,
                     DateExpired = DateTime.UtcNow.AddMinutes(59),
-                    IntegrationSettingId = integrationSetting.IntegrationSettingId
+                    IntegrationSettingId = _integrationSetting.IntegrationSettingId
                 });
                 return authResponse.access_token;
             }
