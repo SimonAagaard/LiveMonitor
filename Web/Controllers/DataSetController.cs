@@ -42,7 +42,7 @@ namespace Web.Controllers
             IntegrationSettingHandler integrationSettingHandler = new IntegrationSettingHandler();
             AzureConnector conn = new AzureConnector();
 
-            var integrationSetting = await integrationSettingHandler.GetIntegration(new Guid("EA72F6B5-0ECF-49F7-8D0B-D2DEACA627CD"));
+            var integrationSetting = await integrationSettingHandler.GetIntegrationSetting(new Guid("EA72F6B5-0ECF-49F7-8D0B-D2DEACA627CD"));
             await conn.GetAzureDataAsync(integrationSetting);
 
             return new OkResult();
