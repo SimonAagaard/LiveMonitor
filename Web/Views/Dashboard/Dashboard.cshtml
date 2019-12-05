@@ -115,7 +115,7 @@
             drawChart();
             //Update speed is controlled here should be the refreshrate property in the future
             //setInterval(drawChart, 5000);
-            setInterval(drawChart, @Model.DashboardSetting.RefreshRate);
+            setInterval(drawChart, @Model.DashboardSetting.RefreshRate * 1000);
 
             function drawChart() {
                 $.get('GetNewestDataSet', integrationSettingId = 'integrationSettingId=854c79b2-6b31-472c-938f-f1077343aac0', function (dataSet) {
