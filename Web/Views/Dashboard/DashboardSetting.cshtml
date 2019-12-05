@@ -22,7 +22,7 @@
     }
 
     //Creates a SelectList for the dropdownmenu with the list of SelectListItems
-    SelectList selectlist = new SelectList(selectlistItems, "Value", "Text", "Select a Chart Type");
+    SelectList selectlist = new SelectList(selectlistItems, "Value", "Text", Model.DashboardTypeValue);
 }
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -73,19 +73,6 @@
 </body>
 </html>
 <script>
-    $(document).ready(function () {
-                        //Determines what option to preselect from the dropdown list of available DashboardTypes, if the user has already picked one before
-                        var e = document.getElementById("DashboardTypes");
-                        for (var i = 0; i < e.options.length; i++)
-                        {
-                            if (e.options[i].text == @ViewBag.DashboardTypeName)
-                            {
-                                e.options[i].selected = true;
-                                return;
-                            }
-                        }
-                    });
-
     function fade_out() {
         $("status-sucess").fadeOut().empty();
                     }
