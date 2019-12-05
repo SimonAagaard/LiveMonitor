@@ -21,7 +21,6 @@ namespace Web.Controllers
         {
             _integrationHandler = new IntegrationHandler();
             _integrationSettingHandler = new IntegrationSettingHandler();
-
         }
 
         // GET: Integration
@@ -43,8 +42,6 @@ namespace Web.Controllers
         }
 
         // POST: Integration/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IntegrationName")] Integration integration)
@@ -69,6 +66,7 @@ namespace Web.Controllers
             }
             return View(integration);
         }
+
         public async Task<IActionResult> IntegrationSetting(Guid integrationSettingId)
         {
             if (integrationSettingId == Guid.Empty)
@@ -77,6 +75,7 @@ namespace Web.Controllers
             }
 
             var integrationSetting = await _integrationSettingHandler.GetIntegrationSetting(integrationSettingId);
+
             if (integrationSetting == null)
             {
                 return NotFound();
@@ -88,6 +87,29 @@ namespace Web.Controllers
 
             return View(integrationSetting);
         }
+
+        // Update an integrationsetting
+        public async Task<IActionResult> UpdateIntegrationSetting([Bind("IntegrationSettingId","IntegrationId","ClientId","ClientSecret","TenantId",
+            "ResourceId","ResourceUrl","IsActive","MetricName","Aggregation","Interval", "MinutesOffset")] IntegrationSetting integrationSetting)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _integrationSettingHandler.UpdateIntegrationSetting(integrationSetting);
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    throw e;
+                }
+
+                return View("IntegrationSetting", integrationSetting);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+
 
         // GET: Integration/Edit/5
         public async Task<IActionResult> Edit(Guid integrationId)

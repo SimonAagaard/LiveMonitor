@@ -124,6 +124,7 @@ namespace Data.Integrations
                                 };
 
                                 // Check if the dataset already exists - Create new if it doesn't
+                                // TODO - use bulk create 
                                 var dataSetCheck = await dataSetHandler.GetDataSetByIntegrationSettingIdAndTimestamp(_integrationSetting.IntegrationSettingId, dataSet.XValue);
                                 if (dataSetCheck == null)
                                 {

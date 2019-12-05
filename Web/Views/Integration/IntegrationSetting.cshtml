@@ -1,8 +1,86 @@
-﻿
+﻿@model Data.Entities.IntegrationSetting
+
 @{
     ViewData["Title"] = "IntegrationSetting";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>IntegrationSetting - @ViewBag.IntegrationName</h1>
+<h1>IntegrationSetting for @ViewBag.IntegrationName</h1>
 
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateIntegrationSetting">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IntegrationSettingId" />
+            <input type="hidden" asp-for="IntegrationId" />
+
+            <div class="form-group">
+                <label asp-for="ClientId" class="control-label"></label>
+                <input asp-for="ClientId" class="form-control" />
+                <span asp-validation-for="ClientId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClientSecret" class="control-label"></label>
+                <input asp-for="ClientSecret" class="form-control" />
+                <span asp-validation-for="ClientSecret" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TenantId" class="control-label"></label>
+                <input asp-for="TenantId" class="form-control" />
+                <span asp-validation-for="TenantId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ResourceId" class="control-label"> </label>
+                <input asp-for="ResourceId" class="form-control" />
+                <span asp-validation-for="ResourceId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ResourceUrl" class="control-label">Please input the Resource URL for your Azure Web App </label>
+                <input asp-for="ResourceUrl" class="form-control" />
+                <span asp-validation-for="ResourceUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label asp-for="IsActive" class="control-label">Please remove the checkmark if this integration should no longer be active and collecting data</label>
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsActive" />
+                </label>
+            </div>
+            @* Should be a dropdown of pre-determined values *@
+            <div class="form-group">
+                <label asp-for="MetricName" class="control-label"></label>
+                <input asp-for="MetricName" class="form-control" />
+                <span asp-validation-for="MetricName" class="text-danger"></span>
+            </div>
+            @* Should be a dropdown of pre-selected values based on MetricName *@
+            <div class="form-group">
+                <label asp-for="Aggregation" class="control-label"></label>
+                <input asp-for="Aggregation" class="form-control" />
+                <span asp-validation-for="Aggregation" class="text-danger"></span>
+            </div>
+            @* Should be a dropdown based on predetermined values *@
+            <div class="form-group">
+                <label asp-for="Interval" class="control-label"></label>
+                <input asp-for="Interval" class="form-control" />
+                <span asp-validation-for="Interval" class="text-danger"></span>
+            </div>
+            @* Amount of minutes to look back in time for data *@
+            <div class="form-group">
+                <label asp-for="MinutesOffset" class="control-label">Minutes to look back in time for data</label>
+                <input asp-for="MinutesOffset" class="form-control" />
+                <span asp-validation-for="MinutesOffset" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

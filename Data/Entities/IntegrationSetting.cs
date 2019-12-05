@@ -19,6 +19,11 @@ namespace Data.Entities
         public string TenantId { get; set; }
         public string ResourceId { get; set; }
         public string ResourceUrl { get; set; }
+        public bool IsActive { get; set; }
+        public string MetricName { get; set; }
+        public string Aggregation { get; set; }
+        public string Interval { get; set; }
+        public int MinutesOffset { get; set; }
         public List<DataSet> DataSets { get; set; }
         public List<BearerToken> BearerTokens { get; set; }
     }
