@@ -48,7 +48,7 @@ namespace Web.Controllers
         //Get a single dashboard along with its setting based on its dashboardId
         public async Task<IActionResult> Dashboard(Guid dashboardId)
         {
-            string[] children = new string[] { "DashboardSetting", "DashboardType" };
+            string[] children = new string[] { "DashboardSetting" };
             var dashboardWithSetting = await _dashboardHandler.GetDashBoardAndDashboardSetting(dashboardId, children);
 
             if(dashboardWithSetting.DashboardSetting != null)
@@ -130,8 +130,9 @@ namespace Web.Controllers
         //POST - Update a setting
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateDashboardSetting([Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel")] DashboardSetting dashboardSetting)
+        public async Task<IActionResult> UpdateDashboardSetting([Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel,DashboardTypeValue")] DashboardSetting dashboardSetting)
         {
+            
             if (ModelState.IsValid)
             {
                 try

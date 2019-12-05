@@ -18,8 +18,12 @@ namespace Data.Entities
         public Type DashboardTypeValue{ get; set; }
         public enum Type
         {
-            LineChart,
-            AreaChart,
+            [Display(Name = "Line Chart")]
+            LineChart = 1,
+            [Display(Name = "Area Chart")]
+            AreaChart = 2,
+            [Display(Name = "Pie Chart")]
+            PieChart = 3
         }
     }
 }

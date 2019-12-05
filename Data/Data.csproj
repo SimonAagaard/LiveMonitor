@@ -55,6 +55,8 @@
     <Compile Remove="Data\Migrations\20191127155357_test.Designer.cs" />
     <Compile Remove="Data\Migrations\20191204155649_DashboardTypeValue.cs" />
     <Compile Remove="Data\Migrations\20191204155649_DashboardTypeValue.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191205105838_ChangeDashboardTypeName.cs" />
+    <Compile Remove="Data\Migrations\20191205105838_ChangeDashboardTypeName.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -105,15 +105,18 @@
                     backgroundColor: { stroke: "gray", strokeWidth: 1 }
                 },
             };
-            
-            //Choose which chart type to use on the line below
-            switch (@Model.DashboardType.DashboardTypeValue)
+
+            //Determines what chart type to be rendered, based on the users choice
+            switch (@Model.DashboardSetting.DashboardTypeValue)
             {
-                case @Data.Entities.DashboardType.Type.LineChart:
+                case 1:
                     var chart = new google.visualization.LineChart(document.getElementById('chart1'));
                     break;
-                case @Data.Entities.DashboardType.Type.AreaChart:
+                case 2:
                     var chart = new google.visualization.AreaChart(document.getElementById('chart1'));
+                    break;
+                case 3:
+                    var chart = new google.visualization.PieChart(document.getElementById('chart1'));
                     break;
                 default:
                     var chart = new google.visualization.LineChart(document.getElementById('chart1'));
