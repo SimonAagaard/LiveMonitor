@@ -53,6 +53,8 @@
     <Compile Remove="Data\Migrations\20191127130918_IntegrationId.Designer.cs" />
     <Compile Remove="Data\Migrations\20191127155357_test.cs" />
     <Compile Remove="Data\Migrations\20191127155357_test.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191205102238_minMaxValue.cs" />
+    <Compile Remove="Data\Migrations\20191205102238_minMaxValue.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
