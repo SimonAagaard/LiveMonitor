@@ -1,8 +1,118 @@
-﻿
+﻿@model Data.Entities.IntegrationSetting
+
 @{
     ViewData["Title"] = "IntegrationSetting";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Create lists for selectlists
+    List<SelectListItem> metricNames = new List<SelectListItem> {
+    new SelectListItem("CPU Time", "CpuTime"),
+    new SelectListItem("Requests", "Requests"),
+    new SelectListItem("2XX responses", "Http2xx"),
+    new SelectListItem("3xx responses", "Http3xx"),
+    new SelectListItem("4xx responses", "Http4xx"),
+    new SelectListItem("5xx responses", "Http5xx"),
+    new SelectListItem("Average Response Time", "AverageResponseTime"),
+    new SelectListItem("Http Response time", "HttpResponseTime"),
+    new SelectListItem("Total App Connections", "AppConnections"),
+    };
+
+    List<SelectListItem> aggregationTypes = new List<SelectListItem>
+    {
+        new SelectListItem("Average", "Average"),
+        new SelectListItem("Total", "Total"),
+        new SelectListItem("Maximum", "Maximum"),
+        new SelectListItem("Minimum", "Minimum"),
+    };
+
+    List<SelectListItem> intervalOptions = new List<SelectListItem>
+    {
+        new SelectListItem("One Minute", "PT1M"),
+        new SelectListItem("Five Minutes", "PT5M"),
+        new SelectListItem("Fifteen Minutes", "PT15M"),
+        new SelectListItem("Thirty Minutes", "PT30M"),
+        new SelectListItem("One Hour", "PT1H"),
+        new SelectListItem("Six Hours", "PT6H"),
+        new SelectListItem("Twelve Hours", "PT12H"),
+        new SelectListItem("One Day", "PT1D"),
+    };
+
+    SelectList intervalList = new SelectList(intervalOptions, "Value", "Text", Model.Interval);
+    SelectList aggregationList = new SelectList(aggregationTypes, "Value", "Text", Model.Aggregation);
+    SelectList metricList = new SelectList(metricNames, "Value", "Text", Model.MetricName);
 }
 
-<h1>IntegrationSetting - @ViewBag.IntegrationName</h1>
+<h1>IntegrationSetting for @ViewBag.IntegrationName</h1>
 
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateIntegrationSetting">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IntegrationSettingId" />
+            <input type="hidden" asp-for="IntegrationId" />
+            <div class="form-group">
+                <label asp-for="ClientId" class="control-label"></label>
+                <input asp-for="ClientId" class="form-control" />
+                <span asp-validation-for="ClientId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClientSecret" class="control-label"></label>
+                <input asp-for="ClientSecret" class="form-control" />
+                <span asp-validation-for="ClientSecret" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TenantId" class="control-label"></label>
+                <input asp-for="TenantId" class="form-control" />
+                <span asp-validation-for="TenantId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ResourceId" class="control-label"> </label>
+                <input asp-for="ResourceId" class="form-control" />
+                <span asp-validation-for="ResourceId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ResourceUrl" class="control-label">Please input the Resource URL for your Azure Web App </label>
+                <input asp-for="ResourceUrl" class="form-control" />
+                <span asp-validation-for="ResourceUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label asp-for="IsActive" class="control-label">Please remove the checkmark if this integration should no longer be active and collecting data</label>
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsActive" />
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="MetricName" class="control-label"></label>
+                <select asp-for="MetricName" asp-items="metricList" class="form-control"></select>
+                <span asp-validation-for="MetricName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Aggregation" class="control-label"></label>
+                <select asp-for="Aggregation" asp-items="aggregationList" class="form-control"></select>
+                <span asp-validation-for="Aggregation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Interval" class="control-label"></label>
+                <select asp-for="Interval" asp-items="intervalList" class="form-control"></select>
+                <span asp-validation-for="Interval" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MinutesOffset" class="control-label">Minutes to look back in time for data (Use negative values)</label>
+                <input asp-for="MinutesOffset" class="form-control" />
+                <span asp-validation-for="MinutesOffset" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

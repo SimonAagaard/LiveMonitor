@@ -53,6 +53,16 @@
     <Compile Remove="Data\Migrations\20191127130918_IntegrationId.Designer.cs" />
     <Compile Remove="Data\Migrations\20191127155357_test.cs" />
     <Compile Remove="Data\Migrations\20191127155357_test.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191205151028_IntegrationSettings.cs" />
+    <Compile Remove="Data\Migrations\20191205151028_IntegrationSettings.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191206092000_Test.cs" />
+    <Compile Remove="Data\Migrations\20191206092000_Test.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191206092142_IntegrationSettingsUpdate.cs" />
+    <Compile Remove="Data\Migrations\20191206092142_IntegrationSettingsUpdate.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191206092309_IntegrationSettingsUpdate.cs" />
+    <Compile Remove="Data\Migrations\20191206092309_IntegrationSettingsUpdate.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191206122120_MinutesOffsetChange.cs" />
+    <Compile Remove="Data\Migrations\20191206122120_MinutesOffsetChange.Designer.cs" />
     <Compile Remove="Data\Migrations\20191204155649_DashboardTypeValue.cs" />
     <Compile Remove="Data\Migrations\20191204155649_DashboardTypeValue.Designer.cs" />
     <Compile Remove="Data\Migrations\20191205105838_ChangeDashboardTypeName.cs" />

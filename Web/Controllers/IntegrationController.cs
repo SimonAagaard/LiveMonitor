@@ -21,7 +21,6 @@ namespace Web.Controllers
         {
             _integrationHandler = new IntegrationHandler();
             _integrationSettingHandler = new IntegrationSettingHandler();
-
         }
 
         // GET: Integration
@@ -43,8 +42,6 @@ namespace Web.Controllers
         }
 
         // POST: Integration/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IntegrationName")] Integration integration)
@@ -52,23 +49,26 @@ namespace Web.Controllers
             if (ModelState.IsValid)
             {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
                 integration.UserId = Guid.Parse(userId);
                 integration.IntegrationSettingId = Guid.NewGuid();
                 integration.IntegrationId = Guid.NewGuid();
-                await _integrationHandler.CreateIntegration(integration);
-
                 IntegrationSetting integrationSetting = new IntegrationSetting
                 {
-                    IntegrationSettingId = Guid.NewGuid(),
+                    IntegrationSettingId = integration.IntegrationSettingId,
                     IntegrationId = integration.IntegrationId,
                 };
-                await _integrationSettingHandler.CreateIntegrationSetting(integrationSetting);
+                integration.IntegrationSetting = integrationSetting;
+
+                // Create the integration object with the added integrationSetting
+                await _integrationHandler.CreateIntegration(integration);
 
                 //Passes the Ids needed by the IntegrationSetting view
                 return RedirectToAction(nameof(IntegrationSetting), new { integrationSettingId = integrationSetting.IntegrationSettingId });
             }
             return View(integration);
         }
+
         public async Task<IActionResult> IntegrationSetting(Guid integrationSettingId)
         {
             if (integrationSettingId == Guid.Empty)
@@ -77,6 +77,7 @@ namespace Web.Controllers
             }
 
             var integrationSetting = await _integrationSettingHandler.GetIntegrationSetting(integrationSettingId);
+
             if (integrationSetting == null)
             {
                 return NotFound();
@@ -87,6 +88,27 @@ namespace Web.Controllers
             ViewBag.IntegrationName = integration.IntegrationName;
 
             return View(integrationSetting);
+        }
+
+        // Update an integrationsetting
+        public async Task<IActionResult> UpdateIntegrationSetting([Bind("IntegrationSettingId","IntegrationId","ClientId","ClientSecret","TenantId",
+            "ResourceId","ResourceUrl","IsActive","MetricName","Aggregation","Interval","MinutesOffset")] IntegrationSetting integrationSetting)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _integrationSettingHandler.UpdateIntegrationSetting(integrationSetting);
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    throw e;
+                }
+
+                return View("IntegrationSetting", integrationSetting);
+            }
+
+            return BadRequest(ModelState);
         }
 
         // GET: Integration/Edit/5
@@ -107,8 +129,6 @@ namespace Web.Controllers
         }
 
         // POST: Integration/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("IntegrationId,UserId,IntegrationSettingId,IntegrationName")] Integration integration)

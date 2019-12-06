@@ -21,5 +21,6 @@ namespace Data.Entities
         public DateTimeOffset XValue { get; set; }
         [Required]
         public double YValue { get; set; }
+        public string MetricType { get; set; }
     }
 }

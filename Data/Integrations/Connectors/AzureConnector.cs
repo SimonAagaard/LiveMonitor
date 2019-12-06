@@ -72,7 +72,7 @@ namespace Data.Integrations
         {
             // Set datetime for the request to the API
             string currentTime = DateTime.UtcNow.ToString("o");
-            string fromTime = DateTime.UtcNow.AddMinutes(-2).ToString("o");
+            string fromTime = DateTime.UtcNow.AddMinutes(_integrationSetting.MinutesOffset).ToString("o");
             DataSetHandler dataSetHandler = new DataSetHandler();
 
             // Get a valid bearertoken either from the DB or new from the API
@@ -81,9 +81,9 @@ namespace Data.Integrations
             // Split url to support new integrations
             Uri Url = new Uri(@"https://management.azure.com" + _integrationSetting.ResourceUrl + "providers/microsoft.insights/metrics?" +
                 "timespan=" + fromTime + @"/" + currentTime +
-                "&interval=PT1M" +
-                "&aggregation=Average" +
-                "&metricnames=AverageResponseTime" +
+                "&interval=" + _integrationSetting.Interval +
+                "&aggregation=" + _integrationSetting.Aggregation +
+                "&metricnames=" + _integrationSetting.MetricName +
                 "&api-version=2018-01-01" +
                 "&metricnamespace=Microsoft.Web/sites");
 
@@ -106,29 +106,55 @@ namespace Data.Integrations
                     // Iterate the objects in the response to get to the metrics returned
                     if (azureDataResponse != null)
                     {
-                        foreach (var value in azureDataResponse.value)
+                        List<DataSet> DataSetsToCreate = new List<DataSet>();
+
+                        foreach (AzureData value in azureDataResponse.value)
                         {
-                            foreach (var timeseries in value.timeseries)
+                            foreach (Timesery timeseries in value.timeseries)
                             {
-                                // Sort list by highest datetime value and select the newest object
-                                timeseries.data.Sort((x, y) => y.timeStamp.CompareTo(x.timeStamp));
-                                Metric newestMetric = timeseries.data.FirstOrDefault();
-
-                                DataSet dataSet = new DataSet
+                                foreach (Metric metric in timeseries.data)
                                 {
-                                    DataSetId = Guid.NewGuid(),
-                                    DateCreated = DateTime.UtcNow,
-                                    IntegrationSettingId = _integrationSetting.IntegrationSettingId,
-                                    XValue = newestMetric.timeStamp.ToUniversalTime(),
-                                    YValue = Math.Round(newestMetric.average * 1000, 2) // Save in milliseconds - Total for count, average for average, etc.
-                                };
+                                    DataSet dataSet = new DataSet
+                                    {
+                                        DataSetId = Guid.NewGuid(),
+                                        DateCreated = DateTime.UtcNow,
+                                        XValue = metric.timeStamp.ToUniversalTime(),
+                                        MetricType = _integrationSetting.MetricName
+                                    };
 
-                                // Check if the dataset already exists - Create new if it doesn't
-                                var dataSetCheck = await dataSetHandler.GetDataSetByIntegrationSettingIdAndTimestamp(_integrationSetting.IntegrationSettingId, dataSet.XValue);
-                                if (dataSetCheck == null)
-                                {
-                                    await dataSetHandler.CreateDataSet(dataSet);
+                                    switch (_integrationSetting.Aggregation)
+                                    {
+                                        // TODO, check for which type of data is being returned
+                                        case "Total":
+                                            dataSet.IntegrationSettingId = _integrationSetting.IntegrationSettingId;
+                                            dataSet.YValue = Math.Round(metric.total, 2); // Save the total value based on integrationSettings
+                                            break;
+                                        case "Average":
+                                            dataSet.IntegrationSettingId = _integrationSetting.IntegrationSettingId;
+                                            dataSet.YValue = Math.Round(metric.average * 1000, 2); // Save in milliseconds instead of seconds. Check for datatype
+                                            break;
+                                        case "Maximum":
+                                            dataSet.IntegrationSettingId = _integrationSetting.IntegrationSettingId;
+                                            dataSet.YValue = Math.Round(metric.maximum, 2); // Consider checking for which type data
+                                            break;
+                                        case "Minimum":
+                                            dataSet.IntegrationSettingId = _integrationSetting.IntegrationSettingId;
+                                            dataSet.YValue = Math.Round(metric.minimum, 2); // Consider to check for which type data
+                                            break;
+                                        default:
+                                            // Do nothing if no value is matched
+                                            break;
+                                    }
+
+                                    // Check if the dataset already exists - Add to Create list if it does not exist
+                                    var dataSetCheck = await dataSetHandler.GetDataSetByIntegrationSettingIdAndTimestamp(_integrationSetting.IntegrationSettingId, dataSet.XValue);
+                                    if (dataSetCheck == null && dataSet.IntegrationSettingId != Guid.Empty)
+                                    {
+                                        DataSetsToCreate.Add(dataSet);
+                                    }
                                 }
+                                // Create all datasets not yet in the database
+                                await dataSetHandler.CreateDataSets(DataSetsToCreate);
                             }
                         }
                     }
@@ -191,6 +217,8 @@ namespace Data.Integrations
         public DateTime timeStamp { get; set; }
         public double total { get; set; }
         public double average { get; set; }
+        public double maximum { get; set; }
+        public double minimum { get; set; }
     }
 
     [JsonObject("timeseries")]
