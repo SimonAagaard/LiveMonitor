@@ -18,6 +18,7 @@ using Web.Areas.Identity.Pages;
 using Data.Data;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Data.Handlers;
+using Newtonsoft.Json;
 
 namespace Web
 {
@@ -58,7 +59,9 @@ namespace Web
             services.AddMvc(options =>
             {
                 options.Filters.Add(new AuthorizeFilter());
-            }).SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
+
+            }).SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0)
+              .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore); 
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddSingleton<IEmailSender, EmailSender>();

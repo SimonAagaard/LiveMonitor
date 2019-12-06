@@ -6,11 +6,35 @@
 
 }
 
-<div class="container">
-    <h1 id="title" style="text-align:center; margin-left:-10%; font-size:28px; font-weight:bold;">@Model.DashboardName</h1>
-    <div id="chart1"></div>
+<div class="row">
+    <div class="col-md-6">
+        <div id="chart1" class="chart"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="chart2" class="chart"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="chart3" class="chart"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="chart4" class="chart"></div>
+    </div>
 </div>
 
+<style scoped>
+    .chart {
+        width: 100%;
+        min-height: 600px;
+    }
+
+    .row {
+        margin: 0 !important;
+    }
+
+    .container, .container-sm, .container-md, .container-lg, .container-xl {
+        max-width: 100%
+    }
+</style>
 @section scripts{
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     @*Should most likely host it locally instead of using CDN, but this was quick n dirty :pregnantWoman:*@
@@ -51,6 +75,7 @@
     <script>
         google.charts.load('current', { 'packages': ['corechart'] });
         google.charts.setOnLoadCallback(callback);
+
 
         function callback() {
             //Style choices for the chart
@@ -110,29 +135,51 @@
             switch (@Model.DashboardSetting.DashboardTypeValue)
             {
                 case 1:
-                    var chart = new google.visualization.LineChart(document.getElementById('chart1'));
+                    var chart1 = new google.visualization.LineChart(document.getElementById('chart1'));
+                    var chart2 = new google.visualization.LineChart(document.getElementById('chart2'));
+                    var chart3 = new google.visualization.LineChart(document.getElementById('chart3'));
+                    var chart4 = new google.visualization.LineChart(document.getElementById('chart4'));
                     break;
                 case 2:
-                    var chart = new google.visualization.AreaChart(document.getElementById('chart1'));
+                    var chart1 = new google.visualization.AreaChart(document.getElementById('chart1'));
                     break;
                 case 3:
-                    var chart = new google.visualization.PieChart(document.getElementById('chart1'));
+                    var chart1 = new google.visualization.PieChart(document.getElementById('chart1'));
                     break;
                 default:
-                    var chart = new google.visualization.LineChart(document.getElementById('chart1'));
+                    var chart1 = new google.visualization.LineChart(document.getElementById('chart1'));
                     break;
             }
-            //var chart = new google.visualization.LineChart(document.getElementById('chart1'));
-            var data = new google.visualization.DataTable();
-            data.addColumn('datetime', 'TimeStamp');
-            data.addColumn('number', 'Value');
-            fillDashboard();
-            drawChart();
+
+            var data1 = new google.visualization.DataTable();
+            data1.addColumn('datetime', 'TimeStamp');
+            data1.addColumn('number', 'Value');
+
+            var data2 = new google.visualization.DataTable();
+            data2.addColumn('datetime', 'TimeStamp');
+            data2.addColumn('number', 'Value');
+
+            var data3 = new google.visualization.DataTable();
+            data3.addColumn('datetime', 'TimeStamp');
+            data3.addColumn('number', 'Value');
+
+            var data4 = new google.visualization.DataTable();
+            data4.addColumn('datetime', 'TimeStamp');
+            data4.addColumn('number', 'Value');
+
+
+            fillDashboard(data1, chart1);
+            fillDashboard(data2, chart2);
+            fillDashboard(data3, chart3);
+            fillDashboard(data4, chart4);
+            drawChart(data1, chart1,data2, chart2, data3, chart3, data4, chart4);
+
             //Update speed is controlled here should be the refreshrate property in the future
             //setInterval(drawChart, 5000);
-            setInterval(drawChart, @Model.DashboardSetting.RefreshRate * 1000);
+            setInterval(drawChart, @Model.DashboardSetting.RefreshRate * 1000, data1, chart1,  data2, chart2, data3, chart3, data4, chart4);
 
-            function drawChart() {
+
+            function drawChart(data1, chart1, data2, chart2, data3, chart3, data4, chart4) {
                 $.get('GetNewestDataSet', integrationSettingId = 'integrationSettingId=854c79b2-6b31-472c-938f-f1077343aac0', function (dataSet) {
                     var timeStamp = new Date(dataSet.xValue);
                     var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm') };
@@ -140,21 +187,39 @@
 
                     //Checks if the new data is of a newer set then the last, based on the time it was made
                     if (timeStamp > lastTimeStamp) {
-                        data.addRow([time, val]);
+                        data1.addRow([time, val]);
 
                         //The hard coded "100" should be the amountofdatasetsfordashboard property in the future
-                        if (data.getNumberOfRows() > 100) {
-                        data.removeRow(0);
+                        if (data1.getNumberOfRows() > 100) {
+                        data1.removeRow(0);
                         }
 
                         lastTimeStamp = new Date(timeStamp);
-                        chart.draw(data, option);
+                        chart1.draw(dataTable, option);
+
+                        data2.addRow([time, val]);
+                        if (data2.getNumberOfRows() > 100) {
+                        data2.removeRow(0);
+                        }
+                        chart2.draw(dataTable, option);
+
+                        data3.addRow([time, val]);
+                        if (data3.getNumberOfRows() > 100) {
+                        data3.removeRow(0);
+                        }
+                        chart3.draw(dataTable, option);
+
+                        data4.addRow([time, val]);
+                        if (data4.getNumberOfRows() > 100) {
+                        data4.removeRow(0);
+                        }
+                        chart4.draw(dataTable, option);
                     }
                 });
             }
 
             //Fills the dashboard with latest entries/datasets
-            function fillDashboard() {
+            function fillDashboard(dataTable, gChart) {
                 $.get('GetNewestDataSets', { integrationSettingId: '854c79b2-6b31-472c-938f-f1077343aac0', amountOfDataSets: '100'  }, function (dataSets) {
                     for (var i = 0; i < dataSets.length; i++) {
                         var itemxyz = dataSets[i];
@@ -163,12 +228,12 @@
                         var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm') };
                         var val = itemxyz.yValue;
 
-                        data.addRow([time, val]);
-                        if (data.getNumberOfRows() >= dataSets.length) {
-                            data.removeRow(0);
+                        dataTable.addRow([time, val]);
+                        if (dataTable.getNumberOfRows() >= dataSets.length) {
+                            dataTable.removeRow(0);
                         }
                     }
-                    chart.draw(data, option);
+                    setInterval(gChart.draw(dataTable, option), @Model.DashboardSetting.RefreshRate * 1000);
                 });
             }
         }
