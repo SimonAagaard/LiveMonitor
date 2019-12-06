@@ -106,8 +106,23 @@
                 },
             };
 
-            //Choose which chart type to use on the line below
-            var chart = new google.visualization.LineChart(document.getElementById('chart1'));
+            //Determines what chart type to be rendered, based on the users choice
+            switch (@Model.DashboardSetting.DashboardTypeValue)
+            {
+                case 1:
+                    var chart = new google.visualization.LineChart(document.getElementById('chart1'));
+                    break;
+                case 2:
+                    var chart = new google.visualization.AreaChart(document.getElementById('chart1'));
+                    break;
+                case 3:
+                    var chart = new google.visualization.PieChart(document.getElementById('chart1'));
+                    break;
+                default:
+                    var chart = new google.visualization.LineChart(document.getElementById('chart1'));
+                    break;
+            }
+            //var chart = new google.visualization.LineChart(document.getElementById('chart1'));
             var data = new google.visualization.DataTable();
             data.addColumn('datetime', 'TimeStamp');
             data.addColumn('number', 'Value');
