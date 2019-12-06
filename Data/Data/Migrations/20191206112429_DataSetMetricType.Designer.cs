@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(DbContext))]
-    [Migration("20191205151028_IntegrationSettings")]
-    partial class IntegrationSettings
+    [Migration("20191206112429_DataSetMetricType")]
+    partial class DataSetMetricType
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -136,6 +136,9 @@ namespace Data.Migrations
                     b.Property<Guid>("IntegrationSettingId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("MetricType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset>("XValue")
                         .HasColumnType("datetimeoffset");
 
@@ -181,10 +184,12 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(36)")
+                        .HasMaxLength(36);
 
                     b.Property<string>("ClientSecret")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(32)")
+                        .HasMaxLength(32);
 
                     b.Property<Guid>("IntegrationId")
                         .HasColumnType("uniqueidentifier");
@@ -202,13 +207,16 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ResourceId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
 
                     b.Property<string>("ResourceUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(510)")
+                        .HasMaxLength(510);
 
                     b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(36)")
+                        .HasMaxLength(36);
 
                     b.HasKey("IntegrationSettingId");
 

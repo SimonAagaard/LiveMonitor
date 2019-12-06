@@ -27,8 +27,8 @@ namespace Web.Controllers
         {
             List<IntegrationSetting> integrations = await _integrationSettingHandler.GetIntegrationSettings();
 
-            // Create DataSets for all integrations
-            foreach (IntegrationSetting integrationSetting in integrations)
+            // Create DataSets for all integrations thats active
+            foreach (IntegrationSetting integrationSetting in integrations.Where(x => x.IsActive == true))
             {
                 if (!String.IsNullOrWhiteSpace(integrationSetting.TenantId) && 
                     !String.IsNullOrWhiteSpace(integrationSetting.ClientId) && 

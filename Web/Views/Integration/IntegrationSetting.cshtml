@@ -3,6 +3,43 @@
 @{
     ViewData["Title"] = "IntegrationSetting";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Create lists for selectlists
+    List<SelectListItem> metricNames = new List<SelectListItem> {
+    new SelectListItem("CPU Time", "CpuTime"),
+    new SelectListItem("Requests", "Requests"),
+    new SelectListItem("2XX responses", "Http2xx"),
+    new SelectListItem("3xx responses", "Http3xx"),
+    new SelectListItem("4xx responses", "Http4xx"),
+    new SelectListItem("5xx responses", "Http5xx"),
+    new SelectListItem("Average Response Time", "AverageResponseTime"),
+    new SelectListItem("Http Response time", "HttpResponseTime"),
+    new SelectListItem("Total App Connections", "AppConnections"),
+    };
+
+    List<SelectListItem> aggregationTypes = new List<SelectListItem>
+    {
+        new SelectListItem("Average", "Average"),
+        new SelectListItem("Total", "Total"),
+        new SelectListItem("Maximum", "Maximum"),
+        new SelectListItem("Minimum", "Minimum"),
+    };
+
+    List<SelectListItem> intervalOptions = new List<SelectListItem>
+    {
+        new SelectListItem("One Minute", "PT1M"),
+        new SelectListItem("Five Minutes", "PT5M"),
+        new SelectListItem("Fifteen Minutes", "PT15M"),
+        new SelectListItem("Thirty Minutes", "PT30M"),
+        new SelectListItem("One Hour", "PT1H"),
+        new SelectListItem("Six Hours", "PT6H"),
+        new SelectListItem("Twelve Hours", "PT12H"),
+        new SelectListItem("One Day", "PT1D"),
+    };
+
+    SelectList intervalList = new SelectList(intervalOptions, "Value", "Text", Model.Interval);
+    SelectList aggregationList = new SelectList(aggregationTypes, "Value", "Text", Model.Aggregation);
+    SelectList metricList = new SelectList(metricNames, "Value", "Text", Model.MetricName);
 }
 
 <h1>IntegrationSetting for @ViewBag.IntegrationName</h1>
@@ -14,7 +51,6 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IntegrationSettingId" />
             <input type="hidden" asp-for="IntegrationId" />
-
             <div class="form-group">
                 <label asp-for="ClientId" class="control-label"></label>
                 <input asp-for="ClientId" class="form-control" />
@@ -46,27 +82,23 @@
                     <input class="form-check-input" asp-for="IsActive" />
                 </label>
             </div>
-            @* Should be a dropdown of pre-determined values *@
             <div class="form-group">
                 <label asp-for="MetricName" class="control-label"></label>
-                <input asp-for="MetricName" class="form-control" />
+                <select asp-for="MetricName" asp-items="metricList" class="form-control"></select>
                 <span asp-validation-for="MetricName" class="text-danger"></span>
             </div>
-            @* Should be a dropdown of pre-selected values based on MetricName *@
             <div class="form-group">
                 <label asp-for="Aggregation" class="control-label"></label>
-                <input asp-for="Aggregation" class="form-control" />
+                <select asp-for="Aggregation" asp-items="aggregationList" class="form-control"></select>
                 <span asp-validation-for="Aggregation" class="text-danger"></span>
             </div>
-            @* Should be a dropdown based on predetermined values *@
             <div class="form-group">
                 <label asp-for="Interval" class="control-label"></label>
-                <input asp-for="Interval" class="form-control" />
+                <select asp-for="Interval" asp-items="intervalList" class="form-control"></select>
                 <span asp-validation-for="Interval" class="text-danger"></span>
             </div>
-            @* Amount of minutes to look back in time for data *@
             <div class="form-group">
-                <label asp-for="MinutesOffset" class="control-label">Minutes to look back in time for data</label>
+                <label asp-for="MinutesOffset" class="control-label">Minutes to look back in time for data (Use negative values)</label>
                 <input asp-for="MinutesOffset" class="form-control" />
                 <span asp-validation-for="MinutesOffset" class="text-danger"></span>
             </div>

@@ -77,26 +77,26 @@ namespace Web.Controllers
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
                 //Checks if there is a current user to bind the dashboard to
-                if (userId == Guid.Empty.ToString())
+                if (String.IsNullOrWhiteSpace(userId))
                 {
                     return NotFound("No current user available");
                 }
-                //Dashboard
+
+                // Set values on dashboard, and instantiate the dashboardsettings as well.
+                dashboard.UserId = Guid.Parse(userId);
                 dashboard.DashboardId = Guid.NewGuid();
                 dashboard.DateCreated = DateTime.UtcNow;
                 dashboard.DashboardSettingId = Guid.NewGuid();
-                dashboard.UserId = Guid.Parse(userId);
-
-                await _dashboardHandler.CreateDashboard(dashboard);
-
-                //DashboardSetting - One-One relation
                 DashboardSetting dashboardSetting = new DashboardSetting
                 {
                     DashboardSettingId = dashboard.DashboardSettingId,
                     DashboardId = dashboard.DashboardId,
                 };
+                dashboard.DashboardSetting = dashboardSetting;
 
-                await _dashboardSettingHandler.CreateDashboardSetting(dashboardSetting);
+                // Create dashboard with the related dashboardsetting
+                await _dashboardHandler.CreateDashboard(dashboard);
+
                 //Passes the Ids needed by the Dashboardsetting view
                 return RedirectToAction(nameof(DashboardSetting), new { dashboardSettingId = dashboardSetting.DashboardSettingId });
             }
