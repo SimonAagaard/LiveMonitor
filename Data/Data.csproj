@@ -63,6 +63,10 @@
     <Compile Remove="Data\Migrations\20191206092309_IntegrationSettingsUpdate.Designer.cs" />
     <Compile Remove="Data\Migrations\20191206122120_MinutesOffsetChange.cs" />
     <Compile Remove="Data\Migrations\20191206122120_MinutesOffsetChange.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191204155649_DashboardTypeValue.cs" />
+    <Compile Remove="Data\Migrations\20191204155649_DashboardTypeValue.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191205105838_ChangeDashboardTypeName.cs" />
+    <Compile Remove="Data\Migrations\20191205105838_ChangeDashboardTypeName.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

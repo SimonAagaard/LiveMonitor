@@ -122,7 +122,7 @@ namespace Web.Controllers
             ViewBag.DashboardName = dashboard.DashboardName;
             //Get the DashboardType in case the user has already chosen one for the current DashboardSetting
             var dashboardType = _dashboardTypeHandler.GetDashboardType(dashboardSetting.DashboardTypeId);
-            ViewBag.DashboardTypeName = dashboardType.Result?.DashboardName;
+            ViewBag.DashboardTypeName = dashboardType.Result?.DashboardTypeValue;
 
             return View(dashboardSetting);
         }
@@ -130,8 +130,9 @@ namespace Web.Controllers
         //POST - Update a setting
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateDashboardSetting([Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel")] DashboardSetting dashboardSetting)
+        public async Task<IActionResult> UpdateDashboardSetting([Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel,DashboardTypeValue")] DashboardSetting dashboardSetting)
         {
+            
             if (ModelState.IsValid)
             {
                 try

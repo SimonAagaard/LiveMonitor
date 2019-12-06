@@ -4,14 +4,16 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(DbContext))]
-    partial class DbContextModelSnapshot : ModelSnapshot
+    [Migration("20191205120417_ChangeDashboardTypeName")]
+    partial class ChangeDashboardTypeName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,9 +139,6 @@ namespace Data.Migrations
                     b.Property<Guid>("IntegrationSettingId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("MetricType")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTimeOffset>("XValue")
                         .HasColumnType("datetimeoffset");
 
@@ -181,43 +180,23 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Aggregation")
+                    b.Property<string>("ClientId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(36)")
-                        .HasMaxLength(36);
-
                     b.Property<string>("ClientSecret")
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("IntegrationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Interval")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("MetricName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MinutesOffset")
-                        .HasColumnType("int");
-
                     b.Property<string>("ResourceId")
-                        .HasColumnType("nvarchar(255)")
-                        .HasMaxLength(255);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResourceUrl")
-                        .HasColumnType("nvarchar(510)")
-                        .HasMaxLength(510);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(36)")
-                        .HasMaxLength(36);
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IntegrationSettingId");
 
