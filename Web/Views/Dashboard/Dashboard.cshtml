@@ -195,25 +195,25 @@
                         }
 
                         lastTimeStamp = new Date(timeStamp);
-                        chart1.draw(dataTable, option);
+                        chart1.draw(data1, option);
 
                         data2.addRow([time, val]);
                         if (data2.getNumberOfRows() > 100) {
                         data2.removeRow(0);
                         }
-                        chart2.draw(dataTable, option);
+                        chart2.draw(data2, option);
 
                         data3.addRow([time, val]);
                         if (data3.getNumberOfRows() > 100) {
                         data3.removeRow(0);
                         }
-                        chart3.draw(dataTable, option);
+                        chart3.draw(data3, option);
 
                         data4.addRow([time, val]);
                         if (data4.getNumberOfRows() > 100) {
                         data4.removeRow(0);
                         }
-                        chart4.draw(dataTable, option);
+                        chart4.draw(data4, option);
                     }
                 });
             }
