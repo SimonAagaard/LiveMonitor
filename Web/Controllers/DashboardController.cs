@@ -9,9 +9,7 @@ using System.Security.Claims;
 using Web.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
-using Data.Integrations;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
 
 namespace Web.Controllers
 {
