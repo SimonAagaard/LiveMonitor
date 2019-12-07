@@ -26,9 +26,11 @@ namespace Web.Controllers
         // GET: Integration
         public async Task<IActionResult> Index()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            Guid userId = Guid.Parse(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            List<Integration> integrations = await _integrationHandler.GetIntegrationsByUserId(Guid.Parse(userId));
+            // Get all integrations based on the userId
+            List<Integration> integrations = await _integrationHandler.GetIntegrationsByUserId(userId);
+            
             //If there is integrations in the DB pass them to the view
             if (integrations.Any())
             {
@@ -37,11 +39,13 @@ namespace Web.Controllers
             return View();
         }
 
-        public async Task<List<Integration>> IntegrationsAndSettingsByUserId(string userId)
+        // Method to get all integrations along with their settings based on a user Id
+        public async Task<List<Integration>> IntegrationsAndSettingsByUserId(Guid userId)
         {
             string[] integrationSetting = new string[] { "IntegrationSetting" };
 
-            List<Integration> integrations = await _integrationHandler.GetIntegrationsAndSettingsByUserId(Guid.Parse(userId), integrationSetting);
+            // Get integrations including the Setting object
+            List<Integration> integrations = await _integrationHandler.GetIntegrationsAndSettingsByUserId(userId, integrationSetting);
 
             if (integrations.Any())
             {
@@ -64,49 +68,53 @@ namespace Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                Guid userId = Guid.Parse(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                integration.UserId = Guid.Parse(userId);
-                integration.IntegrationSettingId = Guid.NewGuid();
-                integration.IntegrationId = Guid.NewGuid();
-                IntegrationSetting integrationSetting = new IntegrationSetting
+                if (userId != Guid.Empty)
                 {
-                    IntegrationSettingId = integration.IntegrationSettingId,
-                    IntegrationId = integration.IntegrationId,
-                };
-                integration.IntegrationSetting = integrationSetting;
+                    integration.UserId = userId;
+                    integration.IntegrationSettingId = Guid.NewGuid();
+                    integration.IntegrationId = Guid.NewGuid();
+                    IntegrationSetting integrationSetting = new IntegrationSetting
+                    {
+                        IntegrationSettingId = integration.IntegrationSettingId,
+                        IntegrationId = integration.IntegrationId,
+                    };
+                    integration.IntegrationSetting = integrationSetting;
 
-                // Create the integration object with the added integrationSetting
-                await _integrationHandler.CreateIntegration(integration);
+                    // Create the integration object with the added integrationSetting
+                    await _integrationHandler.CreateIntegration(integration);
 
-                //Passes the Ids needed by the IntegrationSetting view
-                return RedirectToAction(nameof(IntegrationSetting), new { integrationSettingId = integrationSetting.IntegrationSettingId });
+                    //Passes the Ids needed by the IntegrationSetting view
+                    return RedirectToAction(nameof(IntegrationSetting), new { integrationSettingId = integrationSetting.IntegrationSettingId });
+                }
             }
+
             return View(integration);
         }
 
         public async Task<IActionResult> IntegrationSetting(Guid integrationSettingId)
         {
-            if (integrationSettingId == Guid.Empty)
+            if (integrationSettingId != Guid.Empty)
             {
-                return NotFound();
+                IntegrationSetting integrationSetting = await _integrationSettingHandler.GetIntegrationSetting(integrationSettingId);
+
+                if (integrationSetting != null)
+                {
+                    //Sets viewbag to display the name of the integration linked to the IntegrationSetting page
+                    Integration integration = await _integrationHandler.GetIntegration(integrationSetting.IntegrationId);
+                    ViewBag.IntegrationName = integration.IntegrationName;
+
+                    return View(integrationSetting);
+                }
             }
 
-            var integrationSetting = await _integrationSettingHandler.GetIntegrationSetting(integrationSettingId);
-
-            if (integrationSetting == null)
-            {
-                return NotFound();
-            }
-
-            //Sets viewbag to display the name of the integration linked to the IntegrationSetting page
-            var integration = await _integrationHandler.GetIntegration(integrationSetting.IntegrationId);
-            ViewBag.IntegrationName = integration.IntegrationName;
-
-            return View(integrationSetting);
+            return NotFound();
         }
 
         // Update an integrationsetting
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateIntegrationSetting([Bind("IntegrationSettingId","IntegrationId","ClientId","ClientSecret","TenantId",
             "ResourceId","ResourceUrl","IsActive","MetricName","Aggregation","Interval","MinutesOffset")] IntegrationSetting integrationSetting)
         {
@@ -115,13 +123,13 @@ namespace Web.Controllers
                 try
                 {
                     await _integrationSettingHandler.UpdateIntegrationSetting(integrationSetting);
+
+                    return View("IntegrationSetting", integrationSetting);
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
                     throw e;
                 }
-
-                return View("IntegrationSetting", integrationSetting);
             }
 
             return BadRequest(ModelState);
@@ -130,18 +138,17 @@ namespace Web.Controllers
         // GET: Integration/Edit/5
         public async Task<IActionResult> Edit(Guid integrationId)
         {
-            if (integrationId == null)
+            if (integrationId != null)
             {
-                return NotFound();
+                Integration integration = await _integrationHandler.GetIntegration(integrationId);
+
+                if (integration != null)
+                {
+                    return View(integration);
+                }
             }
 
-            var integration = await _integrationHandler.GetIntegration(integrationId);
-            if (integration == null)
-            {
-                return NotFound();
-            }
-
-            return View(integration);
+            return NotFound();
         }
 
         // POST: Integration/Edit/5
@@ -154,13 +161,15 @@ namespace Web.Controllers
                 try
                 {
                     await _integrationHandler.UpdateIntegration(integration);
+
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
                     throw e;
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             return View(integration);
         }
 
@@ -169,8 +178,13 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid integrationId)
         {
-            var integration = await _integrationHandler.GetIntegration(integrationId);
-            await _integrationHandler.DeleteIntegration(integration);
+            Integration integration = await _integrationHandler.GetIntegration(integrationId);
+
+            if (integration != null)
+            {
+                await _integrationHandler.DeleteIntegration(integration);
+            }
+            
             return RedirectToAction(nameof(Index));
         }
     }

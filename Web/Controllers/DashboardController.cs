@@ -37,17 +37,17 @@ namespace Web.Controllers
         //Get all dashboards for the logged in user.
         public async Task<IActionResult> Index()
         {
-            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            Guid userId = Guid.Parse(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
             string[] children = new string[] { "DashboardSetting" };
-            
+
             var dashboards = await _dashboardHandler.GetDashboardsAndDashboardSettings(userId, children);
-            
+
             //If there is dashboards in the DB pass them to the view
             if (dashboards.Any())
             {
                 return View(dashboards);
             }
-            
+
             return View();
         }
 
@@ -55,15 +55,21 @@ namespace Web.Controllers
         public async Task<IActionResult> Dashboard(Guid dashboardId)
         {
             string[] children = new string[] { "DashboardSetting" };
-            var dashboardWithSetting = await _dashboardHandler.GetDashBoardAndDashboardSetting(dashboardId, children);
+            Dashboard dashboardWithSetting = await _dashboardHandler.GetDashBoardAndDashboardSetting(dashboardId, children);
 
-            if(dashboardWithSetting.DashboardSetting != null)
+            if (dashboardWithSetting.DashboardSetting != null)
             {
                 return View(dashboardWithSetting);
             }
 
-            var dashboard = await _dashboardHandler.GetDashboard(dashboardId);
-            return View(dashboard);
+            Dashboard dashboard = await _dashboardHandler.GetDashboard(dashboardId);
+
+            if (dashboard != null)
+            {
+                return View(dashboard);
+            }
+
+            return NotFound();
         }
 
         // GET: Dashboards/Create
@@ -79,81 +85,88 @@ namespace Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                //Get current user
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                // Get current user
+                Guid userId = Guid.Parse(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                //Checks if there is a current user to bind the dashboard to
-                if (String.IsNullOrWhiteSpace(userId))
+                // Checks if there is a current user to bind the dashboard to
+                if (userId != Guid.Empty)
+                {
+                    // Set values on dashboard, and instantiate the dashboardsettings as well.
+                    dashboard.UserId = userId;
+                    dashboard.DashboardId = Guid.NewGuid();
+                    dashboard.DateCreated = DateTime.UtcNow;
+                    dashboard.DashboardSettingId = Guid.NewGuid();
+                    DashboardSetting dashboardSetting = new DashboardSetting
+                    {
+                        DashboardSettingId = dashboard.DashboardSettingId,
+                        DashboardId = dashboard.DashboardId,
+                    };
+                    dashboard.DashboardSetting = dashboardSetting;
+
+                    // Create dashboard with the related dashboardsetting
+                    await _dashboardHandler.CreateDashboard(dashboard);
+
+                    // Passes the Ids needed by the Dashboardsetting view
+                    return RedirectToAction(nameof(DashboardSetting), new { dashboardSettingId = dashboardSetting.DashboardSettingId });
+                }
+                else
                 {
                     return NotFound("No current user available");
                 }
-
-                // Set values on dashboard, and instantiate the dashboardsettings as well.
-                dashboard.UserId = Guid.Parse(userId);
-                dashboard.DashboardId = Guid.NewGuid();
-                dashboard.DateCreated = DateTime.UtcNow;
-                dashboard.DashboardSettingId = Guid.NewGuid();
-                DashboardSetting dashboardSetting = new DashboardSetting
-                {
-                    DashboardSettingId = dashboard.DashboardSettingId,
-                    DashboardId = dashboard.DashboardId,
-                };
-                dashboard.DashboardSetting = dashboardSetting;
-
-                // Create dashboard with the related dashboardsetting
-                await _dashboardHandler.CreateDashboard(dashboard);
-
-                //Passes the Ids needed by the Dashboardsetting view
-                return RedirectToAction(nameof(DashboardSetting), new { dashboardSettingId = dashboardSetting.DashboardSettingId });
             }
+
             return View(dashboard);
         }
 
         //Get DashboardSetting view
         public async Task<IActionResult> DashboardSetting(Guid dashboardSettingId)
         {
-            if (dashboardSettingId == Guid.Empty)
+            if (dashboardSettingId != Guid.Empty)
             {
-                return NotFound();
+                DashboardSetting dashboardSetting = await _dashboardSettingHandler.GetDashboardSetting(dashboardSettingId);
+                if (dashboardSetting != null)
+                {
+                    // Sets viewbag to display the name of the dashboard linked to the setting page
+                    Dashboard dashboard = await _dashboardHandler.GetDashboard(dashboardSetting.DashboardId);
+                    ViewBag.DashboardName = dashboard.DashboardName;
+
+                    // Pass the userId to the view
+                    ViewBag.UserId = dashboard.UserId;
+
+                    // Get the DashboardType in case the user has already chosen one for the current DashboardSetting
+                    DashboardType dashboardType = await _dashboardTypeHandler.GetDashboardType(dashboardSetting.DashboardTypeId);
+                    ViewBag.DashboardTypeName = dashboardType?.DashboardTypeValue;
+
+                    return View(dashboardSetting);
+                }
             }
 
-            var dashboardSetting = await _dashboardSettingHandler.GetDashboardSetting(dashboardSettingId);
-            if (dashboardSetting == null)
-            {
-                return NotFound();
-            }
-
-            //Sets viewbag to display the name of the dashboard linked to the setting page
-            var dashboard = await _dashboardHandler.GetDashboard(dashboardSetting.DashboardId);
-            ViewBag.DashboardName = dashboard.DashboardName;
-            //Get the DashboardType in case the user has already chosen one for the current DashboardSetting
-            var dashboardType = _dashboardTypeHandler.GetDashboardType(dashboardSetting.DashboardTypeId);
-            ViewBag.DashboardTypeName = dashboardType.Result?.DashboardTypeValue;
-
-            return View(dashboardSetting);
+            return NotFound();
         }
 
         //POST - Update a setting
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateDashboardSetting([Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel,DashboardTypeValue")] DashboardSetting dashboardSetting)
+        public async Task<IActionResult> UpdateDashboardSetting([Bind("DashboardSettingId,DashboardId,DashboardTypeId,RefreshRate,XLabel,YLabel,DashboardTypeValue,IntegrationSettingId")] DashboardSetting dashboardSetting)
         {
-            
             if (ModelState.IsValid)
             {
                 try
                 {
                     await _dashboardSettingHandler.UpdateDashboardSetting(dashboardSetting);
+                    
+                    Dashboard dashboard = await _dashboardHandler.GetDashboard(dashboardSetting.DashboardId);
+                    ViewBag.DashboardName = dashboard.DashboardName;
+                    ViewBag.UserId = dashboard.UserId;
+
+                    return View("DashboardSetting", dashboardSetting);
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
                     throw e;
                 }
-                var dashboard = await _dashboardHandler.GetDashboard(dashboardSetting.DashboardId);
-                ViewBag.DashboardName = dashboard.DashboardName;
-                return View("DashboardSetting", dashboardSetting);
-
             }
+
             return BadRequest(ModelState);
         }
 
@@ -161,17 +174,17 @@ namespace Web.Controllers
         //Used for retrieveing the page to edit/update a dashboard
         public async Task<IActionResult> Edit(Guid dashboardId)
         {
-            if (dashboardId == Guid.Empty)
+            if (dashboardId != Guid.Empty)
             {
-                return NotFound();
+                Dashboard dashboard = await _dashboardHandler.GetDashboard(dashboardId);
+
+                if (dashboard != null)
+                {
+                    return View(dashboard);
+                }
             }
 
-            var dashboard = await _dashboardHandler.GetDashboard(dashboardId);
-            if (dashboard == null)
-            {
-                return NotFound();
-            }
-            return View(dashboard);
+            return NotFound();
         }
 
         // POST: Dashboards/Edit/5
@@ -186,12 +199,13 @@ namespace Web.Controllers
                 {
                     dashboard.DateModified = DateTime.UtcNow;
                     await _dashboardHandler.UpdateDashboard(dashboard);
+
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
                     throw e;
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(dashboard);
         }
@@ -202,17 +216,29 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid dashboardId)
         {
-            var dashboard = await _dashboardHandler.GetDashboard(dashboardId);
-            await _dashboardHandler.DeleteDashboard(dashboard);
+            Dashboard dashboard = await _dashboardHandler.GetDashboard(dashboardId);
+
+            if (dashboard != null)
+            {
+                await _dashboardHandler.DeleteDashboard(dashboard);
+            }
+            
             return RedirectToAction(nameof(Index));
         }
 
         //Helper method to determine if the dashboard exists in the DB before we try to update/delete it
-        private bool DashboardExists(Guid dashboardId)
+        private async Task<bool> DashboardExists(Guid dashboardId)
         {
-            var dashboard = _dashboardHandler.GetDashboard(dashboardId);
-            bool dashboardExists = dashboard != null ? true : false;
-            return dashboardExists;
+            bool dashBoardExists = false;
+
+            Dashboard dashboard = await _dashboardHandler.GetDashboard(dashboardId);
+
+            if (dashboard != null)
+            {
+                dashBoardExists = true;
+            }
+
+            return dashBoardExists;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -231,9 +257,8 @@ namespace Web.Controllers
             return await _dataSetController.GetAmountOfDataSets(integrationSettingId, amountOfDataSets);
         }
 
-        public async Task<List<Integration>> GetIntegrationsAndSettings()
+        public async Task<List<Integration>> GetIntegrationsAndSettings(Guid userId)
         {
-            var userId = User?.FindFirst(ClaimTypes.NameIdentifier).Value;
             return await _integrationController.IntegrationsAndSettingsByUserId(userId);
         }
     }

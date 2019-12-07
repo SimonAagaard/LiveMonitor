@@ -67,6 +67,10 @@
     <Compile Remove="Data\Migrations\20191204155649_DashboardTypeValue.Designer.cs" />
     <Compile Remove="Data\Migrations\20191205105838_ChangeDashboardTypeName.cs" />
     <Compile Remove="Data\Migrations\20191205105838_ChangeDashboardTypeName.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191207111638_IntegrationList.cs" />
+    <Compile Remove="Data\Migrations\20191207111638_IntegrationList.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191207111758_IntegrationList.cs" />
+    <Compile Remove="Data\Migrations\20191207111758_IntegrationList.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

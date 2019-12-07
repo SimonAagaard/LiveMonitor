@@ -101,6 +101,5 @@ namespace Data
              await _entities.AddAsync(entity);
              await _context.SaveChangesAsync();
         }
-        
     }
 }
