@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,7 +26,10 @@ namespace Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             List<IntegrationSetting> integrations = await _integrationSettingHandler.GetIntegrationSettings();
+            List<Task> integrationsToRun = new List<Task>();
 
             // Create DataSets for all integrations thats active
             foreach (IntegrationSetting integrationSetting in integrations.Where(x => x.IsActive == true))
@@ -36,11 +40,16 @@ namespace Web.Controllers
                     !String.IsNullOrWhiteSpace(integrationSetting.ResourceId) &&
                     !String.IsNullOrWhiteSpace(integrationSetting.ResourceUrl))
                 {
+                    // Add the active integrations to the list to run
                     AzureConnector azureConnector = new AzureConnector(integrationSetting);
-                    await azureConnector.GetAzureDataAsync();
+                    integrationsToRun.Add(azureConnector.GetAzureDataAsync());
                 }
             }
 
+            // Asynchronously run all integrations
+            await Task.WhenAll(integrationsToRun);
+
+            var value = sw.Elapsed.TotalSeconds.ToString();
             return new OkResult();
         }
 
