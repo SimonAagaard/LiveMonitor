@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,8 +25,6 @@ namespace Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
             List<IntegrationSetting> integrations = await _integrationSettingHandler.GetIntegrationSettings();
             List<Task> integrationsToRun = new List<Task>();
 
@@ -49,7 +46,6 @@ namespace Web.Controllers
             // Asynchronously run all integrations
             await Task.WhenAll(integrationsToRun);
 
-            var value = sw.Elapsed.TotalSeconds.ToString();
             return new OkResult();
         }
 
