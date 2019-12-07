@@ -9,15 +9,9 @@ namespace PingService
     {
         static void Main(string[] args)
         {
-            while (true)
-            {
-                if (DateTime.Now.Second == 01)
-                {
-                    // Call the method to ping our endpoint with dataset creation
-                    var pingservice = new PingMonitor();
-                    pingservice.PingMethod().Wait();
-                }
-            }
+            // Call the method to ping our endpoint with dataset creation
+            var pingservice = new PingMonitor();
+            pingservice.PingMethod().Wait();
         }
     }
 
@@ -34,6 +28,10 @@ namespace PingService
             using (HttpClient client = new HttpClient())
             {
                 var response = await client.GetAsync(Url);
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("Created DataSet: @ " + DateTime.UtcNow.ToString("HH:mm:ss"));
+                }
             }
         }
     }
