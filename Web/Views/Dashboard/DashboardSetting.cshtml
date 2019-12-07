@@ -1,5 +1,6 @@
 ﻿@model Data.Entities.DashboardSetting
 @inject Data.Handlers.DashboardTypeHandler dashboardTypeHandler
+@using Web.Controllers;
 @{
     ViewData["Title"] = "DashboardSetting";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -20,6 +21,12 @@
 
         selectlistItems.Add(item);
     }
+
+    DashboardController dashboardController = new DashboardController();
+    var integrations = await dashboardController.GetIntegrationsAndSettings();
+
+    // Create a dropdown of integrations
+    SelectList integrationList = new SelectList(integrations, "Integration.IntegrationSettingId", "IntegrationName", Model.IntegrationSettingId);
 
     //Creates a SelectList for the dropdownmenu with the list of SelectListItems
     SelectList selectlist = new SelectList(selectlistItems, "Value", "Text", Model.DashboardTypeValue);
@@ -45,6 +52,7 @@
                 <select asp-for="DashboardTypeValue" asp-items="selectlist" id="DashboardTypes" class="form-control">
                     <option disabled selected value="">Pick one...</option>
                 </select>
+                <select asp-for="IntegrationSettingId" asp-items="integrationList" class="form-control"></select>
                 <div class="form-group">
                     <label asp-for="RefreshRate" class="control-label"></label>
                     <input asp-for="RefreshRate" class="form-control" />
@@ -75,5 +83,5 @@
 <script>
     function fade_out() {
         $("status-sucess").fadeOut().empty();
-                    }
+    }
 </script>

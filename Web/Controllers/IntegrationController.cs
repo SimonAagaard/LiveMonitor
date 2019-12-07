@@ -26,13 +26,29 @@ namespace Web.Controllers
         // GET: Integration
         public async Task<IActionResult> Index()
         {
-            var integrations = await _integrationHandler.GetIntegrations();
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<Integration> integrations = await _integrationHandler.GetIntegrationsByUserId(Guid.Parse(userId));
             //If there is integrations in the DB pass them to the view
             if (integrations.Any())
             {
                 return View(integrations);
             }
             return View();
+        }
+
+        public async Task<List<Integration>> IntegrationsAndSettingsByUserId(string userId)
+        {
+            string[] integrationSetting = new string[] { "IntegrationSetting" };
+
+            List<Integration> integrations = await _integrationHandler.GetIntegrationsAndSettingsByUserId(Guid.Parse(userId), integrationSetting);
+
+            if (integrations.Any())
+            {
+                return integrations;
+            }
+
+            return new List<Integration>();
         }
 
         // GET: Integration/Create

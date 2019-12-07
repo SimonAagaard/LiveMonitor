@@ -33,5 +33,6 @@ namespace Data.Entities
         [Display(Name = "Y-axis Label")]
         [MaxLength(128)]
         public string YLabel { get; set; }
+        public Guid IntegrationSettingId { get; set; }
     }
 }

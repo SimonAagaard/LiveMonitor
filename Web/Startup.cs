@@ -18,6 +18,9 @@ using Web.Areas.Identity.Pages;
 using Data.Data;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Data.Handlers;
+using Web.Controllers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Web
 {
@@ -55,6 +58,7 @@ namespace Web
             });
             //Allows the injection of the handler to Dashboardsettingsview
             services.AddTransient<DashboardTypeHandler>();
+            services.AddTransient<DashboardController>();
             services.AddMvc(options =>
             {
                 options.Filters.Add(new AuthorizeFilter());

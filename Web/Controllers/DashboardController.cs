@@ -11,6 +11,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Data.Integrations;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace Web.Controllers
 {
@@ -21,6 +22,7 @@ namespace Web.Controllers
         private readonly DashboardSettingHandler _dashboardSettingHandler;
         private readonly DashboardTypeHandler _dashboardTypeHandler;
         private readonly DataSetController _dataSetController;
+        private readonly IntegrationController _integrationController;
 
         public DashboardController()
         {
@@ -28,6 +30,7 @@ namespace Web.Controllers
             _dashboardSettingHandler = new DashboardSettingHandler();
             _dashboardTypeHandler = new DashboardTypeHandler();
             _dataSetController = new DataSetController();
+            _integrationController = new IntegrationController();
         }
 
         // GET: Dashboards
@@ -36,12 +39,15 @@ namespace Web.Controllers
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             string[] children = new string[] { "DashboardSetting" };
+            
             var dashboards = await _dashboardHandler.GetDashboardsAndDashboardSettings(userId, children);
+            
             //If there is dashboards in the DB pass them to the view
             if (dashboards.Any())
             {
                 return View(dashboards);
             }
+            
             return View();
         }
 
@@ -223,6 +229,12 @@ namespace Web.Controllers
         public async Task<JsonResult> GetNewestDataSets(Guid integrationSettingId, int amountOfDataSets)
         {
             return await _dataSetController.GetAmountOfDataSets(integrationSettingId, amountOfDataSets);
+        }
+
+        public async Task<List<Integration>> GetIntegrationsAndSettings()
+        {
+            var userId = User?.FindFirst(ClaimTypes.NameIdentifier).Value;
+            return await _integrationController.IntegrationsAndSettingsByUserId(userId);
         }
     }
 }

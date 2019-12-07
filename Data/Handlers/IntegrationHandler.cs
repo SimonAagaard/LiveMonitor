@@ -40,6 +40,12 @@ namespace Data.Handlers
             return await _integrationRepo.GetMany(x => x.UserId == userId);
         }
 
+        // Get integrations including their integrationSetting objects
+        public async Task<List<Integration>> GetIntegrationsAndSettingsByUserId(Guid userId, string[] integrationSetting)
+        {
+            return await _integrationRepo.GetMany(x => x.UserId == userId, integrationSetting);
+        }
+
         // Update a Integration object
         public async Task UpdateIntegration(Integration integration)
         {
