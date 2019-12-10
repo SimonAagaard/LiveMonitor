@@ -14,6 +14,8 @@ namespace Data.Entities
         public DateTimeOffset DateDeleted { get; set; }
         public bool IsDeleted { get; set; }
         public List<Dashboard> Dashboards { get; set; }
+
+        public List<DashboardGroup> DashboardGroups { get; set; }
         public List<Integration> Integrations { get; set; }
     }
 }

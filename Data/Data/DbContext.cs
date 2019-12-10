@@ -107,6 +107,11 @@ namespace Data
                 .WithOne(y => y.DashboardSetting)
                 .HasForeignKey<DashboardSetting>(y => y.DashboardId);
 
+            modelBuilder.Entity<DashboardGroup>()
+               .HasOne(x => x.Dashboard)
+               .WithMany(y => y.DashboardGroups)
+               .HasForeignKey("UserId");
+
             modelBuilder.Entity<Integration>()
                 .HasOne(x => x.MonitorUser)
                 .WithMany(x => x.Integrations)
@@ -132,6 +137,7 @@ namespace Data
         public DbSet<MonitorRole> MonitorRoles { get; set; }
         public DbSet<Dashboard> Dashboards { get; set; }
         public DbSet<DashboardSetting> DashboardSettings { get; set; }
+        public DbSet<DashboardGroup> DashboardGroups { get; set; }
         public DbSet<DashboardType> DashboardTypes { get; set; }
         public DbSet<DataSet> Datasets { get; set; }
         public DbSet<Integration> Integrations { get; set; }
