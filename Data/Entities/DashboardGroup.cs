@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,10 +14,12 @@ namespace Data.Entities
         }
         [Key]
         public Guid DashboardGroupId { get; set; }
+        [ForeignKey("UserId")]
         [Required]
-        [ForeignKey("DashboardId")]
-        public Guid DashboardId { get; set; }
-        public Dashboard Dashboard { get; set; }
+        public Guid UserId { get; set; }
+        public MonitorUser MonitorUser { get; set; }
+        public List<Dashboard> Dashboards { get; set; }
+
         [Required]
         [Display(Name = "Refresh rate")]
         public int GroupRefreshRate { get; set; }

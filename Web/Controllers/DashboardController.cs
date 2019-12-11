@@ -37,8 +37,12 @@ namespace Web.Controllers
         {
             Guid userId = Guid.Parse(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
             string[] children = new string[] { "DashboardSetting" };
-
-            var dashboards = await _dashboardHandler.GetDashboardsAndDashboardSettings(userId, children);
+            List<Dashboard> dashboards = new List<Dashboard>();
+            var allDashboards = await _dashboardHandler.GetDashboardsByUserId(userId);
+            if (allDashboards.Any())
+            {
+                 dashboards = await _dashboardHandler.GetDashboardsAndDashboardSettings(userId, children);
+            }
 
             //If there is dashboards in the DB pass them to the view
             if (dashboards.Any())

@@ -73,6 +73,10 @@
     <Compile Remove="Data\Migrations\20191207111758_IntegrationList.Designer.cs" />
     <Compile Remove="Data\Migrations\20191210153043_DashboardGroups.cs" />
     <Compile Remove="Data\Migrations\20191210153043_DashboardGroups.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191211092313_DashboardGroupUpdate.cs" />
+    <Compile Remove="Data\Migrations\20191211092313_DashboardGroupUpdate.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191211093247_DashboardGroupUpdate.cs" />
+    <Compile Remove="Data\Migrations\20191211093247_DashboardGroupUpdate.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

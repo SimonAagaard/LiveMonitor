@@ -22,7 +22,6 @@ namespace Data.Entities
         [ForeignKey("DashboardSettingId")]
         public Guid DashboardSettingId { get; set; }
         public DashboardSetting DashboardSetting { get; set; }
-        public List<DashboardGroup> DashboardGroups { get; set; }
         [Required]
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset? DateModified { get; set; }

@@ -25,10 +25,10 @@ namespace Data.Handlers
         {
             return await _dashboardGroupRepo.GetAll();
         }
-        public async Task<List<DashboardGroup>> GetDashboardGroupsByDashboardId(Guid dashboardId)
-        {
-            return await _dashboardGroupRepo.GetMany(x => x.DashboardId == dashboardId);
-        }
+        //public async Task<List<DashboardGroup>> GetDashboardGroupsByDashboardId(Guid dashboardId)
+        //{
+        //    return await _dashboardGroupRepo.GetMany(x => x.DashboardId == dashboardId);
+        //}
         // Get a single DashboardGroup based on the DashboardGroupId
         public async Task<DashboardGroup> GetDashboardGroup(Guid dashboardGroupId)
         {

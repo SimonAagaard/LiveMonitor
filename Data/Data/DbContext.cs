@@ -108,7 +108,7 @@ namespace Data
                 .HasForeignKey<DashboardSetting>(y => y.DashboardId);
 
             modelBuilder.Entity<DashboardGroup>()
-               .HasOne(x => x.Dashboard)
+               .HasOne(x => x.MonitorUser)
                .WithMany(y => y.DashboardGroups)
                .HasForeignKey("UserId");
 
