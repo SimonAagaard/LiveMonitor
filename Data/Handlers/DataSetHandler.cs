@@ -68,13 +68,13 @@ namespace Data.Handlers
         //Gets the newest dataset, based on DateCreated
         public async Task<DataSet> GetNewestDataSetByIntegrationSettingId(Guid integrationSettingId)
         {
-            List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId);
+            List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId && x.DateCreated > DateTimeOffset.Now.AddMinutes(-10));
             return dataSets.OrderByDescending(x => x.XValue).FirstOrDefault();
         }
 
         public async Task<List<DataSet>> GetCertainAmountOfDataSets(Guid integrationSettingId, int dataSetAmount)
         {
-            List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId);
+            List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId && x.DateCreated > DateTimeOffset.Now.AddMinutes((-dataSetAmount - 10)));
             return dataSets.OrderBy(x => x.XValue).TakeLast(dataSetAmount).ToList();
         }
 
