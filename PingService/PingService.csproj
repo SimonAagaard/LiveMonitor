@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Update="Settings.job">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

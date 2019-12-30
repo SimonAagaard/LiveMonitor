@@ -1,10 +1,47 @@
 ﻿@model Data.Entities.DashboardSetting
 @inject Data.Handlers.DashboardTypeHandler dashboardTypeHandler
+@inject Web.Controllers.DashboardController dashboardController
+
 @{
     ViewData["Title"] = "DashboardSetting";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    List<Data.Entities.DashboardType> dashboardTypes = await dashboardTypeHandler.GetDashboardTypes();
-    SelectList selectlist = new SelectList(dashboardTypes, "DashboardTypeId", "DashboardName");
+
+    //Creates 2 seperate arrays, one for the values of the enum (0, 1, 2....) and another array for the names("LineChart", "PieChart"....)
+    Array itemValues = System.Enum.GetValues(typeof(Data.Entities.DashboardType.Type));
+    Array itemNames = System.Enum.GetNames(typeof(Data.Entities.DashboardType.Type));
+    List<SelectListItem> dashboardTypeItems = new List<SelectListItem>();
+    List<SelectListItem> integrationItems = new List<SelectListItem>();
+
+    //Populates the list of SelectedListItems for DashboardTypes
+    for (int i = 0; i <= itemNames.Length - 1; i++)
+    {
+        SelectListItem item = new SelectListItem()
+        {
+            Text = itemNames.GetValue(i).ToString(),
+            Value = ((int)itemValues.GetValue(i)).ToString()
+        };
+
+        dashboardTypeItems.Add(item);
+    }
+
+    // Get valid integrations for the user and populate a selectlist
+    List<Data.Entities.Integration> integrations = await dashboardController.GetIntegrationsAndSettings(ViewBag.UserId);
+
+    foreach (var integration in integrations)
+    {
+        SelectListItem item = new SelectListItem
+        {
+            Text = integration.IntegrationName,
+            Value = integration.IntegrationSettingId.ToString(),
+        };
+        integrationItems.Add(item);
+    }
+
+    // Create a dropdown of integrations
+    SelectList integrationList = new SelectList(integrationItems, "Value", "Text", Model.IntegrationSettingId);
+
+    //Creates a SelectList for the dropdownmenu with the list of SelectListItems
+    SelectList selectlist = new SelectList(dashboardTypeItems, "Value", "Text", Model.DashboardTypeValue);
 }
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -24,9 +61,18 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="DashboardSettingId" />
                 <input type="hidden" asp-for="DashboardId" />
-                <select asp-for="DashboardTypeId" asp-items="selectlist" id="DashboardTypes" class="form-control">
-                    @*<option disabled selected value="">Pick one...</option>*@
-                </select>
+                <div>
+                    <label asp-for="DashboardTypeValue" class="control-label"></label>
+                    <select asp-for="DashboardTypeValue" asp-items="dashboardTypeItems" id="DashboardTypes" class="form-control">
+                        <option disabled selected value="">Pick Dashboard Type</option>
+                    </select>
+                </div>
+                <div>
+                    <label asp-for="IntegrationSettingId" class="control-label"></label>
+                    <select asp-for="IntegrationSettingId" asp-items="integrationList" class="form-control">
+                        <option disabled selected value="">Pick Integration</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label asp-for="RefreshRate" class="control-label"></label>
                     <input asp-for="RefreshRate" class="form-control" />
@@ -42,7 +88,6 @@
                     <input asp-for="YLabel" placeholder="Choose name for Y-label" class="form-control" />
                     <span asp-validation-for="YLabel" class="text-danger"></span>
                 </div>
-
                 <div class="form-group">
                     <input type="submit" id="submitButton" name="submitButton" value="Save" onclick="alert('Success! Settings for @ViewBag.DashboardName was updated')" class="btn btn-primary" />
                 </div>
@@ -56,26 +101,7 @@
 </body>
 </html>
 <script>
-    $(document).ready(function () {
-        //Determines what option to preselect from the dropdown list of available DashboardTypes, if the user has already picked one before
-        var e = document.getElementById("DashboardTypes");
-        for (var i = 0; i < e.options.length; i++)
-        {
-            if (e.options[i].text == @ViewBag.DashboardTypeName)
-            {
-            e.options[i].selected = true;
-            return;
-        }
-    }
-    });
-
     function fade_out() {
         $("status-sucess").fadeOut().empty();
     }
 </script>
-@*<script>
-        function() {
-            document.getElementById('DashboardTypes')
-            @Model.DashboardTypeId
-        }
-    </script>*@

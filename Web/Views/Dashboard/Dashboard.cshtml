@@ -3,8 +3,8 @@
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
+}
 
 <div class="container">
     <h1 id="title" style="text-align:center; margin-left:-10%; font-size:28px; font-weight:bold;">@Model.DashboardName</h1>
@@ -20,6 +20,7 @@
         var color = 'grey';
         var backgroundColor = '#ffffff';
         var lineColor = '#3366cc';
+        var lastTimeStamp = new Date().setMinutes(-1);
         document.getElementById("darkBtn").addEventListener("click", setDashboardStyleFromCookie);
         document.getElementById("lightBtn").addEventListener("click", setDashboardStyleFromCookie);
         window.onload = setDashboardStyleFromCookie();
@@ -64,29 +65,26 @@
                 },
                 //Horizontal axis styling
                 hAxis: {
-                    title: "Time", //Use x-label here from dashboardsSettings
+                    title: '@Model.DashboardSetting.XLabel', //Use x-label here from dashboardsSettings
                     titleTextStyle: {
                         color: color,
                         fontSize: 24,
                         bold: true
                     },
-                    format: 'HH:mm:ss',
+                    format: 'HH:mm',
                     textStyle: {
                         color: color
                     },
                 },
                 //Vertical axis styling
                 vAxis: {
-                    title: "Avg. Response time", //Use y-label here from dashboardsSettings
+                    title: '@Model.DashboardSetting.YLabel', //Use y-label here from dashboardsSettings
                     titleTextStyle: {
                         color: color,
                         fontSize: 24,
                         bold: true
                     },
                     baselineColor: 'transparent',
-                    viewWindow: {
-                        min: 0
-                    },
 
                     textStyle: {
                         color: color
@@ -105,39 +103,61 @@
                 },
             };
 
-            //Choose which chart type to use on the line below
-            var chart = new google.visualization.LineChart(document.getElementById('chart1'));
+            //Determines what chart type to be rendered, based on the users choice
+            switch (@Model.DashboardSetting.DashboardTypeValue)
+            {
+                case 1:
+                    var chart = new google.visualization.LineChart(document.getElementById('chart1'));
+                    break;
+                case 2:
+                    var chart = new google.visualization.AreaChart(document.getElementById('chart1'));
+                    break;
+                case 3:
+                    var chart = new google.visualization.PieChart(document.getElementById('chart1'));
+                    break;
+                default:
+                    var chart = new google.visualization.LineChart(document.getElementById('chart1'));
+                    break;
+            }
+            //var chart = new google.visualization.LineChart(document.getElementById('chart1'));
             var data = new google.visualization.DataTable();
             data.addColumn('datetime', 'TimeStamp');
             data.addColumn('number', 'Value');
             fillDashboard();
             drawChart();
             //Update speed is controlled here should be the refreshrate property in the future
-            setInterval(drawChart, 60000);
+            //setInterval(drawChart, 5000);
+            setInterval(drawChart, @Model.DashboardSetting.RefreshRate * 1000);
 
             function drawChart() {
-                $.get('GetDataSet', integrationSettingId = 'integrationSettingId=EA72F6B5-0ECF-49F7-8D0B-D2DEACA627CD', function (dataSet) {
+                $.get('GetNewestDataSet', integrationSettingId = 'integrationSettingId=@Model.DashboardSetting.IntegrationSettingId', function (dataSet) {
                     var timeStamp = new Date(dataSet.xValue);
-                    var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
+                    var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm') };
                     var val = dataSet.yValue;
 
-                    data.addRow([time, val]);
-                    //The hard coded "100" should be the amountofdatasetsfordashboard property in the future
-                    if (data.getNumberOfRows() > 100) {
+                    //Checks if the new data is of a newer set then the last, based on the time it was made
+                    if (timeStamp > lastTimeStamp) {
+                        data.addRow([time, val]);
+
+                        //The hard coded "100" should be the amountofdatasetsfordashboard property in the future
+                        if (data.getNumberOfRows() > 100) {
                         data.removeRow(0);
+                        }
+
+                        lastTimeStamp = new Date(timeStamp);
+                        chart.draw(data, option);
                     }
-                    chart.draw(data, option);
                 });
             }
 
-
-        function onLoad() {
-            $.get('GetDataSets', integrationSettingId = 'integrationSettingId=EA72F6B5-0ECF-49F7-8D0B-D2DEACA627CD', function (dataSets) {
-                for (var i = 0; i < dataSets.length; i++) {
-                    var itemxyz = dataSets[i];
+            //Fills the dashboard with latest entries/datasets
+            function fillDashboard() {
+                $.get('GetNewestDataSets', { integrationSettingId: '@Model.DashboardSetting.IntegrationSettingId', amountOfDataSets: '100'  }, function (dataSets) {
+                    for (var i = 0; i < dataSets.length; i++) {
+                        var itemxyz = dataSets[i];
 
                         var timeStamp = new Date(itemxyz.xValue);
-                        var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm:ss') };
+                        var time = { v: timeStamp, f: moment(timeStamp).format('HH:mm') };
                         var val = itemxyz.yValue;
 
                         data.addRow([time, val]);

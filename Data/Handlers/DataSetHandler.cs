@@ -18,9 +18,16 @@ namespace Data.Handlers
             _dataSetRepo = new Repository<DataSet>();
         }
 
+        // Create a single dataset
         public async Task CreateDataSet(DataSet dataSet)
         {
             await _dataSetRepo.Add(dataSet);
+        }
+
+        // Add a list of datasets to save transactions to the DB
+        public async Task CreateDataSets(List<DataSet> dataSets)
+        {
+            await _dataSetRepo.AddMany(dataSets);
         }
 
         // Get all DataSets in the database
@@ -35,6 +42,7 @@ namespace Data.Handlers
             return await _dataSetRepo.Get(dataSetId);
         }
 
+        // Get a specific dataset based on the integrationSettingId as well as the timestamp given from Azure
         public async Task<DataSet> GetDataSetByIntegrationSettingIdAndTimestamp(Guid integrationSettingId, DateTimeOffset dateTime)
         {
             return await _dataSetRepo.Get(x => x.IntegrationSettingId == integrationSettingId && x.XValue == dateTime);
@@ -60,14 +68,14 @@ namespace Data.Handlers
         //Gets the newest dataset, based on DateCreated
         public async Task<DataSet> GetNewestDataSetByIntegrationSettingId(Guid integrationSettingId)
         {
-            List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId);
-            return dataSets.OrderByDescending(x => x.DateCreated).FirstOrDefault();
+            List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId && x.XValue > DateTimeOffset.Now.AddMinutes(-10));
+            return dataSets.OrderByDescending(x => x.XValue).FirstOrDefault();
         }
 
         public async Task<List<DataSet>> GetCertainAmountOfDataSets(Guid integrationSettingId, int dataSetAmount)
         {
-            List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId);
-            return dataSets.OrderBy(x => x.DateCreated).TakeLast(dataSetAmount).ToList();
+            List<DataSet> dataSets = await _dataSetRepo.GetMany(x => x.IntegrationSettingId == integrationSettingId && x.XValue > DateTimeOffset.Now.AddMinutes((-dataSetAmount - 10)));
+            return dataSets.OrderBy(x => x.XValue).TakeLast(dataSetAmount).ToList();
         }
 
         // Update a DataSet object

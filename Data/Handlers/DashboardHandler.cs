@@ -10,52 +10,59 @@ namespace Data.Handlers
 {
     public class DashboardHandler
     {
-        private readonly Repository<Dashboard> dashboardRepo;
+        private readonly Repository<Dashboard> _dashboardRepo;
 
         public DashboardHandler()
         {
-            dashboardRepo = new Repository<Dashboard>();
+            _dashboardRepo = new Repository<Dashboard>();
         }
 
         public async Task CreateDashboard(Dashboard dashboard)
         {
-            await dashboardRepo.Add(dashboard);
+            await _dashboardRepo.Add(dashboard);
 
         }
 
         // Get all dashboards in the database
         public async Task<List<Dashboard>> GetDashboards()
         {
-            return await dashboardRepo.GetAll();
+            return await _dashboardRepo.GetAll();
         }
 
         // Get a single dashboard based on the dashboardId
         public async Task<Dashboard> GetDashboard(Guid dashboardId)
         {
-            return await dashboardRepo.Get(dashboardId);
+            return await _dashboardRepo.Get(dashboardId);
         }
 
-        public async Task<List<Dashboard>> GetDashboardAndDashboardSetting(Guid userId, string[] children)
+        //Get a single dashboard along with its setting based on its dashboardId
+        public async Task<Dashboard> GetDashBoardAndDashboardSetting(Guid dashboardId, string[] children)
         {
-            return await dashboardRepo.GetMany(x => x.UserId == userId, children);
+            return await _dashboardRepo.Get(x => x.DashboardId == dashboardId, children);
+        }
+
+        //Get a list of dashboards along with their their settings for a given user based on the provided userId
+        public async Task<List<Dashboard>> GetDashboardsAndDashboardSettings(Guid userId, string[] children)
+        {
+            return await _dashboardRepo.GetMany(x => x.UserId == userId, children);
         }
 
         // Get dashboards based on their userId (DashboardOverview)
         public async Task<List<Dashboard>> GetDashboardsByUserId(Guid userId)
         {
-            return await dashboardRepo.GetMany(x => x.UserId == userId);
+            return await _dashboardRepo.GetMany(x => x.UserId == userId);
         }
 
         // Update a dashboard object
         public async Task UpdateDashboard(Dashboard dashboard)
         {
-            await dashboardRepo.Update(dashboard);
+            await _dashboardRepo.Update(dashboard);
         }
 
         // Hard delete a dashboard based on the dashboardId
         public async Task DeleteDashboard(Dashboard dashboard)
         {
-            await dashboardRepo.Delete(dashboard);
+            await _dashboardRepo.Delete(dashboard);
         }
     }
 }

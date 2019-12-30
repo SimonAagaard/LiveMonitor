@@ -4,14 +4,16 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(DbContext))]
-    partial class DbContextModelSnapshot : ModelSnapshot
+    [Migration("20191206092832_IntegrationSettingsUpdate")]
+    partial class IntegrationSettingsUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,12 +91,6 @@ namespace Data.Migrations
                     b.Property<Guid>("DashboardTypeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("DashboardTypeValue")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("IntegrationSettingId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("RefreshRate")
                         .HasColumnType("int");
 
@@ -120,7 +116,7 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("DashboardTypeValue")
+                    b.Property<int>("DashboardName")
                         .HasColumnType("int");
 
                     b.HasKey("DashboardTypeId");
@@ -139,9 +135,6 @@ namespace Data.Migrations
 
                     b.Property<Guid>("IntegrationSettingId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("MetricType")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("XValue")
                         .HasColumnType("datetimeoffset");

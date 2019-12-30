@@ -10,42 +10,73 @@ using System.Threading.Tasks;
 
 namespace Web.Controllers
 {
-    public class DataSetController
+    public class DataSetController : Controller
     {
+        private readonly IntegrationSettingHandler _integrationSettingHandler;
+        private readonly DataSetHandler _dataSetHandler;
+
+        public DataSetController()
+        {
+            _integrationSettingHandler = new IntegrationSettingHandler();
+            _dataSetHandler = new DataSetHandler();
+        }
+
+        // Create all datasets for current integrationSettings
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            //IntegrationHandler integrationHandler = new IntegrationHandler();
-            //IntegrationSettingHandler integrationSettingHandler = new IntegrationSettingHandler();
+            List<IntegrationSetting> integrations = await _integrationSettingHandler.GetIntegrationSettings();
+            List<Task> integrationsToRun = new List<Task>();
 
-            //var integration = new Integration
-            //{
-            //    IntegrationId = Guid.NewGuid(),
-            //    IntegrationName = "Azure Test",
-            //    IntegrationSettingId = Guid.NewGuid(),
-            //    UserId = new Guid("8213517D-670C-EA11-A6A2-C86000C03827"),
-            //};
+            // Create DataSets for all integrations thats active
+            foreach (IntegrationSetting integrationSetting in integrations.Where(x => x.IsActive == true))
+            {
+                if (!String.IsNullOrWhiteSpace(integrationSetting.TenantId) && 
+                    !String.IsNullOrWhiteSpace(integrationSetting.ClientId) && 
+                    !String.IsNullOrWhiteSpace(integrationSetting.ClientSecret) &&
+                    !String.IsNullOrWhiteSpace(integrationSetting.ResourceId) &&
+                    !String.IsNullOrWhiteSpace(integrationSetting.ResourceUrl))
+                {
+                    // Add the active integrations to the list to run
+                    AzureConnector azureConnector = new AzureConnector(integrationSetting);
+                    integrationsToRun.Add(azureConnector.GetAzureDataAsync());
+                }
+            }
 
-            //await integrationHandler.CreateIntegration(integration);
-            //var integrationSetting = new IntegrationSetting
-            //{
-            //    ClientId = "2de6a64e-eb0c-4275-9952-4ce1d3f0d131",
-            //    ClientSecret = "A1l3?[ReU3?L8eEhaYpcUPJG]jEX0_X5",
-            //    IntegrationId = integration.IntegrationId,
-            //    IntegrationSettingId = integration.IntegrationSettingId,
-            //    TenantId = "92404485-d794-4fc2-8d0d-587d30cba2ad",
-            //    ResourceId = "https://management.azure.com",
-            //    ResourceUrl = @"/subscriptions/2c24d5f6-cb4d-4857-88f8-fe5c9a827f7c/resourceGroups/LiveMonitor/providers/Microsoft.Web/sites/LiveMonitorApp/"
-            //};
-            //await integrationSettingHandler.CreateIntegrationSetting(integrationSetting);
-
-            IntegrationSettingHandler integrationSettingHandler = new IntegrationSettingHandler();
-            AzureConnector conn = new AzureConnector();
-
-            var integrationSetting = await integrationSettingHandler.GetIntegrationSetting(new Guid("EA72F6B5-0ECF-49F7-8D0B-D2DEACA627CD"));
-            await conn.GetAzureDataAsync(integrationSetting);
+            // Asynchronously run all integrations
+            await Task.WhenAll(integrationsToRun);
 
             return new OkResult();
+        }
+
+        public async Task<JsonResult> GetDataSet(Guid integrationSettingId)
+        {
+            if (integrationSettingId != Guid.Empty)
+            {
+                var dataSet = await _dataSetHandler.GetNewestDataSetByIntegrationSettingId(integrationSettingId);
+
+                if (dataSet != null)
+                {
+                    return Json(dataSet);
+                }
+            }
+
+            return Json("");
+        }
+
+        public async Task<JsonResult> GetAmountOfDataSets(Guid integrationSettingId, int amountOfDataSets)
+        {
+            if (integrationSettingId != Guid.Empty)
+            {
+                List<DataSet> dataSets = await _dataSetHandler.GetCertainAmountOfDataSets(integrationSettingId, amountOfDataSets);
+
+                if (dataSets.Count > 0)
+                {
+                    return Json(dataSets);
+                }
+            }
+
+            return Json("");
         }
     }
 }
