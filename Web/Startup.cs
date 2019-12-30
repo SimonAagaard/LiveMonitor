@@ -51,10 +51,10 @@ namespace Web
             });
             
             //Allows the injection of the handler to Dashboardsettingsview
-            services.AddTransient<DashboardTypeHandler>();
+            services.AddScoped<DashboardTypeHandler>();
 
             // Inject controller in DashboardSettingsView
-            services.AddTransient<DashboardController>();
+            services.AddScoped<DashboardController>();
             
             services.AddMvc(options =>
             {
@@ -62,7 +62,7 @@ namespace Web
             }).SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
-            services.AddSingleton<IEmailSender, EmailSender>();
+            services.AddScoped<IEmailSender, EmailSender>();
 
             //Custom settings for identity client-side validation
             services.Configure<IdentityOptions>(options =>

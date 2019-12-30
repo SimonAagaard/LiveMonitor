@@ -34,7 +34,7 @@ namespace Data
         // Get a single object based on a predicate
         public async Task<T> Get(Expression<Func<T, bool>> predicate)
         {
-            return await _entities.FirstOrDefaultAsync(predicate);
+            return await _entities.AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
         //Return a single object along with its child objects
@@ -47,13 +47,13 @@ namespace Data
                 entities = entities.Include(entity);
             }
 
-            return await entities.FirstOrDefaultAsync(predicate);
+            return await entities.AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
         // Find List of entities based on a predicate.
         public async Task<List<T>> GetMany(Expression<Func<T, bool>> predicate)
         {
-            return await _entities.Where(predicate).ToListAsync();
+            return await _entities.AsNoTracking().Where(predicate).ToListAsync();
         }
 
         //Return list of objects along with child objects
@@ -66,7 +66,7 @@ namespace Data
                 entities = entities.Include(entity);
             }
         
-            return await entities.Where(predicate).ToListAsync();
+            return await entities.AsNoTracking().Where(predicate).ToListAsync();
         }
 
         // Validation here?

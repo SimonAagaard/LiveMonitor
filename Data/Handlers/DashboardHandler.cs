@@ -32,7 +32,7 @@ namespace Data.Handlers
         // Get a single dashboard based on the dashboardId
         public async Task<Dashboard> GetDashboard(Guid dashboardId)
         {
-            return await _dashboardRepo.Get(dashboardId);
+            return await _dashboardRepo.Get(x => x.DashboardId == dashboardId);
         }
 
         //Get a single dashboard along with its setting based on its dashboardId
