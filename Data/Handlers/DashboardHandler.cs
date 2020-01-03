@@ -10,7 +10,7 @@ namespace Data.Handlers
 {
     public class DashboardHandler
     {
-        private readonly Repository<Dashboard> _dashboardRepo;
+        private readonly IRepository<Dashboard> _dashboardRepo;
 
         public DashboardHandler()
         {

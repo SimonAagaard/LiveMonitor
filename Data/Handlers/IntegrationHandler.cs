@@ -10,7 +10,7 @@ namespace Data.Handlers
 {
     public class IntegrationHandler
     {
-        private readonly Repository<Integration> _integrationRepo;
+        private readonly IRepository<Integration> _integrationRepo;
 
         public IntegrationHandler()
         {

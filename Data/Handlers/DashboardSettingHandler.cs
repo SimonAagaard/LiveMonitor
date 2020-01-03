@@ -8,7 +8,7 @@ namespace Data.Handlers
 {
     public class DashboardSettingHandler
     {
-        private readonly Repository<DashboardSetting> DashboardSettingRepo;
+        private readonly IRepository<DashboardSetting> DashboardSettingRepo;
 
         public DashboardSettingHandler()
         {

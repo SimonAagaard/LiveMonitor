@@ -9,7 +9,7 @@ namespace Data.Handlers
 
     public class BearerTokenHandler
     {
-        private readonly Repository<BearerToken> _bearerTokenRepo;
+        private readonly IRepository<BearerToken> _bearerTokenRepo;
 
         public BearerTokenHandler()
         {

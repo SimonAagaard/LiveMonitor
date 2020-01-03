@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Web\Web.csproj", "{7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsole", "TestConsole\TestConsole.csproj", "{8D055168-8069-4FA2-BFE6-B75320C94CB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PingService", "PingService\PingService.csproj", "{242898BB-E40D-4E1A-95ED-32586293219F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PingService", "PingService\PingService.csproj", "{242898BB-E40D-4E1A-95ED-32586293219F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

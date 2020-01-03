@@ -11,7 +11,7 @@ namespace Data.Handlers
 
     public class DataSetHandler
     {
-        private readonly Repository<DataSet> _dataSetRepo;
+        private readonly IRepository<DataSet> _dataSetRepo;
 
         public DataSetHandler()
         {

@@ -8,7 +8,7 @@ namespace Data.Handlers
 {
     public class IntegrationSettingHandler
     {
-        private readonly Repository<IntegrationSetting> _integrationSettingRepo;
+        private readonly IRepository<IntegrationSetting> _integrationSettingRepo;
 
         public IntegrationSettingHandler()
         {

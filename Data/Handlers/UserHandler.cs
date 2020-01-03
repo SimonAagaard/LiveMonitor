@@ -10,7 +10,7 @@ namespace Data.Handlers
 {
     public class UserHandler
     {
-        private readonly Repository<MonitorUser> userRepo;
+        private readonly IRepository<MonitorUser> userRepo;
 
         public UserHandler()
         {
