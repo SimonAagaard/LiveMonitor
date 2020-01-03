@@ -32,8 +32,6 @@ namespace Web
             DbName dbName = new DbName();
 
             services.AddDbContext<Data.DbContext>(options => options.UseSqlServer(Configuration.GetConnectionString(dbName.ConnectionName)));
-            //services.AddDefaultIdentity<MonitorUser>(options => options.SignIn.RequireConfirmedAccount = true);
-            //.AddEntityFrameworkStores<Data.DbContext, Guid>();
 
             services.AddIdentity<MonitorUser, MonitorRole>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<Data.DbContext>()
@@ -106,8 +104,6 @@ namespace Web
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-
 
             app.UseEndpoints(endpoints =>
             {

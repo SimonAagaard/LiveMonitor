@@ -65,7 +65,7 @@ namespace Data
             {
                 entities = entities.Include(entity);
             }
-        
+
             return await entities.AsNoTracking().Where(predicate).ToListAsync();
         }
 
@@ -78,7 +78,7 @@ namespace Data
 
         public async Task AddMany(List<T> entities)
         {
-            await _context.AddRangeAsync(entities);
+            await _entities.AddRangeAsync(entities);
             await _context.SaveChangesAsync();
         }
 
@@ -93,13 +93,13 @@ namespace Data
         // Create a soft delete to make use of IsDeleted.
         public async Task Delete(T entity)
         {
-             _entities.Remove(entity);
-             await _context.SaveChangesAsync();
+            _entities.Remove(entity);
+            await _context.SaveChangesAsync();
         }
         public async Task Seed(T entity)
         {
-             await _entities.AddAsync(entity);
-             await _context.SaveChangesAsync();
+            await _entities.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
     }
 }

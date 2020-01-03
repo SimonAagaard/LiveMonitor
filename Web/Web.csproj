@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UserSecretsId>aspnet-Web-A892976E-31C3-464F-A198-2E0F8B0937A9</UserSecretsId>
+	<ServerGarbageCollection>true</ServerGarbageCollection>
   </PropertyGroup>
 
 
@@ -27,18 +28,15 @@
     <PackageReference Include="Moment.js" Version="2.24.0" />
   </ItemGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
-
 
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 

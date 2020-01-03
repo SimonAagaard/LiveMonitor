@@ -45,6 +45,7 @@ namespace Web.Controllers
 
             // Asynchronously run all integrations
             await Task.WhenAll(integrationsToRun);
+            integrationsToRun.ForEach(x => x.Dispose());
             return new OkResult();
         }
 

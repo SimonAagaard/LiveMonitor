@@ -24,30 +24,31 @@ namespace Data.Integrations
 
         public async Task<AuthServerResponse> GetAuthTokenAsync()
         {
-            try
+            using (HttpClient client = new HttpClient())
             {
-                using HttpClient client = new HttpClient();
-                // Clear default headers and set the security protocol
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
-
-                // Set baseadress for authentication
-                Uri authUrl = new Uri("https://login.microsoftonline.com/" + _integrationSetting.TenantId + "/oauth2/token");
-
-                // Create a list of KVP with the values for the post-body
-                List<KeyValuePair<string, string>> authObjects = new List<KeyValuePair<string, string>>();
-                authObjects.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
-                authObjects.Add(new KeyValuePair<string, string>("client_id", _integrationSetting.ClientId));
-                authObjects.Add(new KeyValuePair<string, string>("client_secret", _integrationSetting.ClientSecret));
-                authObjects.Add(new KeyValuePair<string, string>("resource", _integrationSetting.ResourceId));
-
-                // Convert the authobjects to a FormUrlEncodedContent to add the post-body
-                FormUrlEncodedContent content = new FormUrlEncodedContent(authObjects);
-
-                using (client)
+                try
                 {
+                    // Clear default headers and set the security protocol
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+
+                    // Set baseadress for authentication
+                    Uri authUrl = new Uri("https://login.microsoftonline.com/" + _integrationSetting.TenantId + "/oauth2/token");
+
+                    // Create a list of KVP with the values for the post-body
+                    List<KeyValuePair<string, string>> authObjects = new List<KeyValuePair<string, string>>();
+                    authObjects.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
+                    authObjects.Add(new KeyValuePair<string, string>("client_id", _integrationSetting.ClientId));
+                    authObjects.Add(new KeyValuePair<string, string>("client_secret", _integrationSetting.ClientSecret));
+                    authObjects.Add(new KeyValuePair<string, string>("resource", _integrationSetting.ResourceId));
+
+                    // Convert the authobjects to a FormUrlEncodedContent to add the post-body
+                    FormUrlEncodedContent content = new FormUrlEncodedContent(authObjects);
+                    
+                    // Get authresponse from Azure
                     HttpResponseMessage response = await client.PostAsync(authUrl, content);
+
                     if (response.IsSuccessStatusCode)
                     {
                         var result = await response.Content.ReadAsStringAsync();
@@ -59,10 +60,11 @@ namespace Data.Integrations
                         }
                     }
                 }
-            }
-            catch (Exception)
-            {
-                throw new NotImplementedException();
+                catch (Exception)
+                {
+                    throw new NotImplementedException();
+
+                }
             }
             return new AuthServerResponse();
         }
@@ -153,8 +155,12 @@ namespace Data.Integrations
                                         DataSetsToCreate.Add(dataSet);
                                     }
                                 }
-                                // Create all datasets not yet in the database
-                                await dataSetHandler.CreateDataSets(DataSetsToCreate);
+
+                                if (DataSetsToCreate.Any())
+                                {
+                                    // Create all datasets not yet in the database
+                                    await dataSetHandler.CreateDataSets(DataSetsToCreate);
+                                }
                             }
                         }
                     }
